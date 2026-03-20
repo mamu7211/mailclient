@@ -17,7 +17,7 @@
 
 ```bash
 # Clone the repository
-git clone git@github.com:mamu7211/mailclient.git
+git clone git@github.com:mamu7211/fireb-mailclient.git
 cd mailclient
 
 # Restore dependencies

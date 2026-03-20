@@ -38,7 +38,7 @@ Feirb is a self-hosted, modern web-based mail client designed for NAS systems. I
 ## Quick Start
 
 ```bash
-git clone git@github.com:mamu7211/mailclient.git
+git clone git@github.com:mamu7211/fireb-mailclient.git
 cd mailclient
 dotnet workload install aspire
 dotnet restore Feirb.sln
