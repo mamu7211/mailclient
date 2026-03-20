@@ -2,6 +2,10 @@
 
 A smart mail client for your NAS, powered by AI.
 
+## Project Language
+
+English is the project language. All code, comments, commit messages, documentation, issues, and PR descriptions must be written in English.
+
 ## Project Overview
 
 MailClient is a self-hosted mail client designed for NAS systems. It provides a modern web-based interface for managing email with integrated AI features powered by Ollama/Qwen3 for mail summarization, smart reply drafts, and automatic categorization.
