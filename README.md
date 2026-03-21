@@ -71,7 +71,7 @@ mailclient/
 │   ├── Feirb.Api.Tests/
 │   └── Feirb.Web.Tests/
 ├── docs/
-│   ├── DESIGN.md                    # Architecture & design decisions
+│   ├── ARCHITECTURE.md                    # Architecture & design decisions
 │   ├── SETUP.md                     # Developer setup guide
 │   └── API.md                       # API documentation
 ├── CLAUDE.md                        # Claude Code project instructions
@@ -80,7 +80,7 @@ mailclient/
 
 ## Documentation
 
-- **[Design Document](docs/DESIGN.md)** — Architecture, data model, and technical decisions
+- **[Design Document](docs/ARCHITECTURE.md)** — Architecture, data model, and technical decisions
 - **[Setup Guide](docs/SETUP.md)** — Developer onboarding and environment setup
 - **[API Documentation](docs/API.md)** — Endpoint reference and examples
 

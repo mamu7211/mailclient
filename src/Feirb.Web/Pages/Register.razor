@@ -5,59 +5,58 @@
 
 <PageTitle>Register - Feirb</PageTitle>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <h2 class="mb-4 text-center">Create Account</h2>
+<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="card p-4 p-md-5" style="width: 100%; max-width: 440px;">
+        <h2 class="mb-1 text-center fw-bold">Create Account</h2>
+        <p class="text-center text-muted mb-4">Join Feirb to manage your mail</p>
 
-            @if (!string.IsNullOrEmpty(_errorMessage))
-            {
-                <div class="alert alert-danger" role="alert">@_errorMessage</div>
-            }
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="alert alert-danger py-2" role="alert">@_errorMessage</div>
+        }
 
-            <EditForm Model="_model" OnValidSubmit="HandleRegisterAsync" FormName="register">
-                <DataAnnotationsValidator />
+        <EditForm Model="_model" OnValidSubmit="HandleRegisterAsync" FormName="register">
+            <DataAnnotationsValidator />
 
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <InputText id="username" class="form-control" @bind-Value="_model.Username" />
-                    <ValidationMessage For="() => _model.Username" />
-                </div>
+            <div class="mb-3">
+                <label for="username" class="form-label small fw-medium">Username</label>
+                <InputText id="username" class="form-control form-control-lg" placeholder="Choose a username" @bind-Value="_model.Username" />
+                <ValidationMessage For="() => _model.Username" />
+            </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <InputText id="email" class="form-control" type="email" @bind-Value="_model.Email" />
-                    <ValidationMessage For="() => _model.Email" />
-                </div>
+            <div class="mb-3">
+                <label for="email" class="form-label small fw-medium">Email</label>
+                <InputText id="email" class="form-control form-control-lg" type="email" placeholder="you@example.com" @bind-Value="_model.Email" />
+                <ValidationMessage For="() => _model.Email" />
+            </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <InputText id="password" class="form-control" type="password" @bind-Value="_model.Password" />
-                    <ValidationMessage For="() => _model.Password" />
-                </div>
+            <div class="mb-3">
+                <label for="password" class="form-label small fw-medium">Password</label>
+                <InputText id="password" class="form-control form-control-lg" type="password" placeholder="Min. 8 characters" @bind-Value="_model.Password" />
+                <ValidationMessage For="() => _model.Password" />
+            </div>
 
-                <div class="mb-3">
-                    <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <InputText id="confirmPassword" class="form-control" type="password" @bind-Value="_model.ConfirmPassword" />
-                    @if (_model.ConfirmPassword is not null && _model.Password != _model.ConfirmPassword)
-                    {
-                        <div class="text-danger">Passwords do not match.</div>
-                    }
-                </div>
+            <div class="mb-4">
+                <label for="confirmPassword" class="form-label small fw-medium">Confirm Password</label>
+                <InputText id="confirmPassword" class="form-control form-control-lg" type="password" placeholder="Repeat your password" @bind-Value="_model.ConfirmPassword" />
+                @if (_model.ConfirmPassword is not null && _model.Password != _model.ConfirmPassword)
+                {
+                    <div class="validation-message">Passwords do not match.</div>
+                }
+            </div>
 
-                <button type="submit" class="btn btn-primary w-100" disabled="@_isSubmitting">
-                    @if (_isSubmitting)
-                    {
-                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-                    }
-                    Register
-                </button>
-            </EditForm>
+            <button type="submit" class="btn btn-primary btn-lg w-100" disabled="@_isSubmitting">
+                @if (_isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                }
+                Create Account
+            </button>
+        </EditForm>
 
-            <p class="mt-3 text-center">
-                Already have an account? <a href="/login">Log in</a>
-            </p>
-        </div>
+        <p class="mt-4 text-center text-muted mb-0">
+            Already have an account? <a href="/login">Log in</a>
+        </p>
     </div>
 </div>
 

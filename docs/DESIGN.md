@@ -1,95 +1,99 @@
-# Feirb — Architecture & Design
+# Feirb — UI/UX Design
 
-## Goals
+Modern, soft light UI with subtle color accents and rounded surfaces.
 
-- Provide a self-hosted mail client optimized for NAS systems
-- Deliver a modern, responsive web UI for managing email
-- Integrate local LLM capabilities for smart mail features
-- Keep deployment simple: single command via Aspire, minimal external dependencies
-- Support multiple mail accounts with IMAP/SMTP
+## Colors
 
-## Non-Goals
+| Token        | Hex       | Usage                                              |
+|--------------|-----------|----------------------------------------------------|
+| `primary`    | `#FF2D78` | Pink accent — primary actions, active states, highlights |
+| `secondary`  | `#00FFCC` | Mint/cyan — secondary actions, success states, indicators |
+| `tertiary`   | `#FFE04A` | Warm yellow — warnings, tags, small highlights     |
+| `neutral`    | `#28283E` | Main text color and dark UI elements               |
+| `background` | `#F4F5FB` | Soft light gray with slight purple tint             |
 
-- Not a replacement for Gmail/Outlook at scale — designed for personal/small team use
-- No mobile-native apps (responsive web UI covers mobile use)
-- No built-in mail server — connects to existing IMAP/SMTP servers
-- No calendar or contacts integration (initial scope)
+### Color Usage Rules
 
-## System Architecture
+- Use `primary` for main CTAs and active states
+- Use `secondary` / `tertiary` sparingly
+- Large surfaces remain neutral/light
+- No glow effects — colors are flat
+- Max 1–2 accent colors per section
 
-```mermaid
-graph TB
-    subgraph Browser
-        WASM[Blazor WASM\nBootstrap 5]
-    end
+## Typography
 
-    subgraph Aspire[.NET Aspire AppHost]
-        API[Feirb.Api\nMinimal APIs]
-        OLLAMA[Ollama Container\nqwen3:4b model]
-        DB[(PostgreSQL)]
-        MAILPIT[Mailpit\ndev only]
-    end
+| Element        | Font                              | Style                        |
+|----------------|-----------------------------------|------------------------------|
+| Headlines      | Geometric sans-serif (Inter/Sora) | Large size, medium–bold weight |
+| Body           | Inter or similar                  | High readability, medium contrast |
+| Labels/UI text | Same family                       | Smaller size, medium weight  |
 
-    subgraph External
-        IMAP[Mail Server\nIMAP/SMTP]
-    end
+## Surfaces & Elevation
 
-    WASM -->|HTTP/JSON| API
-    API -->|MailKit| IMAP
-    API -->|OllamaSharp| OLLAMA
-    API -->|EF Core| DB
-    API -.->|dev SMTP| MAILPIT
-```
+- **Border radius:** `16px` – `24px`
+- **Soft shadow:** `box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06)`
+- **Layering order:** Base background → Raised cards → Interactive elements
 
 ## Components
 
-### Feirb.AppHost
+### Buttons
 
-Aspire orchestration project and main entry point. Registers and configures all services, manages service discovery, and provides the Aspire dashboard.
+| Variant     | Background    | Text    | Border             | Shadow |
+|-------------|---------------|---------|--------------------|--------|
+| Primary     | `primary`     | white   | none               | soft   |
+| Secondary   | light         | neutral | subtle             | none   |
+| Outlined    | transparent   | neutral | thin neutral       | none   |
+| Inverted    | `neutral`     | white   | none               | none   |
 
-Manages: PostgreSQL, Ollama (via `CommunityToolkit.Aspire.Hosting.Ollama`), Mailpit (dev).
+### Cards
 
-### Feirb.ServiceDefaults
+- Light background (`#FFFFFF` or `background`)
+- Rounded corners (`16px` – `24px`)
+- Soft shadow
+- Optional subtle border: `rgba(0, 0, 0, 0.05)`
 
-Shared service configuration: OpenTelemetry, health checks (`/health`, `/alive`), HTTP client resilience (Polly), service discovery.
+### Inputs
 
-### Feirb.Api
+- Light background
+- Rounded edges (`12px` – `16px`)
+- Subtle border
+- **Focus state:** border color `primary`, optional soft shadow
 
-ASP.NET Core Minimal API backend. Connects frontend to mail servers, LLM, and database.
+### Icons & Actions
 
-Endpoint groups: Mail, Folders, Settings, AI.
+- Circular icon buttons
+- Filled with accent colors
+- White icons
+- Consistent sizing
 
-Key services: `IMailService` (MailKit IMAP/SMTP), `IAiService` (OllamaSharp), `IMailAccountService` (account management), `FeirbDbContext` (EF Core/PostgreSQL).
+## Visual Style Rules
 
-### Feirb.Web
+- No neon or glow effects
+- Soft contrast (avoid pure black — use `neutral`)
+- Use spacing + radius for hierarchy
+- Clean and minimal layout
 
-Blazor WebAssembly standalone app. Communicates with API via typed `HttpClient` services. UI built with Bootstrap 5.
+## Layout Patterns
 
-### Feirb.Shared
+- Grid-based layout
+- Generous spacing
+- Grouped cards
+- Consistent alignment
 
-Shared library: DTOs (record types), interfaces, enums, route constants. Referenced by both API and Web.
+## Bootstrap 5 Mapping
 
-## Technology Decisions
+When implementing with Bootstrap 5, apply these design tokens via CSS custom properties:
 
-| Decision | Rationale |
-|----------|-----------|
-| **.NET Aspire** | Orchestrates multi-service topology, service discovery, dev dashboard, health monitoring |
-| **Blazor WASM** | .NET end-to-end, shared types between frontend and backend, offline potential |
-| **Minimal APIs** | Lightweight, less ceremony, fits the API surface well |
-| **PostgreSQL** | Full-text search for mail, concurrent access, managed as Aspire container |
-| **MailKit/MimeKit** | Gold standard for .NET mail — robust IMAP/SMTP, proper MIME handling |
-| **OllamaSharp** | Typed .NET client for Ollama, streaming support, clean DI integration |
-| **Bootstrap 5** | Proven, responsive, no build toolchain required |
-
-## Security Considerations
-
-- Mail passwords encrypted at rest via ASP.NET Data Protection API (keys persisted in volume)
-- Passwords excluded from API responses and Aspire dashboard
-- CORS restricted to Blazor WASM origin
-- Rate limiting on AI endpoints
-- HTML mail content sanitized before rendering
-- AI runs locally via Ollama — no data leaves the NAS
-
-## Future: Google Stitch / MCP Integration
-
-*Details to be provided.* Planned integration with Google Stitch via Model Context Protocol (MCP). A `Stitch2Blazor` skill will be created for generating Blazor components from designs.
+```css
+:root {
+    --bs-primary: #FF2D78;
+    --bs-secondary: #00FFCC;
+    --bs-warning: #FFE04A;
+    --bs-dark: #28283E;
+    --bs-body-bg: #F4F5FB;
+    --bs-body-color: #28283E;
+    --bs-border-radius: 1rem;
+    --bs-border-radius-lg: 1.5rem;
+    --bs-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+```
