@@ -2,7 +2,7 @@
 @inject NavigationManager Navigation
 
 <div class="dropdown">
-    <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <button class="btn btn-sm @ButtonClass dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         @GetDisplayName(_currentCulture)
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
@@ -19,6 +19,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public string ButtonClass { get; set; } = "btn-outline-light";
+
     private string _currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
 
     private static readonly CultureOption[] Cultures =
