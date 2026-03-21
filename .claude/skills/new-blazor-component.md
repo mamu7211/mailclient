@@ -7,26 +7,26 @@ args: component_name
 
 # New Blazor Component
 
-Create a new Blazor component in `src/MailClient.Web/Components/`.
+Create a new Blazor component in `src/Feirb.Web/Components/`.
 
 ## Instructions
 
 Given a component name (from args or ask the user), create two files:
 
-### 1. `src/MailClient.Web/Components/{ComponentName}.razor`
+### 1. `src/Feirb.Web/Components/{ComponentName}.razor`
 
 ```razor
-@namespace MailClient.Web.Components
+@namespace Feirb.Web.Components
 
 <div class="container">
     @* Component markup using Bootstrap 5 classes *@
 </div>
 ```
 
-### 2. `src/MailClient.Web/Components/{ComponentName}.razor.cs`
+### 2. `src/Feirb.Web/Components/{ComponentName}.razor.cs`
 
 ```csharp
-namespace MailClient.Web.Components;
+namespace Feirb.Web.Components;
 
 public partial class {ComponentName} : ComponentBase
 {
@@ -42,7 +42,7 @@ public partial class {ComponentName} : ComponentBase
 - Event callbacks use `EventCallback<T>`
 - Inject services via `[Inject]` attribute in code-behind
 - Follow existing component patterns in the project
-- If the component needs API data, create or reuse a typed HttpClient service in `src/MailClient.Web/Services/`
+- If the component needs API data, create or reuse a typed HttpClient service in `src/Feirb.Web/Services/`
 
 ## After Creation
 

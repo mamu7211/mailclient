@@ -1,4 +1,4 @@
-# MailClient — API Documentation
+# Feirb — API Documentation
 
 Base URL: `https://localhost:7200`
 
@@ -6,7 +6,7 @@ All endpoints return JSON. Error responses use [RFC 7807 Problem Details](https:
 
 ## Authentication
 
-Currently none — MailClient is designed for NAS-local access. Future versions may add authentication.
+Currently none — Feirb is designed for NAS-local access. Future versions may add authentication.
 
 ## Endpoints
 

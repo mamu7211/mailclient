@@ -1,4 +1,4 @@
-# MailClient
+# Feirb
 
 A smart mail client for your NAS, powered by AI.
 
@@ -8,7 +8,7 @@ English is the project language. All code, comments, commit messages, documentat
 
 ## Project Overview
 
-MailClient is a self-hosted mail client designed for NAS systems. It provides a modern web-based interface for managing email with integrated AI features powered by Ollama/Qwen3 for mail summarization, smart reply drafts, and automatic categorization.
+Feirb is a self-hosted mail client designed for NAS systems. It provides a modern web-based interface for managing email with integrated AI features powered by Ollama/Qwen3 for mail summarization, smart reply drafts, and automatic categorization.
 
 ## Tech Stack
 
@@ -26,24 +26,24 @@ MailClient is a self-hosted mail client designed for NAS systems. It provides a 
 
 ```
 src/
-  MailClient.AppHost/          # Aspire orchestration (entry point)
-  MailClient.ServiceDefaults/  # Shared service config (OpenTelemetry, health, resilience)
-  MailClient.Api/              # ASP.NET Minimal API backend
-  MailClient.Web/              # Blazor WASM frontend
-  MailClient.Shared/           # DTOs, interfaces, enums
+  Feirb.AppHost/          # Aspire orchestration (entry point)
+  Feirb.ServiceDefaults/  # Shared service config (OpenTelemetry, health, resilience)
+  Feirb.Api/              # ASP.NET Minimal API backend
+  Feirb.Web/              # Blazor WASM frontend
+  Feirb.Shared/           # DTOs, interfaces, enums
 tests/
-  MailClient.Api.Tests/        # API unit & integration tests
-  MailClient.Web.Tests/        # Frontend tests
+  Feirb.Api.Tests/        # API unit & integration tests
+  Feirb.Web.Tests/        # Frontend tests
 ```
 
 ## Build & Run
 
 ```bash
 # Build everything
-dotnet build MailClient.sln
+dotnet build Feirb.sln
 
 # Run via Aspire (starts all services)
-dotnet run --project src/MailClient.AppHost
+dotnet run --project src/Feirb.AppHost
 
 # Run tests
 dotnet test
@@ -70,7 +70,7 @@ dotnet format
 - File-scoped namespaces
 - Primary constructors preferred
 - Minimal APIs — no controllers
-- Record types for all DTOs in `MailClient.Shared`
+- Record types for all DTOs in `Feirb.Shared`
 - All async methods suffixed with `Async`
 - Expression-bodied members for single-line implementations
 - See `.editorconfig` for full formatting rules
@@ -94,7 +94,7 @@ dotnet format
 - Minimal API endpoints grouped by feature in separate static classes
 - Endpoint groups: `/api/mail`, `/api/folders`, `/api/settings`, `/api/ai`
 - Return `Results<T>` types for explicit HTTP response modeling
-- All request/response DTOs in `MailClient.Shared`
+- All request/response DTOs in `Feirb.Shared`
 
 ## LLM Integration
 

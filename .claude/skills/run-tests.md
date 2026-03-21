@@ -6,19 +6,19 @@ user_invocable: true
 
 # Run Tests
 
-Execute tests for the MailClient solution.
+Execute tests for the Feirb solution.
 
 ## Steps
 
 1. Run all tests:
    ```bash
-   dotnet test MailClient.sln --verbosity normal
+   dotnet test Feirb.sln --verbosity normal
    ```
 
 2. If a specific project or test filter is requested, use:
    ```bash
    # Specific project
-   dotnet test tests/MailClient.Api.Tests --verbosity normal
+   dotnet test tests/Feirb.Api.Tests --verbosity normal
 
    # Filter by test name
    dotnet test --filter "MethodName_or_ClassName" --verbosity normal

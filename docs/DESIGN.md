@@ -1,4 +1,4 @@
-# MailClient — Architecture & Design
+# Feirb — Architecture & Design
 
 ## Goals
 
@@ -24,7 +24,7 @@ graph TB
     end
 
     subgraph Aspire[.NET Aspire AppHost]
-        API[MailClient.Api\nMinimal APIs]
+        API[Feirb.Api\nMinimal APIs]
         OLLAMA[Ollama Container\nqwen3:4b model]
         DB[(PostgreSQL)]
         MAILPIT[Mailpit\ndev only]
@@ -43,29 +43,29 @@ graph TB
 
 ## Components
 
-### MailClient.AppHost
+### Feirb.AppHost
 
 Aspire orchestration project and main entry point. Registers and configures all services, manages service discovery, and provides the Aspire dashboard.
 
 Manages: PostgreSQL, Ollama (via `CommunityToolkit.Aspire.Hosting.Ollama`), Mailpit (dev).
 
-### MailClient.ServiceDefaults
+### Feirb.ServiceDefaults
 
 Shared service configuration: OpenTelemetry, health checks (`/health`, `/alive`), HTTP client resilience (Polly), service discovery.
 
-### MailClient.Api
+### Feirb.Api
 
 ASP.NET Core Minimal API backend. Connects frontend to mail servers, LLM, and database.
 
 Endpoint groups: Mail, Folders, Settings, AI.
 
-Key services: `IMailService` (MailKit IMAP/SMTP), `IAiService` (OllamaSharp), `IMailAccountService` (account management), `MailClientDbContext` (EF Core/PostgreSQL).
+Key services: `IMailService` (MailKit IMAP/SMTP), `IAiService` (OllamaSharp), `IMailAccountService` (account management), `FeirbDbContext` (EF Core/PostgreSQL).
 
-### MailClient.Web
+### Feirb.Web
 
 Blazor WebAssembly standalone app. Communicates with API via typed `HttpClient` services. UI built with Bootstrap 5.
 
-### MailClient.Shared
+### Feirb.Shared
 
 Shared library: DTOs (record types), interfaces, enums, route constants. Referenced by both API and Web.
 

@@ -6,13 +6,13 @@ user_invocable: true
 
 # Run Aspire AppHost
 
-Start the MailClient application via .NET Aspire. This is the primary way to run all services during development.
+Start the Feirb application via .NET Aspire. This is the primary way to run all services during development.
 
 ## Steps
 
 1. Run the Aspire AppHost:
    ```bash
-   dotnet run --project src/MailClient.AppHost
+   dotnet run --project src/Feirb.AppHost
    ```
 
 2. Report the service URLs once started:

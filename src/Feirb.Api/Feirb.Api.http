@@ -1,0 +1,6 @@
+@Feirb.Api_HostAddress = http://localhost:5263
+
+GET {{Feirb.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,4 +1,4 @@
-# MailClient — Developer Setup Guide
+# Feirb — Developer Setup Guide
 
 ## Prerequisites
 
@@ -17,14 +17,14 @@
 
 ```bash
 # Clone the repository
-git clone git@github.com:mamu7211/mailclient.git
+git clone git@github.com:mamu7211/fireb-mailclient.git
 cd mailclient
 
 # Restore dependencies
-dotnet restore MailClient.sln
+dotnet restore Feirb.sln
 
 # Run via Aspire (starts all services)
-dotnet run --project src/MailClient.AppHost
+dotnet run --project src/Feirb.AppHost
 ```
 
 On first run, Aspire will:
@@ -71,7 +71,7 @@ git commit -m "feat(web): add mail list component with pagination"
 dotnet test
 
 # Run specific project tests
-dotnet test tests/MailClient.Api.Tests
+dotnet test tests/Feirb.Api.Tests
 
 # Run with verbose output
 dotnet test --verbosity normal
@@ -122,7 +122,7 @@ Settings are managed via `appsettings.json` and `appsettings.Development.json` i
 Use .NET User Secrets for local sensitive configuration:
 
 ```bash
-cd src/MailClient.Api
+cd src/Feirb.Api
 dotnet user-secrets init
 dotnet user-secrets set "Mail:TestPassword" "your-test-password"
 ```
@@ -169,12 +169,12 @@ The PostgreSQL container is managed by Aspire. To reset the database:
 docker volume rm mailclient-postgres-data
 
 # Restart — EF Core migrations will recreate the schema
-dotnet run --project src/MailClient.AppHost
+dotnet run --project src/Feirb.AppHost
 ```
 
 ### Clean Build
 
 ```bash
-dotnet clean MailClient.sln
-dotnet build MailClient.sln
+dotnet clean Feirb.sln
+dotnet build Feirb.sln
 ```

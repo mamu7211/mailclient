@@ -20,10 +20,10 @@ assignees: ''
 
 ## Affected Component
 
-- [ ] `MailClient.Api` — Backend API
-- [ ] `MailClient.Web` — Blazor Frontend
-- [ ] `MailClient.Shared` — Shared library
-- [ ] `MailClient.AppHost` — Aspire orchestration
+- [ ] `Feirb.Api` — Backend API
+- [ ] `Feirb.Web` — Blazor Frontend
+- [ ] `Feirb.Shared` — Shared library
+- [ ] `Feirb.AppHost` — Aspire orchestration
 - [ ] Documentation
 - [ ] CI/CD
 

@@ -1,4 +1,4 @@
-# MailClient
+# Feirb
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
@@ -7,7 +7,7 @@
 
 **A smart mail client for your NAS, powered by AI.**
 
-MailClient is a self-hosted, modern web-based mail client designed for NAS systems. It combines full IMAP/SMTP support with AI-powered features like mail summarization, smart reply drafts, and automatic categorization — all running locally on your hardware.
+Feirb is a self-hosted, modern web-based mail client designed for NAS systems. It combines full IMAP/SMTP support with AI-powered features like mail summarization, smart reply drafts, and automatic categorization — all running locally on your hardware.
 
 ## Features
 
@@ -38,11 +38,11 @@ MailClient is a self-hosted, modern web-based mail client designed for NAS syste
 ## Quick Start
 
 ```bash
-git clone git@github.com:mamu7211/mailclient.git
+git clone git@github.com:mamu7211/fireb-mailclient.git
 cd mailclient
 dotnet workload install aspire
-dotnet restore MailClient.sln
-dotnet run --project src/MailClient.AppHost
+dotnet restore Feirb.sln
+dotnet run --project src/Feirb.AppHost
 ```
 
 This starts all services via Aspire:
@@ -58,20 +58,20 @@ This starts all services via Aspire:
 ```
 mailclient/
 ├── src/
-│   ├── MailClient.AppHost/          # Aspire orchestration (start here)
-│   ├── MailClient.ServiceDefaults/  # Shared service configuration
-│   ├── MailClient.Api/              # Backend API
-│   ├── MailClient.Web/              # Blazor WASM frontend
-│   └── MailClient.Shared/           # Shared DTOs and interfaces
+│   ├── Feirb.AppHost/          # Aspire orchestration (start here)
+│   ├── Feirb.ServiceDefaults/  # Shared service configuration
+│   ├── Feirb.Api/              # Backend API
+│   ├── Feirb.Web/              # Blazor WASM frontend
+│   └── Feirb.Shared/           # Shared DTOs and interfaces
 ├── tests/
-│   ├── MailClient.Api.Tests/
-│   └── MailClient.Web.Tests/
+│   ├── Feirb.Api.Tests/
+│   └── Feirb.Web.Tests/
 ├── docs/
 │   ├── DESIGN.md                    # Architecture & design decisions
 │   ├── SETUP.md                     # Developer setup guide
 │   └── API.md                       # API documentation
 ├── CLAUDE.md                        # Claude Code project instructions
-└── MailClient.sln
+└── Feirb.sln
 ```
 
 ## Documentation

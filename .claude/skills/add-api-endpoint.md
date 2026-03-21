@@ -7,24 +7,24 @@ args: endpoint_description
 
 # Add API Endpoint
 
-Create a new Minimal API endpoint in `src/MailClient.Api/`.
+Create a new Minimal API endpoint in `src/Feirb.Api/`.
 
 ## Instructions
 
 Given an endpoint description (from args or ask the user), create the following:
 
-### 1. DTOs in `src/MailClient.Shared/`
+### 1. DTOs in `src/Feirb.Shared/`
 
 - Create request/response record types in the appropriate file or a new one
 - Use record types with primary constructors
-- Place in `MailClient.Shared.Models` namespace
+- Place in `Feirb.Shared.Models` namespace
 
-### 2. Endpoint Group in `src/MailClient.Api/Endpoints/`
+### 2. Endpoint Group in `src/Feirb.Api/Endpoints/`
 
 Create or extend a static class following this pattern:
 
 ```csharp
-namespace MailClient.Api.Endpoints;
+namespace Feirb.Api.Endpoints;
 
 public static class {Feature}Endpoints
 {
@@ -46,11 +46,11 @@ public static class {Feature}Endpoints
 }
 ```
 
-### 3. Register in `src/MailClient.Api/Program.cs`
+### 3. Register in `src/Feirb.Api/Program.cs`
 
 Add: `app.Map{Feature}Endpoints();`
 
-### 4. Test in `tests/MailClient.Api.Tests/`
+### 4. Test in `tests/Feirb.Api.Tests/`
 
 Create a test class following naming convention: `{Feature}EndpointsTests.cs`
 

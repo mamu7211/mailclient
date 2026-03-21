@@ -6,20 +6,20 @@ user_invocable: true
 
 # Build & Publish
 
-Build and publish the MailClient application for deployment.
+Build and publish the Feirb application for deployment.
 
 ## Steps
 
 ### Development Build
 
 ```bash
-dotnet build MailClient.sln --configuration Release
+dotnet build Feirb.sln --configuration Release
 ```
 
 ### Publish
 
 ```bash
-dotnet publish src/MailClient.AppHost --configuration Release --output ./publish
+dotnet publish src/Feirb.AppHost --configuration Release --output ./publish
 ```
 
 ### Docker Images (via Aspire)
@@ -27,7 +27,7 @@ dotnet publish src/MailClient.AppHost --configuration Release --output ./publish
 Aspire can generate Docker images for deployment:
 
 ```bash
-dotnet publish src/MailClient.AppHost --configuration Release --output ./publish -p:ContainerImageName=mailclient
+dotnet publish src/Feirb.AppHost --configuration Release --output ./publish -p:ContainerImageName=mailclient
 ```
 
 ## Report
