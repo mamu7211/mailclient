@@ -9,4 +9,5 @@ public static class ApiRoutes
     public const string Folders = "/api/folders";
     public const string Settings = "/api/settings";
     public const string Ai = "/api/ai";
+    public const string Auth = "/api/auth";
 }

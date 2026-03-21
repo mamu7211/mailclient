@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Feirb.AppHost\Feirb.AppHost.csproj" />
+    <ProjectReference Include="..\..\src\Feirb.Api\Feirb.Api.csproj" />
   </ItemGroup>
 
 </Project>

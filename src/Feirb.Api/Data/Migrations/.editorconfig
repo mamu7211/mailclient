@@ -1,0 +1,4 @@
+# Generated EF Core migration files
+[*.cs]
+generated_code = true
+dotnet_diagnostic.CA1062.severity = none
