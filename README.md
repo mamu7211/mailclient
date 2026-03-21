@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="fireb-logo.svg" alt="Feirb Logo" width="200">
+  <img src="feirb-logo.svg" alt="Feirb Logo" width="200">
 </p>
 
 # Feirb
