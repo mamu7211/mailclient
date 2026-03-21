@@ -22,13 +22,13 @@ jobs:
         run: dotnet workload install aspire
 
       - name: Restore dependencies
-        run: dotnet restore MailClient.sln
+        run: dotnet restore Feirb.sln
 
       - name: Build
-        run: dotnet build MailClient.sln --no-restore --configuration Release
+        run: dotnet build Feirb.sln --no-restore --configuration Release
 
       - name: Check formatting
-        run: dotnet format MailClient.sln --verify-no-changes --no-restore
+        run: dotnet format Feirb.sln --verify-no-changes --no-restore
 
       - name: Test
-        run: dotnet test MailClient.sln --no-build --configuration Release --verbosity normal
+        run: dotnet test Feirb.sln --no-build --configuration Release --verbosity normal
