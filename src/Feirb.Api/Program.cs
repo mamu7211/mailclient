@@ -1,5 +1,6 @@
 using System.Text;
 using Feirb.Api.Data;
+using Feirb.Api.Endpoints;
 using Feirb.Api.Services;
 using Feirb.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -45,11 +46,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-// Run migrations on startup
+// Run migrations on startup (skip for in-memory databases used in tests)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
-    await db.Database.MigrateAsync();
+    if (db.Database.IsRelational())
+        await db.Database.MigrateAsync();
+    else
+        await db.Database.EnsureCreatedAsync();
 }
 
 app.UseAuthentication();
@@ -66,6 +70,7 @@ var apiGroup = app.MapGroup("/api").RequireAuthorization();
 
 // Auth endpoints are anonymous
 var authGroup = app.MapGroup(ApiRoutes.Auth).AllowAnonymous();
+authGroup.MapAuthEndpoints();
 
 app.Run();
 
