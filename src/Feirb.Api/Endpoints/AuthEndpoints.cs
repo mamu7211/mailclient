@@ -5,6 +5,7 @@ using Feirb.Api.Services;
 using Feirb.Shared.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace Feirb.Api.Endpoints;
 
@@ -13,6 +14,8 @@ public static class AuthEndpoints
     public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/register", RegisterAsync);
+        group.MapPost("/login", LoginAsync);
+        group.MapPost("/refresh", RefreshAsync);
         return group;
     }
 
@@ -45,5 +48,47 @@ public static class AuthEndpoints
 
         var response = new RegisterResponse(user.Id, user.Username, user.Email);
         return Results.Created($"/api/auth/users/{user.Id}", response);
+    }
+
+    private static async Task<IResult> LoginAsync(
+        LoginRequest request,
+        FeirbDbContext db,
+        IAuthService authService,
+        IOptions<JwtSettings> jwtSettings,
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+        if (user is null || !authService.VerifyPassword(request.Password, user.PasswordHash))
+            return Results.Unauthorized();
+
+        var tokens = authService.GenerateTokens(user);
+
+        user.RefreshToken = tokens.RefreshToken;
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiryDays);
+        user.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return Results.Ok(tokens);
+    }
+
+    private static async Task<IResult> RefreshAsync(
+        RefreshRequest request,
+        FeirbDbContext db,
+        IAuthService authService,
+        IOptions<JwtSettings> jwtSettings,
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+        if (user is null || user.RefreshTokenExpiresAt < DateTime.UtcNow)
+            return Results.Unauthorized();
+
+        var tokens = authService.GenerateTokens(user);
+
+        user.RefreshToken = tokens.RefreshToken;
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiryDays);
+        user.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return Results.Ok(tokens);
     }
 }

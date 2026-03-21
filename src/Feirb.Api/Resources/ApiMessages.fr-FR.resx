@@ -45,4 +45,10 @@
   <data name="EmailAlreadyRegistered" xml:space="preserve">
     <value>Cette adresse e-mail est déjà enregistrée.</value>
   </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Nom d'utilisateur ou mot de passe invalide.</value>
+  </data>
+  <data name="InvalidRefreshToken" xml:space="preserve">
+    <value>Le jeton d'actualisation est invalide ou expiré.</value>
+  </data>
 </root>

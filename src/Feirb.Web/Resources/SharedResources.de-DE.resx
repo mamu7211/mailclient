@@ -111,4 +111,40 @@
   <data name="LanguageSwitcherLabel" xml:space="preserve">
     <value>Sprache</value>
   </data>
+  <data name="PageTitleLogin" xml:space="preserve">
+    <value>Anmelden - Feirb</value>
+  </data>
+  <data name="LoginHeading" xml:space="preserve">
+    <value>Willkommen zurück</value>
+  </data>
+  <data name="LoginSubheading" xml:space="preserve">
+    <value>Melde dich an, um deine E-Mails zu verwalten</value>
+  </data>
+  <data name="PlaceholderLoginUsername" xml:space="preserve">
+    <value>Benutzernamen eingeben</value>
+  </data>
+  <data name="PlaceholderLoginPassword" xml:space="preserve">
+    <value>Passwort eingeben</value>
+  </data>
+  <data name="ButtonLogIn" xml:space="preserve">
+    <value>Anmelden</value>
+  </data>
+  <data name="ErrorInvalidCredentials" xml:space="preserve">
+    <value>Ungültiger Benutzername oder Passwort.</value>
+  </data>
+  <data name="ErrorLoginFailed" xml:space="preserve">
+    <value>Anmeldung fehlgeschlagen. Bitte versuche es erneut.</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Passwort vergessen?</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>Noch kein Konto?</value>
+  </data>
+  <data name="LinkCreateAccount" xml:space="preserve">
+    <value>Konto erstellen</value>
+  </data>
+  <data name="SuccessRegistered" xml:space="preserve">
+    <value>Konto erfolgreich erstellt! Bitte melde dich an.</value>
+  </data>
 </root>

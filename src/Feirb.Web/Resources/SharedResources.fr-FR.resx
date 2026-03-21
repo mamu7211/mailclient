@@ -111,4 +111,40 @@
   <data name="LanguageSwitcherLabel" xml:space="preserve">
     <value>Langue</value>
   </data>
+  <data name="PageTitleLogin" xml:space="preserve">
+    <value>Connexion - Feirb</value>
+  </data>
+  <data name="LoginHeading" xml:space="preserve">
+    <value>Bon retour</value>
+  </data>
+  <data name="LoginSubheading" xml:space="preserve">
+    <value>Connectez-vous pour gérer vos e-mails</value>
+  </data>
+  <data name="PlaceholderLoginUsername" xml:space="preserve">
+    <value>Entrez votre nom d'utilisateur</value>
+  </data>
+  <data name="PlaceholderLoginPassword" xml:space="preserve">
+    <value>Entrez votre mot de passe</value>
+  </data>
+  <data name="ButtonLogIn" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="ErrorInvalidCredentials" xml:space="preserve">
+    <value>Nom d'utilisateur ou mot de passe invalide.</value>
+  </data>
+  <data name="ErrorLoginFailed" xml:space="preserve">
+    <value>Échec de la connexion. Veuillez réessayer.</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>Mot de passe oublié ?</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>Pas encore de compte ?</value>
+  </data>
+  <data name="LinkCreateAccount" xml:space="preserve">
+    <value>Créer un compte</value>
+  </data>
+  <data name="SuccessRegistered" xml:space="preserve">
+    <value>Compte créé avec succès ! Veuillez vous connecter.</value>
+  </data>
 </root>

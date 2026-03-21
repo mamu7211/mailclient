@@ -45,4 +45,10 @@
   <data name="EmailAlreadyRegistered" xml:space="preserve">
     <value>Email is already registered.</value>
   </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid username or password.</value>
+  </data>
+  <data name="InvalidRefreshToken" xml:space="preserve">
+    <value>Refresh token is invalid or expired.</value>
+  </data>
 </root>

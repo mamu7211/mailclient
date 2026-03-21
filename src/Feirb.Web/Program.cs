@@ -1,6 +1,8 @@
 using System.Globalization;
 using Feirb.Web;
 using Feirb.Web.Http;
+using Feirb.Web.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
@@ -10,11 +12,18 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddLocalization();
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<JwtAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+    sp.GetRequiredService<JwtAuthenticationStateProvider>());
 
 builder.Services.AddTransient<CultureDelegatingHandler>();
+builder.Services.AddTransient<AuthDelegatingHandler>();
 builder.Services.AddHttpClient("FeirbApi", client =>
         client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
-    .AddHttpMessageHandler<CultureDelegatingHandler>();
+    .AddHttpMessageHandler<CultureDelegatingHandler>()
+    .AddHttpMessageHandler<AuthDelegatingHandler>();
 builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("FeirbApi"));
 
