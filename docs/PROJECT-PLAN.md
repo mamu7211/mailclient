@@ -113,6 +113,24 @@ LLM-powered mail intelligence.
 | | Toggle AI features on/off in user preferences |
 | **Tests** | AI endpoint tests (mock Ollama responses) |
 
+## Phase 7: Quality & Compliance
+
+Cross-cutting quality features applied retroactively to all existing UI.
+
+| Layer | Deliverable |
+|-------|-------------|
+| **i18n** | Multi-language support: `en_US` (default), `de_DE`, `fr_FR`, `it_IT` |
+| | .NET resource files (`.resx`) + `IStringLocalizer<T>` in Blazor |
+| | Language switcher component, browser `Accept-Language` detection |
+| | Localized API error messages |
+| **Accessibility** | WCAG 2.2 Level AA conformance across all UI |
+| | Color contrast, keyboard navigation, focus indicators, ARIA |
+| | Skip-to-content link, semantic HTML, screen reader compatibility |
+| | Automated audit (axe-core) + manual testing |
+| **Documentation** | `USER-DOCUMENTATION.md` — end-user guide |
+| | Installation, account setup, mail usage, AI features, administration |
+| | Screenshots and troubleshooting |
+
 ## Future (not scheduled)
 
 - Google Stitch / MCP integration

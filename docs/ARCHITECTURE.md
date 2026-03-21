@@ -81,6 +81,22 @@ Shared library: DTOs (record types), interfaces, enums, route constants. Referen
 | **OllamaSharp** | Typed .NET client for Ollama, streaming support, clean DI integration |
 | **Bootstrap 5** | Proven, responsive, no build toolchain required |
 
+## Internationalization (i18n)
+
+- Default/neutral locale: `en_US`
+- Supported foreign languages: `de_DE`, `fr_FR`, `it_IT`
+- Implementation: .NET resource files (`.resx`) + `IStringLocalizer<T>`
+- Language detection: browser `Accept-Language` → user preference → fallback `en_US`
+- API error messages respect `Accept-Language` header
+
+## Accessibility
+
+- Target: WCAG 2.2 Level AA conformance
+- Color contrast: minimum 4.5:1 (normal text), 3:1 (large text)
+- Full keyboard navigation, visible focus indicators
+- Semantic HTML with ARIA attributes where needed
+- Automated testing via axe-core
+
 ## Security Considerations
 
 - Mail passwords encrypted at rest via ASP.NET Data Protection API (keys persisted in volume)
