@@ -83,6 +83,10 @@ var apiGroup = app.MapGroup("/api").RequireAuthorization();
 var authGroup = app.MapGroup(ApiRoutes.Auth).AllowAnonymous();
 authGroup.MapAuthEndpoints();
 
+// Setup endpoints are anonymous (guarded by admin-exists check)
+var setupGroup = app.MapGroup(ApiRoutes.Setup).AllowAnonymous();
+setupGroup.MapSetupEndpoints();
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

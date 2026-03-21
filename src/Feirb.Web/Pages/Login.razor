@@ -2,6 +2,7 @@
 @layout AuthLayout
 @attribute [AllowAnonymous]
 @using Feirb.Shared.Auth
+@using Feirb.Shared.Setup
 @using Feirb.Web.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
@@ -79,11 +80,22 @@
     private bool _showRegisteredMessage;
     private bool _showResetMessage;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var uri = new Uri(Navigation.Uri);
         _showRegisteredMessage = uri.Query.Contains("registered=true");
         _showResetMessage = uri.Query.Contains("reset=true");
+
+        try
+        {
+            var status = await Http.GetFromJsonAsync<SetupStatusResponse>("/api/setup/status");
+            if (status is { IsComplete: false })
+                Navigation.NavigateTo("/setup");
+        }
+        catch
+        {
+            // If setup status check fails, continue to login
+        }
     }
 
     private async Task HandleLoginAsync()

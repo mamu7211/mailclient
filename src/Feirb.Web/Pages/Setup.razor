@@ -1,0 +1,314 @@
+@page "/setup"
+@layout AuthLayout
+@attribute [AllowAnonymous]
+@using Feirb.Shared.Setup
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["PageTitleSetup"]</PageTitle>
+
+<div class="position-relative w-100">
+    <div class="position-absolute top-0 end-0 p-3">
+        <Feirb.Web.Components.LanguageSwitcher ButtonClass="btn-outline-secondary" />
+    </div>
+    <div class="d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="card p-4 p-md-5" style="width: 100%; max-width: 520px;">
+            <div class="text-center mb-3">
+                <h1 class="fw-bold fs-2 text-primary mb-0">@L["AppName"]</h1>
+            </div>
+            <h2 class="mb-1 text-center fw-bold">@L["SetupHeading"]</h2>
+            <p class="text-center text-muted mb-4">@L["SetupSubheading"]</p>
+
+            @* Step indicator *@
+            <div class="d-flex justify-content-center mb-4">
+                <StepIndicator CurrentStep="_currentStep" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="alert alert-danger py-2" role="alert">@_errorMessage</div>
+            }
+
+            @if (_currentStep == 1)
+            {
+                <EditForm Model="_adminModel" OnValidSubmit="GoToStep2" FormName="setup-admin">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label small fw-medium">@L["LabelUsername"]</label>
+                        <InputText id="username" class="form-control form-control-lg" placeholder="@L["PlaceholderUsername"]" @bind-Value="_adminModel.Username" />
+                        <ValidationMessage For="() => _adminModel.Username" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label small fw-medium">@L["LabelEmail"]</label>
+                        <InputText id="email" class="form-control form-control-lg" type="email" placeholder="@L["PlaceholderEmail"]" @bind-Value="_adminModel.Email" />
+                        <ValidationMessage For="() => _adminModel.Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label small fw-medium">@L["LabelPassword"]</label>
+                        <InputText id="password" class="form-control form-control-lg" type="password" placeholder="@L["PlaceholderPassword"]" @bind-Value="_adminModel.Password" />
+                        <ValidationMessage For="() => _adminModel.Password" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirmPassword" class="form-label small fw-medium">@L["LabelConfirmPassword"]</label>
+                        <InputText id="confirmPassword" class="form-control form-control-lg" type="password" placeholder="@L["PlaceholderConfirmPassword"]" @bind-Value="_adminModel.ConfirmPassword" />
+                        @if (_adminModel.ConfirmPassword is not null && _adminModel.Password != _adminModel.ConfirmPassword)
+                        {
+                            <div class="validation-message">@L["ErrorPasswordsDoNotMatch"]</div>
+                        }
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        @L["ButtonNext"]
+                    </button>
+                </EditForm>
+            }
+            else if (_currentStep == 2)
+            {
+                <EditForm Model="_smtpModel" OnValidSubmit="HandleCompleteSetupAsync" FormName="setup-smtp">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label for="smtpHost" class="form-label small fw-medium">@L["LabelSmtpHost"]</label>
+                        <InputText id="smtpHost" class="form-control form-control-lg" placeholder="@L["PlaceholderSmtpHost"]" @bind-Value="_smtpModel.Host" />
+                        <ValidationMessage For="() => _smtpModel.Host" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="smtpPort" class="form-label small fw-medium">@L["LabelSmtpPort"]</label>
+                        <InputNumber id="smtpPort" class="form-control form-control-lg" placeholder="@L["PlaceholderSmtpPort"]" @bind-Value="_smtpModel.Port" />
+                        <ValidationMessage For="() => _smtpModel.Port" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="smtpUsername" class="form-label small fw-medium">@L["LabelSmtpUsername"]</label>
+                        <InputText id="smtpUsername" class="form-control form-control-lg" placeholder="@L["PlaceholderSmtpUsername"]" @bind-Value="_smtpModel.Username" />
+                        <ValidationMessage For="() => _smtpModel.Username" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="smtpPassword" class="form-label small fw-medium">@L["LabelSmtpPassword"]</label>
+                        <InputText id="smtpPassword" class="form-control form-control-lg" type="password" placeholder="@L["PlaceholderSmtpPassword"]" @bind-Value="_smtpModel.Password" />
+                        <ValidationMessage For="() => _smtpModel.Password" />
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <InputCheckbox id="smtpUseTls" class="form-check-input" @bind-Value="_smtpModel.UseTls" />
+                        <label for="smtpUseTls" class="form-check-label">@L["LabelSmtpUseTls"]</label>
+                    </div>
+
+                    <div class="mb-3 form-check form-switch">
+                        <InputCheckbox id="smtpRequiresAuth" class="form-check-input" @bind-Value="_smtpModel.RequiresAuth" />
+                        <label for="smtpRequiresAuth" class="form-check-label">@L["LabelSmtpRequiresAuth"]</label>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(_smtpTestMessage))
+                    {
+                        <div class="alert @(_smtpTestSuccess ? "alert-success" : "alert-danger") py-2" role="alert">
+                            @_smtpTestMessage
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-secondary btn-lg flex-fill" @onclick="GoToStep1">
+                            @L["ButtonBack"]
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-lg flex-fill" disabled="@_isTestingSmtp" @onclick="HandleTestSmtpAsync">
+                            @if (_isTestingSmtp)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            }
+                            @L["ButtonTestConnection"]
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100" disabled="@_isSubmitting">
+                        @if (_isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        @L["ButtonCompleteSetup"]
+                    </button>
+                </EditForm>
+            }
+            else
+            {
+                <div class="text-center">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="text-success" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                        </svg>
+                    </div>
+                    <h3 class="fw-bold">@L["SetupCompleteHeading"]</h3>
+                    <p class="text-muted">@L["SetupCompleteMessage"]</p>
+                    <a href="/login?setup=true" class="btn btn-primary btn-lg w-100">@L["ButtonGoToLogin"]</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _currentStep = 1;
+    private string? _errorMessage;
+    private bool _isSubmitting;
+    private bool _isTestingSmtp;
+    private string? _smtpTestMessage;
+    private bool _smtpTestSuccess;
+
+    private readonly AdminFormModel _adminModel = new();
+    private readonly SmtpFormModel _smtpModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var status = await Http.GetFromJsonAsync<SetupStatusResponse>("/api/setup/status");
+            if (status is { IsComplete: true })
+                Navigation.NavigateTo("/login");
+        }
+        catch
+        {
+            // Continue to setup page
+        }
+    }
+
+    private void GoToStep1()
+    {
+        _currentStep = 1;
+        _errorMessage = null;
+    }
+
+    private void GoToStep2()
+    {
+        if (_adminModel.Password != _adminModel.ConfirmPassword)
+        {
+            _errorMessage = L["ErrorPasswordsDoNotMatch"];
+            return;
+        }
+
+        _errorMessage = null;
+        _currentStep = 2;
+    }
+
+    private async Task HandleTestSmtpAsync()
+    {
+        _isTestingSmtp = true;
+        _smtpTestMessage = null;
+
+        var request = new TestSmtpRequest(
+            _smtpModel.Host!,
+            _smtpModel.Port,
+            _smtpModel.Username!,
+            _smtpModel.Password!,
+            _smtpModel.UseTls,
+            _smtpModel.RequiresAuth);
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("/api/setup/test-smtp", request);
+            var result = await response.Content.ReadFromJsonAsync<TestSmtpResponse>();
+
+            if (result is { Success: true })
+            {
+                _smtpTestSuccess = true;
+                _smtpTestMessage = L["SmtpTestSuccess"];
+            }
+            else
+            {
+                _smtpTestSuccess = false;
+                _smtpTestMessage = result?.ErrorMessage ?? L["SmtpTestFailed"];
+            }
+        }
+        catch
+        {
+            _smtpTestSuccess = false;
+            _smtpTestMessage = L["SmtpTestFailed"];
+        }
+
+        _isTestingSmtp = false;
+    }
+
+    private async Task HandleCompleteSetupAsync()
+    {
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        var request = new CompleteSetupRequest(
+            _adminModel.Username!,
+            _adminModel.Email!,
+            _adminModel.Password!,
+            _smtpModel.Host!,
+            _smtpModel.Port,
+            _smtpModel.Username!,
+            _smtpModel.Password!,
+            _smtpModel.UseTls,
+            _smtpModel.RequiresAuth);
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("/api/setup/complete", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                _currentStep = 3;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                _errorMessage = L["ErrorSetupAlreadyComplete"];
+            }
+            else
+            {
+                _errorMessage = L["ErrorSetupFailed"];
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ErrorSetupFailed"];
+        }
+
+        _isSubmitting = false;
+    }
+
+    private sealed class AdminFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(100, MinimumLength = 3)]
+        public string? Username { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        public string? Email { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MinLength(8)]
+        public string? Password { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        public string? ConfirmPassword { get; set; }
+    }
+
+    private sealed class SmtpFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Host { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Range(1, 65535)]
+        public int Port { get; set; } = 587;
+
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Username { get; set; }
+
+        public string? Password { get; set; }
+
+        public bool UseTls { get; set; } = true;
+
+        public bool RequiresAuth { get; set; } = true;
+    }
+}

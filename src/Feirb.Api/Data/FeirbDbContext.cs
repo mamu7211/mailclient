@@ -7,6 +7,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<SmtpSettings> SmtpSettings => Set<SmtpSettings>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +21,14 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.Username).HasMaxLength(100);
             entity.Property(e => e.Email).HasMaxLength(256);
             entity.Property(e => e.PasswordHash).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<SmtpSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Host).HasMaxLength(256);
+            entity.Property(e => e.Username).HasMaxLength(256);
+            entity.Property(e => e.EncryptedPassword).HasMaxLength(1024);
         });
 
         modelBuilder.Entity<PasswordResetToken>(entity =>

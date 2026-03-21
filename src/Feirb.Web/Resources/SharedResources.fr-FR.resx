@@ -189,4 +189,88 @@
   <data name="SuccessPasswordReset" xml:space="preserve">
     <value>Mot de passe réinitialisé avec succès ! Veuillez vous connecter.</value>
   </data>
+  <data name="PageTitleSetup" xml:space="preserve">
+    <value>Configuration - Feirb</value>
+  </data>
+  <data name="SetupHeading" xml:space="preserve">
+    <value>Configuration initiale</value>
+  </data>
+  <data name="SetupSubheading" xml:space="preserve">
+    <value>Configurez votre instance Feirb</value>
+  </data>
+  <data name="SetupStepAdmin" xml:space="preserve">
+    <value>Admin</value>
+  </data>
+  <data name="SetupStepSmtp" xml:space="preserve">
+    <value>Serveur mail</value>
+  </data>
+  <data name="SetupStepComplete" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="LabelSmtpHost" xml:space="preserve">
+    <value>Hôte SMTP</value>
+  </data>
+  <data name="LabelSmtpPort" xml:space="preserve">
+    <value>Port SMTP</value>
+  </data>
+  <data name="LabelSmtpUsername" xml:space="preserve">
+    <value>Nom d'utilisateur SMTP</value>
+  </data>
+  <data name="LabelSmtpPassword" xml:space="preserve">
+    <value>Mot de passe SMTP</value>
+  </data>
+  <data name="LabelSmtpUseTls" xml:space="preserve">
+    <value>Utiliser TLS/SSL</value>
+  </data>
+  <data name="LabelSmtpRequiresAuth" xml:space="preserve">
+    <value>Authentification requise</value>
+  </data>
+  <data name="PlaceholderSmtpHost" xml:space="preserve">
+    <value>smtp.exemple.com</value>
+  </data>
+  <data name="PlaceholderSmtpPort" xml:space="preserve">
+    <value>587</value>
+  </data>
+  <data name="PlaceholderSmtpUsername" xml:space="preserve">
+    <value>votre@email.com</value>
+  </data>
+  <data name="PlaceholderSmtpPassword" xml:space="preserve">
+    <value>Votre mot de passe mail</value>
+  </data>
+  <data name="ButtonTestConnection" xml:space="preserve">
+    <value>Tester la connexion</value>
+  </data>
+  <data name="ButtonNext" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="ButtonBack" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="ButtonCompleteSetup" xml:space="preserve">
+    <value>Terminer la configuration</value>
+  </data>
+  <data name="SmtpTestSuccess" xml:space="preserve">
+    <value>Connexion réussie !</value>
+  </data>
+  <data name="SmtpTestFailed" xml:space="preserve">
+    <value>Échec de la connexion. Veuillez vérifier vos paramètres.</value>
+  </data>
+  <data name="SetupCompleteHeading" xml:space="preserve">
+    <value>Configuration terminée !</value>
+  </data>
+  <data name="SetupCompleteMessage" xml:space="preserve">
+    <value>Votre instance Feirb est prête. Vous pouvez maintenant vous connecter avec votre compte administrateur.</value>
+  </data>
+  <data name="ButtonGoToLogin" xml:space="preserve">
+    <value>Aller à la connexion</value>
+  </data>
+  <data name="ErrorSetupAlreadyComplete" xml:space="preserve">
+    <value>La configuration a déjà été effectuée.</value>
+  </data>
+  <data name="ErrorSetupFailed" xml:space="preserve">
+    <value>Échec de la configuration. Veuillez réessayer.</value>
+  </data>
+  <data name="SuccessSetupComplete" xml:space="preserve">
+    <value>Configuration terminée avec succès ! Veuillez vous connecter.</value>
+  </data>
 </root>

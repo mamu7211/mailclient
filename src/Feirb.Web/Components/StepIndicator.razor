@@ -1,0 +1,28 @@
+@inject IStringLocalizer<SharedResources> L
+
+<div class="d-flex align-items-center gap-2">
+    @for (var i = 1; i <= 3; i++)
+    {
+        var step = i;
+        <div class="d-flex align-items-center gap-1">
+            <span class="badge rounded-pill @(step <= CurrentStep ? "bg-primary" : "bg-secondary bg-opacity-25 text-muted")">@step</span>
+            <span class="small @(step <= CurrentStep ? "fw-medium" : "text-muted")">
+                @(step switch
+                {
+                    1 => L["SetupStepAdmin"],
+                    2 => L["SetupStepSmtp"],
+                    _ => L["SetupStepComplete"]
+                })
+            </span>
+        </div>
+        @if (i < 3)
+        {
+            <span class="text-muted">&mdash;</span>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentStep { get; set; } = 1;
+}

@@ -60,4 +60,10 @@
   <data name="PasswordResetSuccess" xml:space="preserve">
     <value>Votre mot de passe a été réinitialisé avec succès.</value>
   </data>
+  <data name="SetupAlreadyComplete" xml:space="preserve">
+    <value>La configuration a déjà été effectuée.</value>
+  </data>
+  <data name="SmtpConnectionFailed" xml:space="preserve">
+    <value>Échec de la connexion au serveur SMTP.</value>
+  </data>
 </root>
