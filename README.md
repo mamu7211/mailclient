@@ -1,4 +1,8 @@
-# MailClient
+<p align="center">
+  <img src="fireb-logo.svg" alt="Feirb Logo" width="200">
+</p>
+
+# Feirb
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/)
