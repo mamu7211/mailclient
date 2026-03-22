@@ -1,10 +1,10 @@
 #!/bin/bash
-# Stoppt und entfernt Aspire-Container inkl. zugehöriger Volumes
-# Unterstützt Docker und Podman
+# Stops and removes Aspire containers including associated volumes
+# Supports Docker and Podman
 
 set -e
 
-# ── Farben ──────────────────────────────────────────────────
+# ── Colors ───────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -15,13 +15,13 @@ BOLD='\033[1m'
 DIM='\033[2m'
 RESET='\033[0m'
 
-# ── Container-Runtime erkennen ──────────────────────────────
+# ── Detect container runtime ─────────────────────────────────
 if command -v podman &>/dev/null; then
     RT="podman"
 elif command -v docker &>/dev/null; then
     RT="docker"
 else
-    echo -e "${RED}✗ Weder podman noch docker gefunden.${RESET}"
+    echo -e "${RED}✗ Neither podman nor docker found.${RESET}"
     exit 1
 fi
 
@@ -32,24 +32,52 @@ echo -e "${BOLD}${CYAN}  ╚═════════════════�
 echo -e "  ${DIM}Runtime: ${RT}${RESET}"
 echo ""
 
-# ── Container suchen ────────────────────────────────────────
+# ── Find containers ──────────────────────────────────────────
 mapfile -t CONTAINERS < <($RT ps -a --format "{{.Names}}" | grep -E "^feirb-" || true)
 
 if [ ${#CONTAINERS[@]} -eq 0 ]; then
-    echo -e "  ${YELLOW}⚠  Keine Feirb-Container gefunden.${RESET}"
+    echo -e "  ${YELLOW}⚠  No Feirb containers found.${RESET}"
     echo ""
+
+    # Check for orphaned volumes
+    mapfile -t ORPHAN_VOLS < <($RT volume ls --format "{{.Name}}" | grep -E "^feirb\." || true)
+    if [ ${#ORPHAN_VOLS[@]} -gt 0 ]; then
+        echo -e "  ${BOLD}Orphaned volumes:${RESET}"
+        echo ""
+        for vol in "${ORPHAN_VOLS[@]}"; do
+            echo -e "       ${GRAY}└── $vol${RESET}"
+        done
+        echo ""
+        read -rp "  Delete orphaned volumes? [y/N] " vol_choice
+        echo ""
+        if [[ "$vol_choice" =~ ^[yY]$ ]]; then
+            for vol in "${ORPHAN_VOLS[@]}"; do
+                echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
+                $RT volume rm "$vol" 2>/dev/null || true
+            done
+            echo ""
+            echo -e "  ${GREEN}✓  Orphaned volumes removed.${RESET}"
+        else
+            echo -e "  ${YELLOW}Cancelled.${RESET}"
+        fi
+        echo ""
+    fi
+
     exit 0
 fi
 
-# ── Hilfsfunktionen ─────────────────────────────────────────
+# ── Helper functions ─────────────────────────────────────────
 
 get_volumes() {
-    # Volumes die am Container gemountet sind
+    # Volumes mounted on the container
     local mounted
     mounted=$($RT inspect "$1" --format '{{range .Mounts}}{{if eq .Type "volume"}}{{.Name}} {{end}}{{end}}' 2>/dev/null || true)
-    # Zusätzlich feirb.apphost-* Volumes die zum Service-Namen passen
+    # Additionally match feirb.apphost-* volumes by service name
+    # Extract the service name (e.g. feirb-postgres-xxx → feirb-postgres)
+    local service_name
+    service_name=$(echo "$1" | sed -E 's/-[a-z0-9]{8,}$//')
     local orphaned
-    orphaned=$($RT volume ls --format "{{.Name}}" | grep -E "^feirb\.apphost-.*-${1%%-*}" || true)
+    orphaned=$($RT volume ls --format "{{.Name}}" | grep -F "$service_name" || true)
     echo "$mounted $orphaned" | tr ' ' '\n' | sort -u | tr '\n' ' '
 }
 
@@ -68,20 +96,20 @@ remove_container() {
     local volumes
     volumes=$(get_volumes "$container")
 
-    echo -e "  ${YELLOW}⏹${RESET}  Stoppe ${BOLD}$container${RESET} ..."
+    echo -e "  ${YELLOW}⏹${RESET}  Stopping ${BOLD}$container${RESET} ..."
     $RT stop "$container" 2>/dev/null || true
 
-    echo -e "  ${RED}✗${RESET}  Entferne ${BOLD}$container${RESET} ..."
+    echo -e "  ${RED}✗${RESET}  Removing ${BOLD}$container${RESET} ..."
     $RT rm "$container" 2>/dev/null || true
 
     for vol in $volumes; do
-        echo -e "  ${RED}✗${RESET}  Lösche Volume ${DIM}$vol${RESET}"
+        echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
         $RT volume rm "$vol" 2>/dev/null || true
     done
 }
 
-# ── Container auflisten ────────────────────────────────────
-echo -e "  ${BOLD}Aspire-Container:${RESET}"
+# ── List containers ──────────────────────────────────────────
+echo -e "  ${BOLD}Aspire containers:${RESET}"
 echo ""
 
 for i in "${!CONTAINERS[@]}"; do
@@ -94,11 +122,11 @@ for i in "${!CONTAINERS[@]}"; do
 done
 
 echo ""
-echo -e "  ${BOLD}${BLUE}[a]${RESET}  Alle entfernen"
-echo -e "  ${BOLD}${BLUE}[q]${RESET}  Abbrechen"
+echo -e "  ${BOLD}${BLUE}[a]${RESET}  Remove all"
+echo -e "  ${BOLD}${BLUE}[q]${RESET}  Cancel"
 echo ""
 
-read -rp "  Auswahl: " choice
+read -rp "  Selection: " choice
 echo ""
 
 case "$choice" in
@@ -107,19 +135,19 @@ case "$choice" in
             remove_container "$container"
             echo ""
         done
-        echo -e "  ${GREEN}✓  Alle Feirb-Container wurden entfernt.${RESET}"
+        echo -e "  ${GREEN}✓  All Feirb containers removed.${RESET}"
         ;;
     q|Q)
-        echo -e "  ${YELLOW}Abgebrochen.${RESET}"
+        echo -e "  ${YELLOW}Cancelled.${RESET}"
         exit 0
         ;;
     *)
         if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le ${#CONTAINERS[@]} ]; then
             remove_container "${CONTAINERS[$((choice-1))]}"
             echo ""
-            echo -e "  ${GREEN}✓  Fertig.${RESET}"
+            echo -e "  ${GREEN}✓  Done.${RESET}"
         else
-            echo -e "  ${RED}✗  Ungültige Auswahl.${RESET}"
+            echo -e "  ${RED}✗  Invalid selection.${RESET}"
             exit 1
         fi
         ;;

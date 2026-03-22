@@ -46,8 +46,8 @@ Pronounced like "fire-bee", the name is simply "Brief" (German for *letter*) spe
 ## Quick Start
 
 ```bash
-git clone git@github.com:mamu7211/fireb-mailclient.git
-cd mailclient
+git clone git@github.com:mamu7211/feirb-mailclient.git
+cd feirb-mailclient
 dotnet workload install aspire
 dotnet restore Feirb.sln
 dotnet run --project src/Feirb.AppHost
@@ -60,6 +60,20 @@ This starts all services via Aspire:
 - **Mailpit (dev):** http://localhost:8025
 
 > **Note:** On first run, the Ollama qwen3:4b model (~2.6GB) will be downloaded automatically.
+
+### Development Quickstart with Seeded Data
+
+To skip the initial setup wizard and start with a preconfigured admin user and SMTP settings, set the `FEIRB_SEED_DATA` environment variable:
+
+```bash
+FEIRB_SEED_DATA=true dotnet run --project src/Feirb.AppHost
+```
+
+This seeds the database with:
+- **Admin user:** `admin@feirb.local` / `admin` (password)
+- **SMTP settings:** Mailpit on `localhost:1025` (no TLS, no auth), from address `noreply@feirb.local`
+
+The seeding is idempotent — it checks whether the data already exists and skips if so.
 
 ## Documentation
 
@@ -75,7 +89,7 @@ This starts all services via Aspire:
 Feirb is currently in early development and **not accepting external contributions** (pull requests) at this time. The architecture and core features are still taking shape, and managing external PRs would slow things down right now.
 
 **What you _can_ do:**
-- **Report bugs** — found something broken? Open an [issue](https://github.com/mamu7211/fireb-mailclient/issues)
+- **Report bugs** — found something broken? Open an [issue](https://github.com/mamu7211/feirb-mailclient/issues)
 - **Request features** — ideas are welcome as issues, even if implementation is a while off
 
 External contributions will be opened up once the project reaches a more stable state. Thanks for your patience and interest!

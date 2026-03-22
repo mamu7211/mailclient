@@ -81,6 +81,13 @@ using (var scope = app.Services.CreateScope())
         await db.Database.MigrateAsync();
     else
         await db.Database.EnsureCreatedAsync();
+
+    // Seed development data when FEIRB_SEED_DATA=true
+    if (string.Equals(app.Configuration["FEIRB_SEED_DATA"], "true", StringComparison.OrdinalIgnoreCase))
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseSeeder");
+        await DatabaseSeeder.SeedAsync(db, logger);
+    }
 }
 
 var supportedCultures = new[] { "en-US", "de-DE", "fr-FR", "it-IT", "de", "fr", "it" };

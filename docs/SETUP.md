@@ -17,8 +17,8 @@
 
 ```bash
 # Clone the repository
-git clone git@github.com:mamu7211/fireb-mailclient.git
-cd mailclient
+git clone git@github.com:mamu7211/feirb-mailclient.git
+cd feirb-mailclient
 
 # Install Aspire workload (first time only)
 dotnet workload install aspire
@@ -26,9 +26,11 @@ dotnet workload install aspire
 # Restore dependencies
 dotnet restore Feirb.sln
 
-# Run via Aspire (starts all services)
-dotnet run --project src/Feirb.AppHost
+# Start with database seeding (recommended for development)
+./run.sh
 ```
+
+The `run.sh` script starts Aspire with database seeding enabled by default, creating a preconfigured admin user and SMTP settings so you can skip the setup wizard. Use `./run.sh --no-seeding` to start without seeding.
 
 On first run, Aspire will:
 1. Start a PostgreSQL container for the database
@@ -49,6 +51,28 @@ Once running, these services are available:
 | PostgreSQL | localhost:5432 | Database |
 | Mailpit Web UI | http://localhost:8025 | View test emails |
 | Mailpit SMTP | localhost:1025 | Send test emails |
+
+## Helper Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `./run.sh` | Start Feirb with database seeding (admin user + Mailpit SMTP) |
+| `./run.sh --no-seeding` | Start Feirb without seeding |
+| `./stop-aspire-containers.sh` | Stop and remove Aspire containers and orphaned volumes |
+
+### Database Seeding
+
+When started via `./run.sh` (or with `FEIRB_SEED_DATA=true`), the following data is seeded:
+
+| Data | Value |
+|------|-------|
+| Admin email | `admin@feirb.local` |
+| Admin password | `admin` |
+| SMTP host | `localhost:1025` (Mailpit) |
+| SMTP from address | `noreply@feirb.local` |
+| TLS / Auth | disabled |
+
+The seeding is idempotent — it checks whether the data already exists and skips if so.
 
 ## Development Workflow
 
