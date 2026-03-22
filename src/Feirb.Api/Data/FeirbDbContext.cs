@@ -1,14 +1,16 @@
 using Feirb.Api.Data.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Feirb.Api.Data;
 
-public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContext(options)
+public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContext(options), IDataProtectionKeyContext
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
     public DbSet<SmtpSettings> SmtpSettings => Set<SmtpSettings>();
     public DbSet<Mailbox> Mailboxes => Set<Mailbox>();
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

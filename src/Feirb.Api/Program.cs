@@ -4,6 +4,7 @@ using Feirb.Api.Endpoints;
 using Feirb.Api.Services;
 using Feirb.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -62,8 +63,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
 });
 
-// Data Protection API for credential encryption
-builder.Services.AddDataProtection();
+// Data Protection API for credential encryption — keys persisted to PostgreSQL
+builder.Services.AddDataProtection()
+    .PersistKeysToDbContext<FeirbDbContext>();
 
 // Localization
 builder.Services.AddLocalization();
