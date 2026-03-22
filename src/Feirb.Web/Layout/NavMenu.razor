@@ -13,7 +13,7 @@
                 </div>
                 <div class="profile-info">
                     <span class="profile-name">@context.User.Identity?.Name</span>
-                    <span class="profile-email">@(context.User.FindFirst("email")?.Value ?? "")</span>
+                    <span class="profile-email">@(context.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "")</span>
                 </div>
             </div>
         </Authorized>
