@@ -17,6 +17,10 @@
 
 Feirb is a self-hosted, modern web-based mail client designed for NAS systems. It combines full IMAP/SMTP support with AI-powered features like mail summarization, smart reply drafts, and automatic categorization — all running locally on your hardware.
 
+### Why "Feirb"?
+
+Pronounced like "fire-bee", the name is simply "Brief" (German for *letter*) spelled backwards. After hours of searching for a proper name, this was the one that stuck.
+
 ## Features
 
 - **Full Mail Support** — Read, compose, reply, and manage emails via IMAP/SMTP using MailKit
