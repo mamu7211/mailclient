@@ -6,6 +6,7 @@ public class User
     public required string Username { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
+    public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAt { get; set; }
     public bool IsAdmin { get; set; }

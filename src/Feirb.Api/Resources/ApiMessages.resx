@@ -87,4 +87,13 @@
   <data name="MailboxDeleted" xml:space="preserve">
     <value>Mailbox deleted successfully.</value>
   </data>
+  <data name="InvalidCurrentPassword" xml:space="preserve">
+    <value>Current password is incorrect.</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Password changed successfully.</value>
+  </data>
+  <data name="AllSessionsLoggedOut" xml:space="preserve">
+    <value>All sessions have been logged out.</value>
+  </data>
 </root>

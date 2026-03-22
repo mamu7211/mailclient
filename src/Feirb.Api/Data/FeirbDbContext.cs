@@ -22,6 +22,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.Username).HasMaxLength(100);
             entity.Property(e => e.Email).HasMaxLength(256);
             entity.Property(e => e.PasswordHash).HasMaxLength(256);
+            entity.Property(e => e.SecurityStamp).HasMaxLength(64);
         });
 
         modelBuilder.Entity<SmtpSettings>(entity =>

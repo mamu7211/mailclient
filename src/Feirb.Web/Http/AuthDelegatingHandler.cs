@@ -2,11 +2,17 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Feirb.Shared.Auth;
+using Feirb.Web.Services;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 
 namespace Feirb.Web.Http;
 
-public sealed class AuthDelegatingHandler(IJSRuntime jsRuntime) : DelegatingHandler
+public sealed class AuthDelegatingHandler(
+    IJSRuntime jsRuntime,
+    AuthenticationStateProvider authStateProvider,
+    NavigationManager navigationManager) : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
@@ -49,18 +55,26 @@ public sealed class AuthDelegatingHandler(IJSRuntime jsRuntime) : DelegatingHand
 
         if (!response.IsSuccessStatusCode)
         {
-            await jsRuntime.InvokeVoidAsync("blazorAuth.clearTokens");
+            await ForceLogoutAsync();
             return false;
         }
 
         var tokens = await response.Content.ReadFromJsonAsync<TokenResponse>(cancellationToken);
         if (tokens is null)
         {
-            await jsRuntime.InvokeVoidAsync("blazorAuth.clearTokens");
+            await ForceLogoutAsync();
             return false;
         }
 
         await jsRuntime.InvokeVoidAsync("blazorAuth.setTokens", tokens.AccessToken, tokens.RefreshToken);
         return true;
+    }
+
+    private async Task ForceLogoutAsync()
+    {
+        if (authStateProvider is JwtAuthenticationStateProvider jwtProvider)
+            await jwtProvider.LogoutAsync();
+
+        navigationManager.NavigateTo("/login", forceLoad: true);
     }
 }

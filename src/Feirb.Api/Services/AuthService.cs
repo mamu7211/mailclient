@@ -68,6 +68,7 @@ public class AuthService(IOptions<JwtSettings> jwtSettings) : IAuthService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.Username),
             new(ClaimTypes.Email, user.Email),
+            new("security_stamp", user.SecurityStamp),
         };
 
         if (user.IsAdmin)

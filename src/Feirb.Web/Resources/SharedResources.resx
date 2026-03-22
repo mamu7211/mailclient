@@ -636,4 +636,52 @@
   <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
     <value>smtp.example.com</value>
   </data>
+  <data name="PageTitlePersonalInformation" xml:space="preserve">
+    <value>Personal Information - Feirb</value>
+  </data>
+  <data name="PageTitleSecurity" xml:space="preserve">
+    <value>Security &amp; Password - Feirb</value>
+  </data>
+  <data name="LoadingProfile" xml:space="preserve">
+    <value>Loading profile...</value>
+  </data>
+  <data name="ErrorProfileFailed" xml:space="preserve">
+    <value>An error occurred while loading the profile.</value>
+  </data>
+  <data name="SuccessProfileUpdated" xml:space="preserve">
+    <value>Profile updated successfully.</value>
+  </data>
+  <data name="SecurityChangePasswordTitle" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="LabelCurrentPassword" xml:space="preserve">
+    <value>Current Password</value>
+  </data>
+  <data name="LabelConfirmNewPassword" xml:space="preserve">
+    <value>Confirm New Password</value>
+  </data>
+  <data name="ButtonChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="SecuritySessionsTitle" xml:space="preserve">
+    <value>Sessions</value>
+  </data>
+  <data name="SecuritySessionsDescription" xml:space="preserve">
+    <value>Logging out all sessions will invalidate your refresh token. You will need to log in again on all devices.</value>
+  </data>
+  <data name="ButtonLogoutAllSessions" xml:space="preserve">
+    <value>Log out all sessions</value>
+  </data>
+  <data name="SuccessPasswordChanged" xml:space="preserve">
+    <value>Password changed successfully.</value>
+  </data>
+  <data name="ErrorPasswordChangeFailed" xml:space="preserve">
+    <value>Failed to change password. Please try again.</value>
+  </data>
+  <data name="SuccessAllSessionsLoggedOut" xml:space="preserve">
+    <value>All sessions have been logged out.</value>
+  </data>
+  <data name="ErrorLogoutAllFailed" xml:space="preserve">
+    <value>Failed to log out all sessions. Please try again.</value>
+  </data>
 </root>

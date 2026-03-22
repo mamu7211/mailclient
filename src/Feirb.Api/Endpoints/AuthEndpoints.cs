@@ -153,8 +153,9 @@ public static class AuthEndpoints
             return Results.BadRequest(new { message = localizer["InvalidOrExpiredResetToken"].Value });
 
         resetToken.User.PasswordHash = authService.HashPassword(request.NewPassword);
+        resetToken.User.SecurityStamp = Guid.NewGuid().ToString();
         resetToken.User.UpdatedAt = DateTime.UtcNow;
-        // Invalidate any existing refresh tokens
+        // Invalidate any existing refresh tokens and sessions
         resetToken.User.RefreshToken = null;
         resetToken.User.RefreshTokenExpiresAt = null;
         resetToken.IsUsed = true;
