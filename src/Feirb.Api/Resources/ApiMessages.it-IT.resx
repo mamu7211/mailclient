@@ -81,4 +81,10 @@
   <data name="UserDeleted" xml:space="preserve">
     <value>L'utente è stato eliminato.</value>
   </data>
+  <data name="MailboxNotFound" xml:space="preserve">
+    <value>Casella di posta non trovata.</value>
+  </data>
+  <data name="MailboxDeleted" xml:space="preserve">
+    <value>Casella di posta eliminata con successo.</value>
+  </data>
 </root>

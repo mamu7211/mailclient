@@ -1,0 +1,311 @@
+@page "/settings/mailboxes/new"
+@attribute [Authorize]
+@using Feirb.Shared.Settings
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+@inject ToolbarStateService ToolbarState
+@implements IDisposable
+
+<PageTitle>@L["PageTitleNewMailbox"]</PageTitle>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible py-2" role="alert">
+        @_errorMessage
+        <button type="button" class="btn-close" @onclick="() => _errorMessage = null"></button>
+    </div>
+}
+
+<EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
+    <DataAnnotationsValidator />
+
+    @* General Section *@
+    <h5 class="text-muted mb-3">@L["MailboxSectionGeneral"]</h5>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="name" class="form-label">@L["LabelMailboxName"]</label>
+                <InputText id="name" class="form-control" @bind-Value="_model.Name" placeholder="@L["PlaceholderMailboxName"]" />
+                <ValidationMessage For="() => _model.Name" />
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">@L["LabelEmailAddress"]</label>
+                <InputText id="email" class="form-control" type="email" @bind-Value="_model.EmailAddress" placeholder="@L["PlaceholderEmailAddress"]" />
+                <ValidationMessage For="() => _model.EmailAddress" />
+            </div>
+            <div class="mb-3">
+                <label for="displayName" class="form-label">@L["LabelDisplayName"]</label>
+                <InputText id="displayName" class="form-control" @bind-Value="_model.DisplayName" placeholder="@L["PlaceholderDisplayName"]" />
+            </div>
+        </div>
+    </div>
+
+    @* IMAP Section *@
+    <h5 class="text-muted mb-3">@L["MailboxSectionImap"]</h5>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <label for="imapHost" class="form-label">@L["LabelImapHost"]</label>
+                    <InputText id="imapHost" class="form-control" @bind-Value="_model.ImapHost" placeholder="@L["PlaceholderImapHost"]" />
+                    <ValidationMessage For="() => _model.ImapHost" />
+                </div>
+                <div class="col-md-4">
+                    <label for="imapPort" class="form-label">@L["LabelImapPort"]</label>
+                    <InputNumber id="imapPort" class="form-control" @bind-Value="_model.ImapPort" />
+                    <ValidationMessage For="() => _model.ImapPort" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="imapUsername" class="form-label">@L["LabelImapUsername"]</label>
+                    <InputText id="imapUsername" class="form-control" @bind-Value="_model.ImapUsername" />
+                    <ValidationMessage For="() => _model.ImapUsername" />
+                </div>
+                <div class="col-md-6">
+                    <label for="imapPassword" class="form-label">@L["LabelImapPassword"]</label>
+                    <InputText id="imapPassword" class="form-control" type="password" @bind-Value="_model.ImapPassword" />
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <InputCheckbox id="imapUseTls" class="form-check-input" @bind-Value="_model.ImapUseTls" />
+                    <label for="imapUseTls" class="form-check-label">@L["LabelImapUseTls"]</label>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestImapAsync" disabled="@_isTestingImap">
+                    @if (_isTestingImap)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    }
+                    @L["ButtonTestConnection"]
+                </button>
+            </div>
+            @if (_imapTestResult is not null)
+            {
+                <div class="alert @(_imapTestResult.Success ? "alert-success" : "alert-danger") mt-3 mb-0 py-2">
+                    @GetTestResultMessage(_imapTestResult)
+                </div>
+            }
+        </div>
+    </div>
+
+    @* SMTP Section *@
+    <h5 class="text-muted mb-3">@L["MailboxSectionSmtp"]</h5>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <label for="smtpHost" class="form-label">@L["LabelSmtpHostMailbox"]</label>
+                    <InputText id="smtpHost" class="form-control" @bind-Value="_model.SmtpHost" placeholder="@L["PlaceholderSmtpHostMailbox"]" />
+                    <ValidationMessage For="() => _model.SmtpHost" />
+                </div>
+                <div class="col-md-4">
+                    <label for="smtpPort" class="form-label">@L["LabelSmtpPortMailbox"]</label>
+                    <InputNumber id="smtpPort" class="form-control" @bind-Value="_model.SmtpPort" />
+                    <ValidationMessage For="() => _model.SmtpPort" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="smtpUsername" class="form-label">@L["LabelSmtpUsernameMailbox"]</label>
+                    <InputText id="smtpUsername" class="form-control" @bind-Value="_model.SmtpUsername" />
+                    <ValidationMessage For="() => _model.SmtpUsername" />
+                </div>
+                <div class="col-md-6">
+                    <label for="smtpPassword" class="form-label">@L["LabelSmtpPasswordMailbox"]</label>
+                    <InputText id="smtpPassword" class="form-control" type="password" @bind-Value="_model.SmtpPassword" />
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="form-check">
+                        <InputCheckbox id="smtpUseTls" class="form-check-input" @bind-Value="_model.SmtpUseTls" />
+                        <label for="smtpUseTls" class="form-check-label">@L["LabelSmtpUseTlsMailbox"]</label>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox id="smtpRequiresAuth" class="form-check-input" @bind-Value="_model.SmtpRequiresAuth" />
+                        <label for="smtpRequiresAuth" class="form-check-label">@L["LabelSmtpRequiresAuthMailbox"]</label>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestSmtpAsync" disabled="@_isTestingSmtp">
+                    @if (_isTestingSmtp)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    }
+                    @L["ButtonTestConnection"]
+                </button>
+            </div>
+            @if (_smtpTestResult is not null)
+            {
+                <div class="alert @(_smtpTestResult.Success ? "alert-success" : "alert-danger") mt-3 mb-0 py-2">
+                    @GetTestResultMessage(_smtpTestResult)
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private MailboxFormModel _model = new();
+    private bool _isSaving;
+    private string? _errorMessage;
+
+    private bool _isTestingImap;
+    private bool _isTestingSmtp;
+    private TestConnectionResponse? _imapTestResult;
+    private TestConnectionResponse? _smtpTestResult;
+
+    protected override void OnInitialized()
+    {
+        ToolbarState.SetActions(
+        [
+            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check")
+        ]);
+    }
+
+    public void Dispose() => ToolbarState.Clear();
+
+    private async Task HandleSaveAsync()
+    {
+        if (_isSaving) return;
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            var request = new CreateMailboxRequest(
+                _model.Name!, _model.EmailAddress!, _model.DisplayName,
+                _model.ImapHost!, _model.ImapPort, _model.ImapUsername!, _model.ImapPassword,
+                _model.ImapUseTls,
+                _model.SmtpHost!, _model.SmtpPort, _model.SmtpUsername!, _model.SmtpPassword,
+                _model.SmtpUseTls, _model.SmtpRequiresAuth);
+
+            var response = await Http.PostAsJsonAsync("/api/settings/mailboxes", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var created = await response.Content.ReadFromJsonAsync<MailboxDetailResponse>();
+                Navigation.NavigateTo($"/settings/mailboxes/{created!.Id}");
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                _errorMessage = error?.Message ?? L["ErrorMailboxFailed"];
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ErrorMailboxFailed"];
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private async Task TestImapAsync()
+    {
+        _isTestingImap = true;
+        _imapTestResult = null;
+        try
+        {
+            var request = new TestImapRequest(
+                _model.ImapHost ?? "", _model.ImapPort, _model.ImapUsername, _model.ImapPassword, _model.ImapUseTls);
+            var response = await Http.PostAsJsonAsync("/api/mail/test/imap", request);
+            _imapTestResult = await response.Content.ReadFromJsonAsync<TestConnectionResponse>();
+        }
+        catch
+        {
+            _imapTestResult = new TestConnectionResponse(false, null, null);
+        }
+        finally
+        {
+            _isTestingImap = false;
+        }
+    }
+
+    private async Task TestSmtpAsync()
+    {
+        _isTestingSmtp = true;
+        _smtpTestResult = null;
+        try
+        {
+            var request = new TestSmtpMailboxRequest(
+                _model.SmtpHost ?? "", _model.SmtpPort, _model.SmtpUsername, _model.SmtpPassword,
+                _model.SmtpUseTls, _model.SmtpRequiresAuth);
+            var response = await Http.PostAsJsonAsync("/api/mail/test/smtp", request);
+            _smtpTestResult = await response.Content.ReadFromJsonAsync<TestConnectionResponse>();
+        }
+        catch
+        {
+            _smtpTestResult = new TestConnectionResponse(false, null, null);
+        }
+        finally
+        {
+            _isTestingSmtp = false;
+        }
+    }
+
+    private string GetTestResultMessage(TestConnectionResponse result)
+    {
+        if (result.Success)
+            return L["TestConnectionSuccess"];
+        return result.ErrorStep switch
+        {
+            "dns" => L["TestConnectionFailedDns"],
+            "tls" => L["TestConnectionFailedTls"],
+            "auth" => L["TestConnectionFailedAuth"],
+            _ => L["TestConnectionFailed"]
+        };
+    }
+
+    private sealed class MailboxFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? Name { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.EmailAddress]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? EmailAddress { get; set; }
+
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? DisplayName { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? ImapHost { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(1, 65535)]
+        public int ImapPort { get; set; } = 993;
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? ImapUsername { get; set; }
+
+        public string? ImapPassword { get; set; }
+
+        public bool ImapUseTls { get; set; } = true;
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? SmtpHost { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(1, 65535)]
+        public int SmtpPort { get; set; } = 587;
+
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? SmtpUsername { get; set; }
+
+        public string? SmtpPassword { get; set; }
+
+        public bool SmtpUseTls { get; set; } = true;
+
+        public bool SmtpRequiresAuth { get; set; } = true;
+    }
+
+    private sealed record ErrorResponse(string Message);
+}

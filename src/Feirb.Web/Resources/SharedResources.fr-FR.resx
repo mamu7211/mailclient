@@ -498,4 +498,142 @@
   <data name="StubComingSoon" xml:space="preserve">
     <value>Cette page est en cours de construction.</value>
   </data>
+  <data name="SettingsMailTitle" xml:space="preserve">
+    <value>Messagerie</value>
+  </data>
+  <data name="SettingsMailboxesTitle" xml:space="preserve">
+    <value>Boîtes mail</value>
+  </data>
+  <data name="SettingsMailboxesSubtitle" xml:space="preserve">
+    <value>Configurer vos comptes e-mail</value>
+  </data>
+  <data name="PageTitleMailboxes" xml:space="preserve">
+    <value>Boîtes mail - Feirb</value>
+  </data>
+  <data name="PageTitleNewMailbox" xml:space="preserve">
+    <value>Nouvelle boîte mail - Feirb</value>
+  </data>
+  <data name="PageTitleEditMailbox" xml:space="preserve">
+    <value>Modifier la boîte mail - Feirb</value>
+  </data>
+  <data name="BreadcrumbMailboxes" xml:space="preserve">
+    <value>Boîtes mail</value>
+  </data>
+  <data name="BreadcrumbNewMailbox" xml:space="preserve">
+    <value>Nouvelle boîte mail</value>
+  </data>
+  <data name="MailboxesHeading" xml:space="preserve">
+    <value>Boîtes mail</value>
+  </data>
+  <data name="MailboxSectionGeneral" xml:space="preserve">
+    <value>Général</value>
+  </data>
+  <data name="MailboxSectionImap" xml:space="preserve">
+    <value>Courrier entrant (IMAP)</value>
+  </data>
+  <data name="MailboxSectionSmtp" xml:space="preserve">
+    <value>Courrier sortant (SMTP)</value>
+  </data>
+  <data name="LabelMailboxName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="LabelEmailAddress" xml:space="preserve">
+    <value>Adresse e-mail</value>
+  </data>
+  <data name="LabelDisplayName" xml:space="preserve">
+    <value>Nom d'affichage</value>
+  </data>
+  <data name="LabelImapHost" xml:space="preserve">
+    <value>Hôte IMAP</value>
+  </data>
+  <data name="LabelImapPort" xml:space="preserve">
+    <value>Port IMAP</value>
+  </data>
+  <data name="LabelImapUsername" xml:space="preserve">
+    <value>Nom d'utilisateur</value>
+  </data>
+  <data name="LabelImapPassword" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="LabelImapUseTls" xml:space="preserve">
+    <value>Utiliser TLS</value>
+  </data>
+  <data name="LabelSmtpHostMailbox" xml:space="preserve">
+    <value>Hôte SMTP</value>
+  </data>
+  <data name="LabelSmtpPortMailbox" xml:space="preserve">
+    <value>Port SMTP</value>
+  </data>
+  <data name="LabelSmtpUsernameMailbox" xml:space="preserve">
+    <value>Nom d'utilisateur</value>
+  </data>
+  <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
+    <value>Mot de passe</value>
+  </data>
+  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
+    <value>Utiliser TLS</value>
+  </data>
+  <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
+    <value>Authentification requise</value>
+  </data>
+  <data name="ButtonAddMailbox" xml:space="preserve">
+    <value>Ajouter une boîte mail</value>
+  </data>
+  <data name="TestConnectionSuccess" xml:space="preserve">
+    <value>Connexion réussie !</value>
+  </data>
+  <data name="TestConnectionFailedDns" xml:space="preserve">
+    <value>Impossible de joindre le serveur. Vérifiez le nom d'hôte et le port.</value>
+  </data>
+  <data name="TestConnectionFailedTls" xml:space="preserve">
+    <value>Échec de la négociation TLS. Vérifiez le paramètre TLS.</value>
+  </data>
+  <data name="TestConnectionFailedAuth" xml:space="preserve">
+    <value>Échec de l'authentification. Vérifiez le nom d'utilisateur et le mot de passe.</value>
+  </data>
+  <data name="TestConnectionFailed" xml:space="preserve">
+    <value>Échec de la connexion.</value>
+  </data>
+  <data name="PasswordPlaceholderKeep" xml:space="preserve">
+    <value>Laisser vide pour conserver l'existant</value>
+  </data>
+  <data name="ConfirmDeleteMailboxTitle" xml:space="preserve">
+    <value>Supprimer la boîte mail</value>
+  </data>
+  <data name="ConfirmDeleteMailboxMessage" xml:space="preserve">
+    <value>Voulez-vous vraiment supprimer la boîte mail « {0} » ? Cette action est irréversible.</value>
+  </data>
+  <data name="SuccessMailboxCreated" xml:space="preserve">
+    <value>Boîte mail créée avec succès.</value>
+  </data>
+  <data name="SuccessMailboxUpdated" xml:space="preserve">
+    <value>Boîte mail mise à jour avec succès.</value>
+  </data>
+  <data name="SuccessMailboxDeleted" xml:space="preserve">
+    <value>Boîte mail supprimée avec succès.</value>
+  </data>
+  <data name="ErrorMailboxFailed" xml:space="preserve">
+    <value>Une erreur est survenue lors du traitement de la boîte mail.</value>
+  </data>
+  <data name="NoMailboxesFound" xml:space="preserve">
+    <value>Aucune boîte mail configurée.</value>
+  </data>
+  <data name="LoadingMailboxes" xml:space="preserve">
+    <value>Chargement des boîtes mail...</value>
+  </data>
+  <data name="PlaceholderMailboxName" xml:space="preserve">
+    <value>ex. Travail, Personnel</value>
+  </data>
+  <data name="PlaceholderEmailAddress" xml:space="preserve">
+    <value>vous@exemple.fr</value>
+  </data>
+  <data name="PlaceholderDisplayName" xml:space="preserve">
+    <value>Jean Dupont</value>
+  </data>
+  <data name="PlaceholderImapHost" xml:space="preserve">
+    <value>imap.exemple.fr</value>
+  </data>
+  <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
+    <value>smtp.exemple.fr</value>
+  </data>
 </root>

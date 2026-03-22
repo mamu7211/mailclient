@@ -1,0 +1,62 @@
+@page "/settings/mailboxes"
+@attribute [Authorize]
+@using Feirb.Shared.Settings
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@L["PageTitleMailboxes"]</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">@L["MailboxesHeading"]</h1>
+    <a class="btn btn-primary" href="/settings/mailboxes/new">
+        <span class="material-symbols-outlined me-1" style="font-size: 1.2rem; vertical-align: middle;">add</span>@L["ButtonAddMailbox"]
+    </a>
+</div>
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["LoadingMailboxes"]</span>
+        </div>
+        <p class="mt-2 text-muted">@L["LoadingMailboxes"]</p>
+    </div>
+}
+else if (_mailboxes is null || _mailboxes.Count == 0)
+{
+    <p class="text-muted">@L["NoMailboxesFound"]</p>
+}
+else
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var mailbox in _mailboxes)
+        {
+            <NavigationItem
+                Icon="mail"
+                Title="@mailbox.Name"
+                Subtitle="@mailbox.EmailAddress"
+                Href="@($"/settings/mailboxes/{mailbox.Id}")" />
+        }
+    </div>
+}
+
+@code {
+    private List<MailboxListResponse>? _mailboxes;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _mailboxes = await Http.GetFromJsonAsync<List<MailboxListResponse>>("/api/settings/mailboxes");
+        }
+        catch
+        {
+            // Error handled by empty state
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

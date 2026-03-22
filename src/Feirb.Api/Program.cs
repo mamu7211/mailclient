@@ -94,6 +94,14 @@ setupGroup.MapSetupEndpoints();
 var adminGroup = apiGroup.MapGroup("/admin").RequireAuthorization("RequireAdmin");
 adminGroup.MapAdminEndpoints();
 
+// Settings endpoints (per-user, JWT required)
+var settingsGroup = apiGroup.MapGroup("/settings");
+settingsGroup.MapMailboxEndpoints();
+
+// Mail test endpoints (per-user, JWT required)
+var mailGroup = apiGroup.MapGroup("/mail");
+mailGroup.MapMailTestEndpoints();
+
 app.MapFallbackToFile("index.html");
 
 app.Run();

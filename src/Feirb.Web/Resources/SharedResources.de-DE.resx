@@ -498,4 +498,142 @@
   <data name="StubComingSoon" xml:space="preserve">
     <value>Diese Seite befindet sich im Aufbau.</value>
   </data>
+  <data name="SettingsMailTitle" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="SettingsMailboxesTitle" xml:space="preserve">
+    <value>Postfächer</value>
+  </data>
+  <data name="SettingsMailboxesSubtitle" xml:space="preserve">
+    <value>E-Mail-Konten konfigurieren</value>
+  </data>
+  <data name="PageTitleMailboxes" xml:space="preserve">
+    <value>Postfächer - Feirb</value>
+  </data>
+  <data name="PageTitleNewMailbox" xml:space="preserve">
+    <value>Neues Postfach - Feirb</value>
+  </data>
+  <data name="PageTitleEditMailbox" xml:space="preserve">
+    <value>Postfach bearbeiten - Feirb</value>
+  </data>
+  <data name="BreadcrumbMailboxes" xml:space="preserve">
+    <value>Postfächer</value>
+  </data>
+  <data name="BreadcrumbNewMailbox" xml:space="preserve">
+    <value>Neues Postfach</value>
+  </data>
+  <data name="MailboxesHeading" xml:space="preserve">
+    <value>Postfächer</value>
+  </data>
+  <data name="MailboxSectionGeneral" xml:space="preserve">
+    <value>Allgemein</value>
+  </data>
+  <data name="MailboxSectionImap" xml:space="preserve">
+    <value>Posteingang (IMAP)</value>
+  </data>
+  <data name="MailboxSectionSmtp" xml:space="preserve">
+    <value>Postausgang (SMTP)</value>
+  </data>
+  <data name="LabelMailboxName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="LabelEmailAddress" xml:space="preserve">
+    <value>E-Mail-Adresse</value>
+  </data>
+  <data name="LabelDisplayName" xml:space="preserve">
+    <value>Anzeigename</value>
+  </data>
+  <data name="LabelImapHost" xml:space="preserve">
+    <value>IMAP-Host</value>
+  </data>
+  <data name="LabelImapPort" xml:space="preserve">
+    <value>IMAP-Port</value>
+  </data>
+  <data name="LabelImapUsername" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="LabelImapPassword" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="LabelImapUseTls" xml:space="preserve">
+    <value>TLS verwenden</value>
+  </data>
+  <data name="LabelSmtpHostMailbox" xml:space="preserve">
+    <value>SMTP-Host</value>
+  </data>
+  <data name="LabelSmtpPortMailbox" xml:space="preserve">
+    <value>SMTP-Port</value>
+  </data>
+  <data name="LabelSmtpUsernameMailbox" xml:space="preserve">
+    <value>Benutzername</value>
+  </data>
+  <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
+    <value>Passwort</value>
+  </data>
+  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
+    <value>TLS verwenden</value>
+  </data>
+  <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
+    <value>Authentifizierung erforderlich</value>
+  </data>
+  <data name="ButtonAddMailbox" xml:space="preserve">
+    <value>Postfach hinzufügen</value>
+  </data>
+  <data name="TestConnectionSuccess" xml:space="preserve">
+    <value>Verbindung erfolgreich!</value>
+  </data>
+  <data name="TestConnectionFailedDns" xml:space="preserve">
+    <value>Server nicht erreichbar. Überprüfen Sie Hostname und Port.</value>
+  </data>
+  <data name="TestConnectionFailedTls" xml:space="preserve">
+    <value>TLS-Handshake fehlgeschlagen. Überprüfen Sie die TLS-Einstellung.</value>
+  </data>
+  <data name="TestConnectionFailedAuth" xml:space="preserve">
+    <value>Authentifizierung fehlgeschlagen. Überprüfen Sie Benutzername und Passwort.</value>
+  </data>
+  <data name="TestConnectionFailed" xml:space="preserve">
+    <value>Verbindung fehlgeschlagen.</value>
+  </data>
+  <data name="PasswordPlaceholderKeep" xml:space="preserve">
+    <value>Leer lassen, um bestehendes beizubehalten</value>
+  </data>
+  <data name="ConfirmDeleteMailboxTitle" xml:space="preserve">
+    <value>Postfach löschen</value>
+  </data>
+  <data name="ConfirmDeleteMailboxMessage" xml:space="preserve">
+    <value>Möchten Sie das Postfach „{0}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</value>
+  </data>
+  <data name="SuccessMailboxCreated" xml:space="preserve">
+    <value>Postfach erfolgreich erstellt.</value>
+  </data>
+  <data name="SuccessMailboxUpdated" xml:space="preserve">
+    <value>Postfach erfolgreich aktualisiert.</value>
+  </data>
+  <data name="SuccessMailboxDeleted" xml:space="preserve">
+    <value>Postfach erfolgreich gelöscht.</value>
+  </data>
+  <data name="ErrorMailboxFailed" xml:space="preserve">
+    <value>Beim Verarbeiten des Postfachs ist ein Fehler aufgetreten.</value>
+  </data>
+  <data name="NoMailboxesFound" xml:space="preserve">
+    <value>Noch keine Postfächer konfiguriert.</value>
+  </data>
+  <data name="LoadingMailboxes" xml:space="preserve">
+    <value>Postfächer werden geladen...</value>
+  </data>
+  <data name="PlaceholderMailboxName" xml:space="preserve">
+    <value>z.B. Arbeit, Privat</value>
+  </data>
+  <data name="PlaceholderEmailAddress" xml:space="preserve">
+    <value>du@beispiel.de</value>
+  </data>
+  <data name="PlaceholderDisplayName" xml:space="preserve">
+    <value>Max Mustermann</value>
+  </data>
+  <data name="PlaceholderImapHost" xml:space="preserve">
+    <value>imap.beispiel.de</value>
+  </data>
+  <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
+    <value>smtp.beispiel.de</value>
+  </data>
 </root>

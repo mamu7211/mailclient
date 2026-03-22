@@ -81,4 +81,10 @@
   <data name="UserDeleted" xml:space="preserve">
     <value>L'utilisateur a été supprimé.</value>
   </data>
+  <data name="MailboxNotFound" xml:space="preserve">
+    <value>Boîte mail introuvable.</value>
+  </data>
+  <data name="MailboxDeleted" xml:space="preserve">
+    <value>Boîte mail supprimée avec succès.</value>
+  </data>
 </root>

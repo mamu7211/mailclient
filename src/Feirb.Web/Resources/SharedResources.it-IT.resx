@@ -498,4 +498,142 @@
   <data name="StubComingSoon" xml:space="preserve">
     <value>Questa pagina è in costruzione.</value>
   </data>
+  <data name="SettingsMailTitle" xml:space="preserve">
+    <value>Posta</value>
+  </data>
+  <data name="SettingsMailboxesTitle" xml:space="preserve">
+    <value>Caselle di posta</value>
+  </data>
+  <data name="SettingsMailboxesSubtitle" xml:space="preserve">
+    <value>Configura i tuoi account e-mail</value>
+  </data>
+  <data name="PageTitleMailboxes" xml:space="preserve">
+    <value>Caselle di posta - Feirb</value>
+  </data>
+  <data name="PageTitleNewMailbox" xml:space="preserve">
+    <value>Nuova casella di posta - Feirb</value>
+  </data>
+  <data name="PageTitleEditMailbox" xml:space="preserve">
+    <value>Modifica casella di posta - Feirb</value>
+  </data>
+  <data name="BreadcrumbMailboxes" xml:space="preserve">
+    <value>Caselle di posta</value>
+  </data>
+  <data name="BreadcrumbNewMailbox" xml:space="preserve">
+    <value>Nuova casella di posta</value>
+  </data>
+  <data name="MailboxesHeading" xml:space="preserve">
+    <value>Caselle di posta</value>
+  </data>
+  <data name="MailboxSectionGeneral" xml:space="preserve">
+    <value>Generale</value>
+  </data>
+  <data name="MailboxSectionImap" xml:space="preserve">
+    <value>Posta in arrivo (IMAP)</value>
+  </data>
+  <data name="MailboxSectionSmtp" xml:space="preserve">
+    <value>Posta in uscita (SMTP)</value>
+  </data>
+  <data name="LabelMailboxName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="LabelEmailAddress" xml:space="preserve">
+    <value>Indirizzo e-mail</value>
+  </data>
+  <data name="LabelDisplayName" xml:space="preserve">
+    <value>Nome visualizzato</value>
+  </data>
+  <data name="LabelImapHost" xml:space="preserve">
+    <value>Host IMAP</value>
+  </data>
+  <data name="LabelImapPort" xml:space="preserve">
+    <value>Porta IMAP</value>
+  </data>
+  <data name="LabelImapUsername" xml:space="preserve">
+    <value>Nome utente</value>
+  </data>
+  <data name="LabelImapPassword" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="LabelImapUseTls" xml:space="preserve">
+    <value>Usa TLS</value>
+  </data>
+  <data name="LabelSmtpHostMailbox" xml:space="preserve">
+    <value>Host SMTP</value>
+  </data>
+  <data name="LabelSmtpPortMailbox" xml:space="preserve">
+    <value>Porta SMTP</value>
+  </data>
+  <data name="LabelSmtpUsernameMailbox" xml:space="preserve">
+    <value>Nome utente</value>
+  </data>
+  <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
+    <value>Usa TLS</value>
+  </data>
+  <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
+    <value>Autenticazione richiesta</value>
+  </data>
+  <data name="ButtonAddMailbox" xml:space="preserve">
+    <value>Aggiungi casella di posta</value>
+  </data>
+  <data name="TestConnectionSuccess" xml:space="preserve">
+    <value>Connessione riuscita!</value>
+  </data>
+  <data name="TestConnectionFailedDns" xml:space="preserve">
+    <value>Impossibile raggiungere il server. Controllare hostname e porta.</value>
+  </data>
+  <data name="TestConnectionFailedTls" xml:space="preserve">
+    <value>Handshake TLS fallito. Controllare l'impostazione TLS.</value>
+  </data>
+  <data name="TestConnectionFailedAuth" xml:space="preserve">
+    <value>Autenticazione fallita. Controllare nome utente e password.</value>
+  </data>
+  <data name="TestConnectionFailed" xml:space="preserve">
+    <value>Connessione fallita.</value>
+  </data>
+  <data name="PasswordPlaceholderKeep" xml:space="preserve">
+    <value>Lasciare vuoto per mantenere l'esistente</value>
+  </data>
+  <data name="ConfirmDeleteMailboxTitle" xml:space="preserve">
+    <value>Elimina casella di posta</value>
+  </data>
+  <data name="ConfirmDeleteMailboxMessage" xml:space="preserve">
+    <value>Sei sicuro di voler eliminare la casella di posta "{0}"? Questa azione non può essere annullata.</value>
+  </data>
+  <data name="SuccessMailboxCreated" xml:space="preserve">
+    <value>Casella di posta creata con successo.</value>
+  </data>
+  <data name="SuccessMailboxUpdated" xml:space="preserve">
+    <value>Casella di posta aggiornata con successo.</value>
+  </data>
+  <data name="SuccessMailboxDeleted" xml:space="preserve">
+    <value>Casella di posta eliminata con successo.</value>
+  </data>
+  <data name="ErrorMailboxFailed" xml:space="preserve">
+    <value>Si è verificato un errore durante l'elaborazione della casella di posta.</value>
+  </data>
+  <data name="NoMailboxesFound" xml:space="preserve">
+    <value>Nessuna casella di posta configurata.</value>
+  </data>
+  <data name="LoadingMailboxes" xml:space="preserve">
+    <value>Caricamento caselle di posta...</value>
+  </data>
+  <data name="PlaceholderMailboxName" xml:space="preserve">
+    <value>es. Lavoro, Personale</value>
+  </data>
+  <data name="PlaceholderEmailAddress" xml:space="preserve">
+    <value>tu@esempio.it</value>
+  </data>
+  <data name="PlaceholderDisplayName" xml:space="preserve">
+    <value>Mario Rossi</value>
+  </data>
+  <data name="PlaceholderImapHost" xml:space="preserve">
+    <value>imap.esempio.it</value>
+  </data>
+  <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
+    <value>smtp.esempio.it</value>
+  </data>
 </root>
