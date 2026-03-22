@@ -46,8 +46,8 @@ Pronounced like "fire-bee", the name is simply "Brief" (German for *letter*) spe
 ## Quick Start
 
 ```bash
-git clone git@github.com:mamu7211/fireb-mailclient.git
-cd fireb-mailclient
+git clone git@github.com:mamu7211/feirb-mailclient.git
+cd feirb-mailclient
 dotnet workload install aspire
 dotnet restore Feirb.sln
 dotnet run --project src/Feirb.AppHost
@@ -89,7 +89,7 @@ The seeding is idempotent — it checks whether the data already exists and skip
 Feirb is currently in early development and **not accepting external contributions** (pull requests) at this time. The architecture and core features are still taking shape, and managing external PRs would slow things down right now.
 
 **What you _can_ do:**
-- **Report bugs** — found something broken? Open an [issue](https://github.com/mamu7211/fireb-mailclient/issues)
+- **Report bugs** — found something broken? Open an [issue](https://github.com/mamu7211/feirb-mailclient/issues)
 - **Request features** — ideas are welcome as issues, even if implementation is a while off
 
 External contributions will be opened up once the project reaches a more stable state. Thanks for your patience and interest!

@@ -17,8 +17,8 @@
 
 ```bash
 # Clone the repository
-git clone git@github.com:mamu7211/fireb-mailclient.git
-cd fireb-mailclient
+git clone git@github.com:mamu7211/feirb-mailclient.git
+cd feirb-mailclient
 
 # Install Aspire workload (first time only)
 dotnet workload install aspire
