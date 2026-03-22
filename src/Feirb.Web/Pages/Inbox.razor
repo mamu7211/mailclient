@@ -1,7 +1,8 @@
-@page "/inbox"
+@page "/mail/inbox"
 @attribute [Authorize]
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Inbox - Feirb</PageTitle>
+<PageTitle>@L["PageTitleInbox"]</PageTitle>
 
-<h1>Inbox</h1>
-<p class="text-muted">Coming soon.</p>
+<h1>@L["NavInbox"]</h1>
+<p class="text-muted">@L["StubComingSoon"]</p>

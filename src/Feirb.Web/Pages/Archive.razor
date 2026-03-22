@@ -1,7 +1,8 @@
-@page "/archive"
+@page "/mail/archive"
 @attribute [Authorize]
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Archive - Feirb</PageTitle>
+<PageTitle>@L["PageTitleArchive"]</PageTitle>
 
-<h1>Archive</h1>
-<p class="text-muted">Coming soon.</p>
+<h1>@L["NavArchive"]</h1>
+<p class="text-muted">@L["StubComingSoon"]</p>

@@ -1,7 +1,8 @@
-@page "/trash"
+@page "/mail/trash"
 @attribute [Authorize]
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Trash - Feirb</PageTitle>
+<PageTitle>@L["PageTitleTrash"]</PageTitle>
 
-<h1>Trash</h1>
-<p class="text-muted">Coming soon.</p>
+<h1>@L["NavTrash"]</h1>
+<p class="text-muted">@L["StubComingSoon"]</p>

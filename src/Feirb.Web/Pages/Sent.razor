@@ -1,7 +1,8 @@
-@page "/sent"
+@page "/mail/sent"
 @attribute [Authorize]
+@inject IStringLocalizer<SharedResources> L
 
-<PageTitle>Sent - Feirb</PageTitle>
+<PageTitle>@L["PageTitleSent"]</PageTitle>
 
-<h1>Sent</h1>
-<p class="text-muted">Coming soon.</p>
+<h1>@L["NavSent"]</h1>
+<p class="text-muted">@L["StubComingSoon"]</p>

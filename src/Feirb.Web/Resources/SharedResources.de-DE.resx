@@ -708,4 +708,43 @@
   <data name="LoadingSmtpSettings" xml:space="preserve">
     <value>SMTP-Einstellungen werden geladen...</value>
   </data>
+  <data name="BreadcrumbMail" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="BreadcrumbInbox" xml:space="preserve">
+    <value>Posteingang</value>
+  </data>
+  <data name="BreadcrumbSent" xml:space="preserve">
+    <value>Gesendet</value>
+  </data>
+  <data name="BreadcrumbDrafts" xml:space="preserve">
+    <value>Entwürfe</value>
+  </data>
+  <data name="BreadcrumbTrash" xml:space="preserve">
+    <value>Papierkorb</value>
+  </data>
+  <data name="BreadcrumbArchive" xml:space="preserve">
+    <value>Archiv</value>
+  </data>
+  <data name="NavDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="PageTitleDashboard" xml:space="preserve">
+    <value>Dashboard - Feirb</value>
+  </data>
+  <data name="PageTitleInbox" xml:space="preserve">
+    <value>Posteingang - Feirb</value>
+  </data>
+  <data name="PageTitleSent" xml:space="preserve">
+    <value>Gesendet - Feirb</value>
+  </data>
+  <data name="PageTitleDrafts" xml:space="preserve">
+    <value>Entwürfe - Feirb</value>
+  </data>
+  <data name="PageTitleTrash" xml:space="preserve">
+    <value>Papierkorb - Feirb</value>
+  </data>
+  <data name="PageTitleArchive" xml:space="preserve">
+    <value>Archiv - Feirb</value>
+  </data>
 </root>

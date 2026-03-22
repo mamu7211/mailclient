@@ -51,7 +51,8 @@
         {
             currentPath = string.IsNullOrEmpty(currentPath) ? part : $"{currentPath}/{part}";
             var label = ResolveLabel(currentPath, part);
-            _segments.Add(new BreadcrumbSegment(label, $"/{currentPath}"));
+            var href = ResolveHref(currentPath);
+            _segments.Add(new BreadcrumbSegment(label, href));
         }
     }
 
@@ -71,12 +72,20 @@
             "admin/llm-settings" => L["BreadcrumbLlmSettings"],
             "admin/llm-settings/system-prompt" => L["BreadcrumbSystemPrompt"],
             "admin/llm-settings/scheduling" => L["BreadcrumbScheduling"],
-            "inbox" => L["NavInbox"],
-            "sent" => L["NavSent"],
-            "drafts" => L["NavDrafts"],
-            "trash" => L["NavTrash"],
-            "archive" => L["NavArchive"],
+            "mail" => L["BreadcrumbMail"],
+            "mail/inbox" => L["BreadcrumbInbox"],
+            "mail/sent" => L["BreadcrumbSent"],
+            "mail/drafts" => L["BreadcrumbDrafts"],
+            "mail/trash" => L["BreadcrumbTrash"],
+            "mail/archive" => L["BreadcrumbArchive"],
             _ => segment
+        };
+
+    private static string ResolveHref(string fullPath) =>
+        fullPath switch
+        {
+            "mail" => "/mail/inbox",
+            _ => $"/{fullPath}"
         };
 
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;

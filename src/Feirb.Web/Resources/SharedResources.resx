@@ -708,4 +708,43 @@
   <data name="LoadingSmtpSettings" xml:space="preserve">
     <value>Loading SMTP settings...</value>
   </data>
+  <data name="BreadcrumbMail" xml:space="preserve">
+    <value>Mail</value>
+  </data>
+  <data name="BreadcrumbInbox" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="BreadcrumbSent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="BreadcrumbDrafts" xml:space="preserve">
+    <value>Drafts</value>
+  </data>
+  <data name="BreadcrumbTrash" xml:space="preserve">
+    <value>Trash</value>
+  </data>
+  <data name="BreadcrumbArchive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="NavDashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="PageTitleDashboard" xml:space="preserve">
+    <value>Dashboard - Feirb</value>
+  </data>
+  <data name="PageTitleInbox" xml:space="preserve">
+    <value>Inbox - Feirb</value>
+  </data>
+  <data name="PageTitleSent" xml:space="preserve">
+    <value>Sent - Feirb</value>
+  </data>
+  <data name="PageTitleDrafts" xml:space="preserve">
+    <value>Drafts - Feirb</value>
+  </data>
+  <data name="PageTitleTrash" xml:space="preserve">
+    <value>Trash - Feirb</value>
+  </data>
+  <data name="PageTitleArchive" xml:space="preserve">
+    <value>Archive - Feirb</value>
+  </data>
 </root>
