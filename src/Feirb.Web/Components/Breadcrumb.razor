@@ -51,7 +51,8 @@
         {
             currentPath = string.IsNullOrEmpty(currentPath) ? part : $"{currentPath}/{part}";
             var label = ResolveLabel(currentPath, part);
-            _segments.Add(new BreadcrumbSegment(label, $"/{currentPath}"));
+            var href = ResolveHref(currentPath);
+            _segments.Add(new BreadcrumbSegment(label, href));
         }
     }
 
@@ -78,6 +79,13 @@
             "mail/trash" => L["NavTrash"],
             "mail/archive" => L["NavArchive"],
             _ => segment
+        };
+
+    private static string ResolveHref(string fullPath) =>
+        fullPath switch
+        {
+            "mail" => "/mail/inbox",
+            _ => $"/{fullPath}"
         };
 
     public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
