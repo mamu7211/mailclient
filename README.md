@@ -11,6 +11,10 @@
 
 **A smart mail client for your NAS, powered by AI.**
 
+> **⚠️ Early Development — Not Functional Yet**
+>
+> Feirb is in active early development and is **not yet functional**. There is no release candidate, no stable build, and features are incomplete or missing entirely. Everything is subject to change. Use at your own risk — or better yet, check back later.
+
 Feirb is a self-hosted, modern web-based mail client designed for NAS systems. It combines full IMAP/SMTP support with AI-powered features like mail summarization, smart reply drafts, and automatic categorization — all running locally on your hardware.
 
 ## Features
@@ -86,11 +90,13 @@ mailclient/
 
 ## Contributing
 
-1. Create a feature branch: `git checkout -b feature/my-feature`
-2. Follow [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, etc.
-3. Ensure tests pass: `dotnet test`
-4. Ensure formatting: `dotnet format --verify-no-changes`
-5. Open a Pull Request against `main`
+Feirb is currently in early development and **not accepting external contributions** (pull requests) at this time. The architecture and core features are still taking shape, and managing external PRs would slow things down right now.
+
+**What you _can_ do:**
+- **Report bugs** — found something broken? Open an [issue](https://github.com/mamu7211/fireb-mailclient/issues)
+- **Request features** — ideas are welcome as issues, even if implementation is a while off
+
+External contributions will be opened up once the project reaches a more stable state. Thanks for your patience and interest!
 
 ## License
 
