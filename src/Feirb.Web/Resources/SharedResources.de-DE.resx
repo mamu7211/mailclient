@@ -636,4 +636,52 @@
   <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
     <value>smtp.beispiel.de</value>
   </data>
+  <data name="PageTitlePersonalInformation" xml:space="preserve">
+    <value>Persönliche Informationen - Feirb</value>
+  </data>
+  <data name="PageTitleSecurity" xml:space="preserve">
+    <value>Sicherheit &amp; Passwort - Feirb</value>
+  </data>
+  <data name="LoadingProfile" xml:space="preserve">
+    <value>Profil wird geladen...</value>
+  </data>
+  <data name="ErrorProfileFailed" xml:space="preserve">
+    <value>Beim Laden des Profils ist ein Fehler aufgetreten.</value>
+  </data>
+  <data name="SuccessProfileUpdated" xml:space="preserve">
+    <value>Profil erfolgreich aktualisiert.</value>
+  </data>
+  <data name="SecurityChangePasswordTitle" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
+  <data name="LabelCurrentPassword" xml:space="preserve">
+    <value>Aktuelles Passwort</value>
+  </data>
+  <data name="LabelConfirmNewPassword" xml:space="preserve">
+    <value>Neues Passwort bestätigen</value>
+  </data>
+  <data name="ButtonChangePassword" xml:space="preserve">
+    <value>Passwort ändern</value>
+  </data>
+  <data name="SecuritySessionsTitle" xml:space="preserve">
+    <value>Sitzungen</value>
+  </data>
+  <data name="SecuritySessionsDescription" xml:space="preserve">
+    <value>Das Abmelden aller Sitzungen macht Ihr Aktualisierungstoken ungültig. Sie müssen sich auf allen Geräten erneut anmelden.</value>
+  </data>
+  <data name="ButtonLogoutAllSessions" xml:space="preserve">
+    <value>Alle Sitzungen abmelden</value>
+  </data>
+  <data name="SuccessPasswordChanged" xml:space="preserve">
+    <value>Passwort erfolgreich geändert.</value>
+  </data>
+  <data name="ErrorPasswordChangeFailed" xml:space="preserve">
+    <value>Passwortänderung fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
+  </data>
+  <data name="SuccessAllSessionsLoggedOut" xml:space="preserve">
+    <value>Alle Sitzungen wurden abgemeldet.</value>
+  </data>
+  <data name="ErrorLogoutAllFailed" xml:space="preserve">
+    <value>Abmelden aller Sitzungen fehlgeschlagen. Bitte versuchen Sie es erneut.</value>
+  </data>
 </root>

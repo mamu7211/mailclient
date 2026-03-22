@@ -35,6 +35,27 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero,
         };
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var db = context.HttpContext.RequestServices.GetRequiredService<FeirbDbContext>();
+                var userIdClaim = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var stampClaim = context.Principal?.FindFirst("security_stamp")?.Value;
+
+                if (userIdClaim is null || !Guid.TryParse(userIdClaim, out var userId))
+                {
+                    context.Fail("Invalid token.");
+                    return;
+                }
+
+                var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+                if (user is null || user.SecurityStamp != stampClaim)
+                {
+                    context.Fail("Token has been revoked.");
+                }
+            },
+        };
     });
 builder.Services.AddAuthorization(options =>
 {
@@ -97,6 +118,7 @@ adminGroup.MapAdminEndpoints();
 // Settings endpoints (per-user, JWT required)
 var settingsGroup = apiGroup.MapGroup("/settings");
 settingsGroup.MapMailboxEndpoints();
+settingsGroup.MapProfileEndpoints();
 
 // Mail test endpoints (per-user, JWT required)
 var mailGroup = apiGroup.MapGroup("/mail");

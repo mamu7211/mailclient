@@ -87,4 +87,13 @@
   <data name="MailboxDeleted" xml:space="preserve">
     <value>Boîte mail supprimée avec succès.</value>
   </data>
+  <data name="InvalidCurrentPassword" xml:space="preserve">
+    <value>Le mot de passe actuel est incorrect.</value>
+  </data>
+  <data name="PasswordChanged" xml:space="preserve">
+    <value>Mot de passe changé avec succès.</value>
+  </data>
+  <data name="AllSessionsLoggedOut" xml:space="preserve">
+    <value>Toutes les sessions ont été déconnectées.</value>
+  </data>
 </root>

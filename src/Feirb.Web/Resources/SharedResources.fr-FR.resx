@@ -636,4 +636,52 @@
   <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
     <value>smtp.exemple.fr</value>
   </data>
+  <data name="PageTitlePersonalInformation" xml:space="preserve">
+    <value>Informations personnelles - Feirb</value>
+  </data>
+  <data name="PageTitleSecurity" xml:space="preserve">
+    <value>Sécurité &amp; Mot de passe - Feirb</value>
+  </data>
+  <data name="LoadingProfile" xml:space="preserve">
+    <value>Chargement du profil...</value>
+  </data>
+  <data name="ErrorProfileFailed" xml:space="preserve">
+    <value>Une erreur est survenue lors du chargement du profil.</value>
+  </data>
+  <data name="SuccessProfileUpdated" xml:space="preserve">
+    <value>Profil mis à jour avec succès.</value>
+  </data>
+  <data name="SecurityChangePasswordTitle" xml:space="preserve">
+    <value>Changer le mot de passe</value>
+  </data>
+  <data name="LabelCurrentPassword" xml:space="preserve">
+    <value>Mot de passe actuel</value>
+  </data>
+  <data name="LabelConfirmNewPassword" xml:space="preserve">
+    <value>Confirmer le nouveau mot de passe</value>
+  </data>
+  <data name="ButtonChangePassword" xml:space="preserve">
+    <value>Changer le mot de passe</value>
+  </data>
+  <data name="SecuritySessionsTitle" xml:space="preserve">
+    <value>Sessions</value>
+  </data>
+  <data name="SecuritySessionsDescription" xml:space="preserve">
+    <value>La déconnexion de toutes les sessions invalidera votre jeton d'actualisation. Vous devrez vous reconnecter sur tous les appareils.</value>
+  </data>
+  <data name="ButtonLogoutAllSessions" xml:space="preserve">
+    <value>Déconnecter toutes les sessions</value>
+  </data>
+  <data name="SuccessPasswordChanged" xml:space="preserve">
+    <value>Mot de passe changé avec succès.</value>
+  </data>
+  <data name="ErrorPasswordChangeFailed" xml:space="preserve">
+    <value>Échec du changement de mot de passe. Veuillez réessayer.</value>
+  </data>
+  <data name="SuccessAllSessionsLoggedOut" xml:space="preserve">
+    <value>Toutes les sessions ont été déconnectées.</value>
+  </data>
+  <data name="ErrorLogoutAllFailed" xml:space="preserve">
+    <value>Échec de la déconnexion de toutes les sessions. Veuillez réessayer.</value>
+  </data>
 </root>

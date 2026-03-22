@@ -636,4 +636,52 @@
   <data name="PlaceholderSmtpHostMailbox" xml:space="preserve">
     <value>smtp.esempio.it</value>
   </data>
+  <data name="PageTitlePersonalInformation" xml:space="preserve">
+    <value>Informazioni personali - Feirb</value>
+  </data>
+  <data name="PageTitleSecurity" xml:space="preserve">
+    <value>Sicurezza &amp; Password - Feirb</value>
+  </data>
+  <data name="LoadingProfile" xml:space="preserve">
+    <value>Caricamento profilo...</value>
+  </data>
+  <data name="ErrorProfileFailed" xml:space="preserve">
+    <value>Si è verificato un errore durante il caricamento del profilo.</value>
+  </data>
+  <data name="SuccessProfileUpdated" xml:space="preserve">
+    <value>Profilo aggiornato con successo.</value>
+  </data>
+  <data name="SecurityChangePasswordTitle" xml:space="preserve">
+    <value>Cambia password</value>
+  </data>
+  <data name="LabelCurrentPassword" xml:space="preserve">
+    <value>Password attuale</value>
+  </data>
+  <data name="LabelConfirmNewPassword" xml:space="preserve">
+    <value>Conferma nuova password</value>
+  </data>
+  <data name="ButtonChangePassword" xml:space="preserve">
+    <value>Cambia password</value>
+  </data>
+  <data name="SecuritySessionsTitle" xml:space="preserve">
+    <value>Sessioni</value>
+  </data>
+  <data name="SecuritySessionsDescription" xml:space="preserve">
+    <value>La disconnessione di tutte le sessioni invaliderà il token di aggiornamento. Dovrai accedere nuovamente su tutti i dispositivi.</value>
+  </data>
+  <data name="ButtonLogoutAllSessions" xml:space="preserve">
+    <value>Disconnetti tutte le sessioni</value>
+  </data>
+  <data name="SuccessPasswordChanged" xml:space="preserve">
+    <value>Password cambiata con successo.</value>
+  </data>
+  <data name="ErrorPasswordChangeFailed" xml:space="preserve">
+    <value>Cambio password fallito. Riprova.</value>
+  </data>
+  <data name="SuccessAllSessionsLoggedOut" xml:space="preserve">
+    <value>Tutte le sessioni sono state disconnesse.</value>
+  </data>
+  <data name="ErrorLogoutAllFailed" xml:space="preserve">
+    <value>Disconnessione di tutte le sessioni fallita. Riprova.</value>
+  </data>
 </root>
