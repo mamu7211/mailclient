@@ -97,8 +97,10 @@ public static class AuthEndpoints
 
     private static async Task<IResult> RequestResetAsync(
         RequestResetRequest request,
+        HttpContext httpContext,
         FeirbDbContext db,
         IAuthService authService,
+        IEmailService emailService,
         ILogger<Program> logger,
         IStringLocalizer<ApiMessages> localizer)
     {
@@ -119,7 +121,16 @@ public static class AuthEndpoints
             });
             await db.SaveChangesAsync();
 
-            logger.LogInformation("Password reset token for {Email}: {Token}", user.Email, token);
+            var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+            var resetLink = $"{baseUrl}/reset-password/{token}";
+            var subject = localizer["ResetEmailSubject"].Value;
+            var htmlBody = EmailTemplates.BuildPasswordResetEmail(user.Username, resetLink, localizer);
+
+            var sent = await emailService.SendAsync(user.Email, subject, htmlBody);
+            if (!sent)
+            {
+                logger.LogInformation("Password reset token for {Email}: {Token}", user.Email, token);
+            }
         }
 
         // Always return OK to not reveal whether the email exists

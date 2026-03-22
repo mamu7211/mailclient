@@ -99,4 +99,22 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>System SMTP settings not found.</value>
   </data>
+  <data name="ResetEmailSubject" xml:space="preserve">
+    <value>Reset your Feirb password</value>
+  </data>
+  <data name="ResetEmailGreeting" xml:space="preserve">
+    <value>Hi {0},</value>
+  </data>
+  <data name="ResetEmailBody" xml:space="preserve">
+    <value>We received a request to reset your password. Click the button below to choose a new password.</value>
+  </data>
+  <data name="ResetEmailButtonText" xml:space="preserve">
+    <value>Reset Password</value>
+  </data>
+  <data name="ResetEmailExpiry" xml:space="preserve">
+    <value>This link expires in 1 hour.</value>
+  </data>
+  <data name="ResetEmailDisclaimer" xml:space="preserve">
+    <value>If you didn't request this, you can safely ignore this email.</value>
+  </data>
 </root>

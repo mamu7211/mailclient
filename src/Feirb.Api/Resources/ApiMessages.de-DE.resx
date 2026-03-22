@@ -99,4 +99,22 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>System-SMTP-Einstellungen nicht gefunden.</value>
   </data>
+  <data name="ResetEmailSubject" xml:space="preserve">
+    <value>Setze dein Feirb-Passwort zurück</value>
+  </data>
+  <data name="ResetEmailGreeting" xml:space="preserve">
+    <value>Hallo {0},</value>
+  </data>
+  <data name="ResetEmailBody" xml:space="preserve">
+    <value>Wir haben eine Anfrage zum Zurücksetzen deines Passworts erhalten. Klicke auf die Schaltfläche unten, um ein neues Passwort zu wählen.</value>
+  </data>
+  <data name="ResetEmailButtonText" xml:space="preserve">
+    <value>Passwort zurücksetzen</value>
+  </data>
+  <data name="ResetEmailExpiry" xml:space="preserve">
+    <value>Dieser Link läuft in 1 Stunde ab.</value>
+  </data>
+  <data name="ResetEmailDisclaimer" xml:space="preserve">
+    <value>Falls du diese Anfrage nicht gestellt hast, kannst du diese E-Mail ignorieren.</value>
+  </data>
 </root>

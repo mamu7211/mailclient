@@ -99,4 +99,22 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>Paramètres SMTP système introuvables.</value>
   </data>
+  <data name="ResetEmailSubject" xml:space="preserve">
+    <value>Réinitialisez votre mot de passe Feirb</value>
+  </data>
+  <data name="ResetEmailGreeting" xml:space="preserve">
+    <value>Bonjour {0},</value>
+  </data>
+  <data name="ResetEmailBody" xml:space="preserve">
+    <value>Nous avons reçu une demande de réinitialisation de votre mot de passe. Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.</value>
+  </data>
+  <data name="ResetEmailButtonText" xml:space="preserve">
+    <value>Réinitialiser le mot de passe</value>
+  </data>
+  <data name="ResetEmailExpiry" xml:space="preserve">
+    <value>Ce lien expire dans 1 heure.</value>
+  </data>
+  <data name="ResetEmailDisclaimer" xml:space="preserve">
+    <value>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet e-mail.</value>
+  </data>
 </root>

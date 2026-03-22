@@ -99,4 +99,22 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>Impostazioni SMTP di sistema non trovate.</value>
   </data>
+  <data name="ResetEmailSubject" xml:space="preserve">
+    <value>Reimposta la tua password Feirb</value>
+  </data>
+  <data name="ResetEmailGreeting" xml:space="preserve">
+    <value>Ciao {0},</value>
+  </data>
+  <data name="ResetEmailBody" xml:space="preserve">
+    <value>Abbiamo ricevuto una richiesta di reimpostazione della tua password. Clicca il pulsante qui sotto per scegliere una nuova password.</value>
+  </data>
+  <data name="ResetEmailButtonText" xml:space="preserve">
+    <value>Reimposta password</value>
+  </data>
+  <data name="ResetEmailExpiry" xml:space="preserve">
+    <value>Questo link scade tra 1 ora.</value>
+  </data>
+  <data name="ResetEmailDisclaimer" xml:space="preserve">
+    <value>Se non hai fatto questa richiesta, puoi ignorare questa e-mail.</value>
+  </data>
 </root>
