@@ -178,13 +178,13 @@ public class ImapSyncServiceTests
     }
 
     [Fact]
-    public async Task SyncMailboxAsync_DuplicateMessageId_IsSkippedAsync()
+    public async Task DuplicateMessageId_IsSkipped_WhenAlreadyInDatabaseAsync()
     {
         var services = CreateServiceProvider();
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
-        var dataProtection = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
 
+        var mailboxId = Guid.NewGuid();
         var user = new User
         {
             Id = Guid.NewGuid(),
@@ -193,10 +193,7 @@ public class ImapSyncServiceTests
             PasswordHash = "hash",
         };
         db.Users.Add(user);
-
-        var mailboxId = Guid.NewGuid();
-        var protector = dataProtection.CreateProtector("MailboxImapPassword");
-        var mailbox = new Mailbox
+        db.Mailboxes.Add(new Mailbox
         {
             Id = mailboxId,
             UserId = user.Id,
@@ -204,18 +201,16 @@ public class ImapSyncServiceTests
             EmailAddress = "test@example.com",
             ImapHost = "localhost",
             ImapUsername = "test",
-            ImapEncryptedPassword = protector.Protect("password"),
             SmtpHost = "localhost",
             SmtpUsername = "test",
-        };
-        db.Mailboxes.Add(mailbox);
+        });
 
-        // Pre-existing message with this MessageId
+        // Pre-existing message
         db.CachedMessages.Add(new CachedMessage
         {
             Id = Guid.NewGuid(),
             MailboxId = mailboxId,
-            MessageId = "existing@example.com",
+            MessageId = "duplicate@example.com",
             ImapUid = 10,
             Subject = "Existing",
             From = "alice@example.com",
@@ -225,13 +220,53 @@ public class ImapSyncServiceTests
         });
         await db.SaveChangesAsync();
 
-        // Verify the duplicate check: the existing message should be in the hashset
-        var existingIds = await db.CachedMessages
+        // Simulate the dedup logic from SyncMailboxAsync
+        var existingMessageIds = await db.CachedMessages
             .Where(cm => cm.MailboxId == mailboxId)
             .Select(cm => cm.MessageId)
             .ToHashSetAsync();
 
-        existingIds.Should().Contain("existing@example.com");
+        // Create a "new" message with the same MessageId
+        var duplicateMessage = new MimeMessage();
+        duplicateMessage.From.Add(new MailboxAddress("Alice", "alice@example.com"));
+        duplicateMessage.To.Add(new MailboxAddress("Bob", "bob@example.com"));
+        duplicateMessage.Subject = "Duplicate";
+        duplicateMessage.MessageId = "duplicate@example.com";
+        duplicateMessage.Body = new TextPart("plain") { Text = "Hello again" };
+
+        // Create a genuinely new message
+        var newMessage = new MimeMessage();
+        newMessage.From.Add(new MailboxAddress("Charlie", "charlie@example.com"));
+        newMessage.To.Add(new MailboxAddress("Bob", "bob@example.com"));
+        newMessage.Subject = "New message";
+        newMessage.MessageId = "new@example.com";
+        newMessage.Body = new TextPart("plain") { Text = "Hello" };
+
+        // Apply same dedup logic as SyncMailboxAsync
+        var messages = new[] { (duplicateMessage, new UniqueId(11)), (newMessage, new UniqueId(12)) };
+        foreach (var (msg, uid) in messages)
+        {
+            if (msg.MessageId is not null && existingMessageIds.Contains(msg.MessageId))
+                continue;
+
+            db.CachedMessages.Add(ImapSyncService.MapToCachedMessage(msg, mailboxId, uid));
+        }
+
+        await db.SaveChangesAsync();
+
+        // Only the new message should have been added (1 existing + 1 new = 2 total)
+        var totalMessages = await db.CachedMessages.CountAsync(cm => cm.MailboxId == mailboxId);
+        totalMessages.Should().Be(2);
+
+        // The duplicate should not exist twice
+        var duplicateCount = await db.CachedMessages
+            .CountAsync(cm => cm.MailboxId == mailboxId && cm.MessageId == "duplicate@example.com");
+        duplicateCount.Should().Be(1);
+
+        // The new message should exist
+        var newExists = await db.CachedMessages
+            .AnyAsync(cm => cm.MailboxId == mailboxId && cm.MessageId == "new@example.com");
+        newExists.Should().BeTrue();
     }
 
     [Fact]
