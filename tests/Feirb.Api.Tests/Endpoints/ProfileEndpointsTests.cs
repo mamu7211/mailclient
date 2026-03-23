@@ -1,41 +1,22 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Feirb.Api.Data;
 using Feirb.Shared.Auth;
 using Feirb.Shared.Settings;
 using Feirb.Shared.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Feirb.Api.Tests.Endpoints;
 
 public class ProfileEndpointsTests : IDisposable
 {
-    private readonly string _dbName = $"TestDb-{Guid.NewGuid()}";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
     public ProfileEndpointsTests()
     {
-        var dbName = _dbName;
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                var dbDescriptors = services.Where(d =>
-                    d.ServiceType == typeof(DbContextOptions<FeirbDbContext>) ||
-                    d.ServiceType.FullName?.Contains("FeirbDbContext") == true ||
-                    d.ServiceType.FullName?.Contains("Npgsql") == true).ToList();
-                foreach (var d in dbDescriptors)
-                    services.Remove(d);
-
-                services.AddDbContext<FeirbDbContext>(options =>
-                    options.UseInMemoryDatabase(dbName));
-            });
-        });
+        _factory = TestWebApplicationFactory.Create($"TestDb-{Guid.NewGuid()}");
         _client = _factory.CreateClient();
     }
 

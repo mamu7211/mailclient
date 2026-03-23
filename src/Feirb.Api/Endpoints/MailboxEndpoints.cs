@@ -44,7 +44,7 @@ public static class MailboxEndpoints
         HttpContext httpContext,
         FeirbDbContext db,
         IDataProtectionProvider dataProtection,
-        ImapSyncScheduler syncScheduler)
+        IImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var imapProtector = dataProtection.CreateProtector(_imapPasswordPurpose);
@@ -103,7 +103,7 @@ public static class MailboxEndpoints
         FeirbDbContext db,
         IDataProtectionProvider dataProtection,
         IStringLocalizer<ApiMessages> localizer,
-        ImapSyncScheduler syncScheduler)
+        IImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var mailbox = await db.Mailboxes.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
@@ -143,7 +143,7 @@ public static class MailboxEndpoints
         HttpContext httpContext,
         FeirbDbContext db,
         IStringLocalizer<ApiMessages> localizer,
-        ImapSyncScheduler syncScheduler)
+        IImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var mailbox = await db.Mailboxes.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);

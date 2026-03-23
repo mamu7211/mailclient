@@ -80,6 +80,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<IImapSyncService, ImapSyncService>();
 builder.Services.AddSingleton<ImapSyncScheduler>();
+builder.Services.AddSingleton<IImapSyncScheduler>(sp => sp.GetRequiredService<ImapSyncScheduler>());
 builder.Services.AddHostedService(sp => sp.GetRequiredService<ImapSyncScheduler>());
 
 var app = builder.Build();

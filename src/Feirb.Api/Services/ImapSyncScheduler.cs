@@ -7,7 +7,7 @@ namespace Feirb.Api.Services;
 public class ImapSyncScheduler(
     ISchedulerFactory schedulerFactory,
     IServiceScopeFactory scopeFactory,
-    ILogger<ImapSyncScheduler> logger) : BackgroundService
+    ILogger<ImapSyncScheduler> logger) : BackgroundService, IImapSyncScheduler
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

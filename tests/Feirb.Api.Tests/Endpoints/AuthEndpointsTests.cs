@@ -12,30 +12,12 @@ namespace Feirb.Api.Tests.Endpoints;
 
 public class AuthEndpointsTests : IDisposable
 {
-    private readonly string _dbName = $"TestDb-{Guid.NewGuid()}";
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
     public AuthEndpointsTests()
     {
-        var dbName = _dbName;
-        _factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                // Remove all DbContext-related registrations (Aspire pools + Npgsql)
-                var dbDescriptors = services.Where(d =>
-                    d.ServiceType == typeof(DbContextOptions<FeirbDbContext>) ||
-                    d.ServiceType.FullName?.Contains("FeirbDbContext") == true ||
-                    d.ServiceType.FullName?.Contains("Npgsql") == true).ToList();
-                foreach (var d in dbDescriptors)
-                    services.Remove(d);
-
-                // Add in-memory database with a shared name per test
-                services.AddDbContext<FeirbDbContext>(options =>
-                    options.UseInMemoryDatabase(dbName));
-            });
-        });
+        _factory = TestWebApplicationFactory.Create($"TestDb-{Guid.NewGuid()}");
         _client = _factory.CreateClient();
     }
 
