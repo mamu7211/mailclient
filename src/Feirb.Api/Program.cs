@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,9 +71,16 @@ builder.Services.AddDataProtection()
 // Localization
 builder.Services.AddLocalization();
 
+// Quartz.NET scheduler
+builder.Services.AddQuartz();
+builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<IImapSyncService, ImapSyncService>();
+builder.Services.AddSingleton<ImapSyncScheduler>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<ImapSyncScheduler>());
 
 var app = builder.Build();
 

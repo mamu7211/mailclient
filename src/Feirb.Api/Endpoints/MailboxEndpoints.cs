@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
 using Feirb.Api.Resources;
+using Feirb.Api.Services;
 using Feirb.Shared.Settings;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,8 @@ public static class MailboxEndpoints
         CreateMailboxRequest request,
         HttpContext httpContext,
         FeirbDbContext db,
-        IDataProtectionProvider dataProtection)
+        IDataProtectionProvider dataProtection,
+        ImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var imapProtector = dataProtection.CreateProtector(_imapPasswordPurpose);
@@ -75,6 +77,8 @@ public static class MailboxEndpoints
         db.Mailboxes.Add(mailbox);
         await db.SaveChangesAsync();
 
+        await syncScheduler.ScheduleMailboxAsync(mailbox.Id, mailbox.PollIntervalMinutes, triggerImmediately: true);
+
         return Results.Created($"/api/settings/mailboxes/{mailbox.Id}", ToDetailResponse(mailbox));
     }
 
@@ -98,7 +102,8 @@ public static class MailboxEndpoints
         HttpContext httpContext,
         FeirbDbContext db,
         IDataProtectionProvider dataProtection,
-        IStringLocalizer<ApiMessages> localizer)
+        IStringLocalizer<ApiMessages> localizer,
+        ImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var mailbox = await db.Mailboxes.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
@@ -128,6 +133,8 @@ public static class MailboxEndpoints
 
         await db.SaveChangesAsync();
 
+        await syncScheduler.RescheduleMailboxAsync(mailbox.Id, mailbox.PollIntervalMinutes);
+
         return Results.Ok(ToDetailResponse(mailbox));
     }
 
@@ -135,12 +142,15 @@ public static class MailboxEndpoints
         Guid id,
         HttpContext httpContext,
         FeirbDbContext db,
-        IStringLocalizer<ApiMessages> localizer)
+        IStringLocalizer<ApiMessages> localizer,
+        ImapSyncScheduler syncScheduler)
     {
         var userId = GetCurrentUserId(httpContext);
         var mailbox = await db.Mailboxes.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
         if (mailbox is null)
             return Results.NotFound(new { message = localizer["MailboxNotFound"].Value });
+
+        await syncScheduler.UnscheduleMailboxAsync(mailbox.Id);
 
         db.Mailboxes.Remove(mailbox);
         await db.SaveChangesAsync();
