@@ -52,22 +52,7 @@ Users configure their IMAP/SMTP mail accounts.
 | **Tests** | Account CRUD tests, encryption round-trip tests |
 | **EF Core** | Migration adding MailAccount table |
 
-## Phase 3: Dashboard & Navigation Shell ✅
-
-*Completed — merged on `main`. Sidebar navigation, main layout, and placeholder pages for all mail folders are in place.*
-
-The application layout and navigation structure.
-
-| Layer | Deliverable |
-|-------|-------------|
-| **UI** | Main layout: sidebar (folder tree), top bar, content area |
-| | Dashboard page: account overview, unread counts per folder |
-| | Responsive Bootstrap 5 layout (mobile-friendly) |
-| | Navigation between dashboard, inbox, settings |
-| **API** | `GET /api/folders` — folder list with unread counts |
-| **Tests** | Layout rendering tests |
-
-## Phase 4: Mail Fetching & Inbox
+## Phase 3: Mail Fetching & Inbox
 
 Background synchronization and mail reading.
 
@@ -88,6 +73,21 @@ Background synchronization and mail reading.
 | | Attachment list with download |
 | **Tests** | Sync service tests, mail endpoint tests |
 | **EF Core** | Migration adding CachedMessage table + FTS index |
+
+## Phase 4: Dashboard & Navigation Shell ✅
+
+*Completed — merged on `main`. Sidebar navigation, main layout, and placeholder pages for all mail folders are in place.*
+
+The application layout and navigation structure.
+
+| Layer | Deliverable |
+|-------|-------------|
+| **UI** | Main layout: sidebar (folder tree), top bar, content area |
+| | Dashboard page: account overview, unread counts per folder |
+| | Responsive Bootstrap 5 layout (mobile-friendly) |
+| | Navigation between dashboard, inbox, settings |
+| **API** | `GET /api/folders` — folder list with unread counts |
+| **Tests** | Layout rendering tests |
 
 ## Phase 5: Mail Compose & Send
 
