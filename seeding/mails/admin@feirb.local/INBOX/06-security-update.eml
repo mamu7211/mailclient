@@ -1,0 +1,18 @@
+From: security@infra.local
+To: admin@feirb.local
+Subject: Security patches available
+Date: Thu, 13 Mar 2026 08:00:00 +0100
+Message-ID: <admin-06@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Security Advisory
+=================
+
+3 new security patches are available for your system:
+
+1. openssl 3.2.1 - fixes CVE-2026-1234 (medium severity)
+2. nginx 1.27.3 - fixes request smuggling issue (high severity)
+3. postgresql 17.3 - minor security hardening (low severity)
+
+Please schedule a maintenance window to apply these updates.

@@ -1,0 +1,22 @@
+From: ci@infra.local
+To: alice@feirb.local
+Subject: Deployment to staging completed
+Date: Wed, 12 Mar 2026 18:45:00 +0100
+Message-ID: <alice-06@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Deployment Report
+=================
+
+Environment: staging
+Branch: feature/mail-sync
+Commit: a1b2c3d
+Status: Success
+
+Changes deployed:
+- IMAP folder sync service
+- Mail list API endpoint
+- Blazor inbox component (WIP)
+
+Please verify the deployment at staging.feirb.local.

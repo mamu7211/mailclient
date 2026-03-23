@@ -23,7 +23,8 @@ public static class MailTestEndpoints
 
             try
             {
-                await client.ConnectAsync(request.Host, request.Port, request.UseTls);
+                var tlsOptions = request.UseTls ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.None;
+                await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             }
             catch (Exception ex) when (ex is SocketException or IOException)
             {
@@ -61,7 +62,8 @@ public static class MailTestEndpoints
 
             try
             {
-                await client.ConnectAsync(request.Host, request.Port, request.UseTls);
+                var tlsOptions = request.UseTls ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.None;
+                await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             }
             catch (Exception ex) when (ex is SocketException or IOException)
             {

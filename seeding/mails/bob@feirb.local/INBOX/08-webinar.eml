@@ -1,0 +1,26 @@
+From: learn@digitalacademy.example
+To: bob@feirb.local
+Subject: Free webinar - Introduction to self-hosting
+Date: Fri, 14 Mar 2026 07:00:00 +0100
+Message-ID: <bob-08@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Bob,
+
+Join our free webinar on self-hosting!
+
+Topic: Getting Started with Self-Hosting
+Date: March 20, 2026 at 19:00 CET
+Duration: 90 minutes
+
+What you will learn:
+- Choosing the right hardware
+- Setting up Docker and Compose
+- Essential self-hosted services
+- Security best practices
+- Backup strategies
+
+Register at digitalacademy.example/webinar/self-hosting
+
+Seats are limited!

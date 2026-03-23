@@ -1,0 +1,18 @@
+From: bob@external.example
+To: alice@feirb.local
+Subject: Quick question about the API docs
+Date: Mon, 10 Mar 2026 14:00:00 +0100
+Message-ID: <alice-02@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hey Alice,
+
+I was looking at the API documentation and noticed that the
+endpoint for fetching mailbox settings returns different fields
+than what the create endpoint expects.
+
+Is that intentional or should I file a bug?
+
+Cheers,
+Bob

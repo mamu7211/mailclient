@@ -1,0 +1,19 @@
+From: system@feirb.local
+To: admin@feirb.local
+Subject: Weekly system summary
+Date: Sun, 16 Mar 2026 08:00:00 +0100
+Message-ID: <admin-10@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Weekly Summary (2026-03-10 to 2026-03-16)
+=========================================
+
+Users: 2 active
+Emails processed: 147
+Storage used: 3.14 TB / 4.0 TB
+Uptime: 99.98%
+
+Top senders: monitoring@infra.local (42), alice@feirb.local (18)
+
+No critical incidents this week.

@@ -1,0 +1,26 @@
+From: billing@cloudhost.example
+To: bob@feirb.local
+Subject: Invoice #INV-2026-0312 - March hosting
+Date: Mon, 10 Mar 2026 12:00:00 +0100
+Message-ID: <bob-02@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Invoice #INV-2026-0312
+======================
+
+Customer: Bob
+Date: 2026-03-10
+Due: 2026-03-25
+
+Items:
+- Cloud Hosting Basic Plan    EUR 9.99
+- Domain renewal (1 year)     EUR 12.00
+- SSL certificate             EUR 0.00
+
+Total: EUR 21.99
+
+Payment method: Credit card ending in 4242
+Status: Paid
+
+Thank you for your business!

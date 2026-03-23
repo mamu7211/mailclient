@@ -1,0 +1,19 @@
+From: monitoring@infra.local
+To: admin@feirb.local
+Subject: Server health check passed
+Date: Tue, 11 Mar 2026 06:00:00 +0100
+Message-ID: <admin-03@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Daily Health Check Report
+=========================
+
+All systems operational.
+
+- CPU usage: 23%
+- Memory usage: 41%
+- Disk usage: 58%
+- Uptime: 45 days
+
+No action required.

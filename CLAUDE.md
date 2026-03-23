@@ -59,7 +59,7 @@ dotnet format
 
 - **Aspire Dashboard:** https://localhost:18888
 - **PostgreSQL:** Managed by Aspire, localhost:5432
-- **Mailpit (dev mail server):** http://localhost:8025 (UI), localhost:1025 (SMTP)
+- **GreenMail (dev mail server):** SMTP localhost:3025, IMAP localhost:3143, REST API / OpenAPI UI http://localhost:8080
 - **Ollama:** Managed by Aspire, model `qwen3:4b` pulled automatically (~2.6GB on first run)
 
 ## Conventions

@@ -1,0 +1,20 @@
+From: notifications@devforum.example
+To: bob@feirb.local
+Subject: New reply to your post "Best NAS software 2026"
+Date: Wed, 12 Mar 2026 11:30:00 +0100
+Message-ID: <bob-05@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Bob,
+
+Someone replied to your post "Best NAS software 2026":
+
+user_techfan42 wrote:
+"Have you tried Feirb? It is a new self-hosted mail client
+designed specifically for NAS systems. Still in early development
+but the AI features look promising."
+
+View the full thread at devforum.example/posts/nas-software-2026
+
+You are receiving this because you subscribed to thread updates.

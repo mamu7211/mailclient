@@ -1,0 +1,22 @@
+From: events@techconf.example
+To: alice@feirb.local
+Subject: Registration confirmed - TechConf 2026
+Date: Fri, 14 Mar 2026 09:00:00 +0100
+Message-ID: <alice-08@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Alice,
+
+Your registration for TechConf 2026 has been confirmed!
+
+Event: TechConf 2026
+Date: April 15-17, 2026
+Location: Convention Center, Berlin
+Track: Cloud Native & DevOps
+
+Your ticket ID is TC2026-4821. Please bring this email
+or your QR code to the registration desk.
+
+See you there!
+TechConf Team

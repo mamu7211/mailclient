@@ -1,0 +1,21 @@
+From: news@dotnetweekly.example
+To: alice@feirb.local
+Subject: .NET Weekly - Issue 312
+Date: Wed, 12 Mar 2026 07:00:00 +0100
+Message-ID: <alice-05@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+.NET Weekly - Issue 312
+=======================
+
+Top stories this week:
+
+1. .NET 10 Preview 3 released with improved AOT support
+2. Blazor WebAssembly performance improvements in preview
+3. New EF Core bulk operations API announced
+4. Community spotlight: Building mail clients with MailKit
+
+Read more at dotnetweekly.example/312
+
+To unsubscribe, reply with UNSUBSCRIBE in the subject line.

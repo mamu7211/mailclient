@@ -1,0 +1,18 @@
+From: calendar@workspace.example
+To: bob@feirb.local
+Subject: Reminder - Dentist appointment tomorrow
+Date: Thu, 13 Mar 2026 18:00:00 +0100
+Message-ID: <bob-07@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Reminder
+========
+
+You have an upcoming appointment:
+
+What: Dentist - regular checkup
+When: Friday, March 14, 2026 at 10:00
+Where: Dr. Mueller, Hauptstrasse 15
+
+This is an automated reminder from your calendar.

@@ -1,0 +1,17 @@
+From: alice@feirb.local
+To: bob@feirb.local
+Subject: Re: Quick question about the API docs
+Date: Tue, 11 Mar 2026 16:00:00 +0100
+Message-ID: <bob-04@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Bob,
+
+Good catch! That is indeed a bug in the documentation. The create
+endpoint was updated last week but the docs were not regenerated.
+
+I have filed an issue for it. Should be fixed in the next update.
+
+Thanks for reporting it!
+Alice

@@ -58,7 +58,7 @@ graph TB
         API[Feirb.Api\nMinimal APIs]
         OLLAMA[Ollama Container\nqwen3:4b model]
         DB[(PostgreSQL)]
-        MAILPIT[Mailpit\ndev only]
+        GREENMAIL[GreenMail\ndev only\nSMTP+IMAP+API]
     end
 
     subgraph External
@@ -69,7 +69,7 @@ graph TB
     API -->|MailKit| IMAP
     API -->|OllamaSharp| OLLAMA
     API -->|EF Core| DB
-    API -.->|dev SMTP| MAILPIT
+    API -.->|dev SMTP/IMAP| GREENMAIL
 ```
 
 ## Components
@@ -78,7 +78,7 @@ graph TB
 
 Aspire orchestration project and main entry point. Registers and configures all services, manages service discovery, and provides the Aspire dashboard.
 
-Manages: PostgreSQL (with pgAdmin), Ollama (via `CommunityToolkit.Aspire.Hosting.Ollama`), Mailpit (dev).
+Manages: PostgreSQL (with pgAdmin), Ollama (via `CommunityToolkit.Aspire.Hosting.Ollama`), GreenMail (dev SMTP/IMAP/API).
 
 ### Feirb.ServiceDefaults
 

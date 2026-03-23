@@ -1,0 +1,22 @@
+From: admin@feirb.local
+To: alice@feirb.local
+Subject: Meeting notes - Thursday standup
+Date: Thu, 13 Mar 2026 15:00:00 +0100
+Message-ID: <alice-07@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Meeting Notes - 2026-03-13
+==========================
+
+Attendees: Admin, Alice
+
+Discussion:
+- Mail sync is working for single folders
+- Next step: recursive folder sync
+- AI summarization spike planned for next week
+- Bob requested an account, will set up next week
+
+Action items:
+- Alice: finish folder tree component by Friday
+- Admin: review PR #42, set up Bob's account

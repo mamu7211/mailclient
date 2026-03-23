@@ -40,7 +40,7 @@ Pronounced like "fire-bee", the name is simply "Brief" (German for *letter*) spe
 ## Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download) (10.0.100+)
-- [Docker](https://www.docker.com/) (for Aspire, Ollama, and Mailpit containers)
+- [Docker](https://www.docker.com/) (for Aspire, Ollama, and GreenMail containers)
 - Git
 
 ## Quick Start
@@ -57,7 +57,7 @@ This starts all services via Aspire:
 - **Aspire Dashboard:** https://localhost:18888
 - **Blazor Frontend:** https://localhost:7100
 - **API Backend:** https://localhost:7200
-- **Mailpit (dev):** http://localhost:8025
+- **GreenMail API (dev):** http://localhost:8080
 
 > **Note:** On first run, the Ollama qwen3:4b model (~2.6GB) will be downloaded automatically.
 
@@ -70,8 +70,10 @@ FEIRB_SEED_DATA=true dotnet run --project src/Feirb.AppHost
 ```
 
 This seeds the database with:
-- **Admin user:** `admin@feirb.local` / `admin` (password)
-- **SMTP settings:** Mailpit on `localhost:1025` (no TLS, no auth), from address `noreply@feirb.local`
+- **Admin user:** `admin@feirb.local` / `admin@feirb.local` (password)
+- **Alice user:** `alice@feirb.local` / `alice@feirb.local` (password)
+- **SMTP settings:** GreenMail on `localhost:3025` (no TLS, no auth), from address `noreply@feirb.local`
+- **Mailboxes:** One per user, IMAP on `localhost:3143`, SMTP on `localhost:3025`
 
 The seeding is idempotent — it checks whether the data already exists and skips if so.
 

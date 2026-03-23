@@ -1,0 +1,15 @@
+From: monitoring@infra.local
+To: admin@feirb.local
+Subject: Disk space warning on storage pool
+Date: Fri, 14 Mar 2026 14:45:00 +0100
+Message-ID: <admin-07@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Warning: Storage pool "data" is at 78% capacity.
+
+Current usage: 3.12 TB of 4.0 TB
+Growth rate: ~50 GB/week
+
+At this rate, the pool will reach 90% in approximately 5 weeks.
+Consider expanding the pool or archiving old data.

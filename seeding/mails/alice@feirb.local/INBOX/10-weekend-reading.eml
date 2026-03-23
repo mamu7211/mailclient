@@ -1,0 +1,21 @@
+From: digest@blazordigest.example
+To: alice@feirb.local
+Subject: Blazor Digest - Weekend Edition
+Date: Sat, 15 Mar 2026 10:00:00 +0100
+Message-ID: <alice-10@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Blazor Digest - Weekend Edition
+================================
+
+Featured articles:
+
+1. Understanding Blazor WASM lazy loading
+2. State management patterns in Blazor
+3. Building reusable Razor class libraries
+4. Testing Blazor components with bUnit
+5. Blazor and SignalR: real-time updates
+
+Happy reading!
+The Blazor Digest Team

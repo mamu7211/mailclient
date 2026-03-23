@@ -1,0 +1,21 @@
+From: alerts@weather.example
+To: bob@feirb.local
+Subject: Weather alert - Heavy rain expected Sunday
+Date: Sat, 15 Mar 2026 06:00:00 +0100
+Message-ID: <bob-10@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Weather Alert for your area
+============================
+
+Heavy rain expected on Sunday, March 16.
+
+Forecast:
+- Saturday: Cloudy, 12C, light wind
+- Sunday: Heavy rain, 8C, strong gusts up to 60 km/h
+- Monday: Partly cloudy, 10C, calm
+
+Rainfall expected: 25-35 mm over 12 hours.
+
+Stay safe and plan accordingly.

@@ -89,7 +89,8 @@ using (var scope = app.Services.CreateScope())
     if (string.Equals(app.Configuration["FEIRB_SEED_DATA"], "true", StringComparison.OrdinalIgnoreCase))
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseSeeder");
-        await DatabaseSeeder.SeedAsync(db, logger);
+        var dataProtection = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
+        await DatabaseSeeder.SeedAsync(db, logger, dataProtection);
     }
 }
 

@@ -1,0 +1,20 @@
+From: orders@techshop.example
+To: bob@feirb.local
+Subject: Your order has shipped - NAS hard drive
+Date: Wed, 12 Mar 2026 14:15:00 +0100
+Message-ID: <bob-06@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Order Confirmation
+==================
+
+Order #TS-88421 has shipped!
+
+Item: Seagate IronWolf 8TB NAS HDD
+Quantity: 2
+Tracking: DHL 1234567890
+
+Estimated delivery: March 15-17, 2026
+
+You can track your package at dhl.example/track/1234567890

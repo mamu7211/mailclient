@@ -1,0 +1,18 @@
+From: bob@external.example
+To: admin@feirb.local
+Subject: Account access request
+Date: Wed, 12 Mar 2026 11:20:00 +0100
+Message-ID: <admin-05@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+My name is Bob and I work in the marketing department. I would like
+to request access to the Feirb mail system. Could you please create
+an account for me?
+
+My preferred email would be bob@feirb.local.
+
+Thanks in advance,
+Bob

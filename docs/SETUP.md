@@ -5,7 +5,7 @@
 | Tool | Version | Purpose |
 |------|---------|---------|
 | [.NET SDK](https://dotnet.microsoft.com/download) | 10.0.100+ | Build and run the solution |
-| [Docker](https://www.docker.com/) | Latest | Aspire containers (PostgreSQL, Ollama, Mailpit) |
+| [Docker](https://www.docker.com/) | Latest | Aspire containers (PostgreSQL, Ollama, GreenMail) |
 | [Git](https://git-scm.com/) | Latest | Version control |
 
 **Recommended IDE (pick one):**
@@ -37,7 +37,7 @@ On first run, Aspire will:
 2. Start the API and Web projects
 3. Pull and start the Ollama Docker container
 4. Download the `qwen3:4b` model (~2.6GB — this takes a while on first run)
-5. Start Mailpit for development email testing
+5. Start GreenMail for development email testing (SMTP + IMAP)
 
 ## Development Services
 
@@ -49,14 +49,15 @@ Once running, these services are available:
 | Blazor Frontend | https://localhost:7100 | The mail client UI |
 | API Backend | https://localhost:7200 | REST API |
 | PostgreSQL | localhost:5432 | Database |
-| Mailpit Web UI | http://localhost:8025 | View test emails |
-| Mailpit SMTP | localhost:1025 | Send test emails |
+| GreenMail API / OpenAPI UI | http://localhost:8080 | View and manage test emails |
+| GreenMail SMTP | localhost:3025 | Send test emails |
+| GreenMail IMAP | localhost:3143 | Fetch test emails |
 
 ## Helper Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `./run.sh` | Start Feirb with database seeding (admin user + Mailpit SMTP) |
+| `./run.sh` | Start Feirb with database seeding (admin + alice users, mailboxes, GreenMail SMTP) |
 | `./run.sh --no-seeding` | Start Feirb without seeding |
 | `./stop-aspire-containers.sh` | Stop and remove Aspire containers and orphaned volumes |
 
@@ -67,10 +68,14 @@ When started via `./run.sh` (or with `FEIRB_SEED_DATA=true`), the following data
 | Data | Value |
 |------|-------|
 | Admin email | `admin@feirb.local` |
-| Admin password | `admin` |
-| SMTP host | `localhost:1025` (Mailpit) |
+| Admin password | `admin@feirb.local` |
+| Alice email | `alice@feirb.local` |
+| Alice password | `alice@feirb.local` |
+| System SMTP | `localhost:3025` (GreenMail) |
 | SMTP from address | `noreply@feirb.local` |
 | TLS / Auth | disabled |
+| IMAP host | `localhost:3143` (GreenMail) |
+| Mailbox credentials | email address as both username and password |
 
 The seeding is idempotent — it checks whether the data already exists and skips if so.
 
@@ -130,13 +135,15 @@ docker stop ollama && docker rm ollama
 
 The Aspire configuration uses a persistent volume, so the model is only downloaded once.
 
-## Mailpit (Dev Mail Server)
+## GreenMail (Dev Mail Server)
 
-Mailpit acts as a catch-all SMTP server for development. No real emails are sent.
+GreenMail provides SMTP, IMAP, and a REST API in a single container for development. No real emails are sent.
 
-- **Send test emails** to any address — they all arrive in Mailpit
-- **Web UI** at http://localhost:8025 shows all captured emails
-- **SMTP** at localhost:1025 — configure test accounts to use this
+- **SMTP** at localhost:3025 — system and per-mailbox outgoing mail
+- **IMAP** at localhost:3143 — mail fetching for inbox sync
+- **REST API / OpenAPI UI** at http://localhost:8080 — inspect and manage test emails
+- **Preloaded mail** — 30 .eml files (10 per account) are mounted from `seeding/mails/` and loaded on startup
+- **Test accounts:** admin@feirb.local, alice@feirb.local, bob@feirb.local (bob has mail but no Feirb account)
 
 ## Configuration
 
@@ -160,7 +167,7 @@ Never commit passwords or secrets to the repository.
 
 ### Docker not running
 
-Aspire requires Docker for Ollama and Mailpit containers. Ensure Docker Desktop is running:
+Aspire requires Docker for Ollama and GreenMail containers. Ensure Docker Desktop is running:
 
 ```bash
 docker info

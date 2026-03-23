@@ -19,13 +19,13 @@ This starts:
 - **API backend** — https://localhost:7200
 - **PostgreSQL** — localhost:5432 (Aspire-managed container)
 - **Ollama** — with qwen3:4b model (Aspire-managed container)
-- **Mailpit** — http://localhost:8025 (dev mail server)
+- **GreenMail** — SMTP localhost:3025, IMAP localhost:3143, API http://localhost:8080 (dev mail server)
 - **Aspire Dashboard** — https://localhost:18888
 
 ### Requirements
 
 - .NET 10 SDK (10.0.100+)
-- Docker (for PostgreSQL, Ollama, and Mailpit containers)
+- Docker (for PostgreSQL, Ollama, and GreenMail containers)
 
 See [Developer Setup](SETUP.md) for detailed instructions.
 

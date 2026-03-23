@@ -1,0 +1,21 @@
+From: admin@feirb.local
+To: alice@feirb.local
+Subject: Code review requested - PR #42
+Date: Tue, 11 Mar 2026 15:20:00 +0100
+Message-ID: <alice-04@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Alice,
+
+I just opened PR #42 for the mailbox CRUD endpoints. Could you
+take a look when you get a chance? It includes the data protection
+encryption for stored passwords.
+
+The changes are in:
+- MailboxEndpoints.cs
+- Mailbox.cs (entity)
+- Two new migrations
+
+Thanks!
+Admin

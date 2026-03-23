@@ -1,0 +1,21 @@
+From: admin@feirb.local
+To: alice@feirb.local
+Subject: Project status update
+Date: Mon, 10 Mar 2026 09:30:00 +0100
+Message-ID: <alice-01@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Hi Alice,
+
+Here is a quick update on the current project status:
+
+- Authentication module: completed
+- Mail fetching: in progress (70%)
+- AI integration: scheduled for next sprint
+- UI polish: backlog
+
+Let me know if you have any questions.
+
+Best,
+Admin

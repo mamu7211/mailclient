@@ -1,0 +1,16 @@
+From: system@feirb.local
+To: admin@feirb.local
+Subject: Welcome to Feirb
+Date: Mon, 10 Mar 2026 09:00:00 +0100
+Message-ID: <admin-01@feirb.local>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+
+Welcome to Feirb, your self-hosted mail client!
+
+You are now set up as the system administrator. From here you can
+manage users, configure mail accounts, and explore AI-powered
+features like mail summarization and smart replies.
+
+Happy mailing!
+The Feirb Team

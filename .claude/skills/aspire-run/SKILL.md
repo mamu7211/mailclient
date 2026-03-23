@@ -19,11 +19,11 @@ Start the Feirb application via .NET Aspire. This is the primary way to run all 
    - **Aspire Dashboard:** https://localhost:18888
    - **Blazor Frontend:** https://localhost:7100
    - **API Backend:** https://localhost:7200
-   - **Mailpit:** http://localhost:8025
+   - **GreenMail API:** http://localhost:8080
 
 3. If the command fails, check:
    - Docker is running (`docker info`)
-   - No port conflicts on 7100, 7200, 8025, 11434, 18888
+   - No port conflicts on 3025, 3143, 7100, 7200, 8080, 11434, 18888
    - .NET 10 SDK is installed (`dotnet --version`)
 
 4. On first run, note that the Ollama qwen3:4b model download (~2.6GB) may take several minutes.
