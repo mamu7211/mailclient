@@ -90,6 +90,12 @@ dotnet format
 - Branch naming: `feature/`, `fix/`, `docs/`, `chore/`
 - Target branch: `main`
 
+### Issues
+
+- See [`docs/ISSUES.md`](docs/ISSUES.md) for issue templates, labels, and guidelines
+- Always apply at least one type label (`bug`, `feature`, `enhancement`, etc.)
+- Feature specs live inline in the issue body — no separate spec docs
+
 ### API Design
 
 - Minimal API endpoints grouped by feature in separate static classes
