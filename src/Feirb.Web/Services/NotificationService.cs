@@ -18,8 +18,6 @@ public sealed class NotificationItem(string message, NotificationSeverity severi
 
 public sealed class NotificationService : IDisposable
 {
-    private const int _maxVisible = 5;
-
     private static readonly Dictionary<NotificationSeverity, TimeSpan?> _autoDismissDelays = new()
     {
         [NotificationSeverity.Error] = null,
@@ -32,11 +30,6 @@ public sealed class NotificationService : IDisposable
     private readonly Dictionary<Guid, CancellationTokenSource> _timers = [];
 
     public IReadOnlyList<NotificationItem> Notifications => _notifications;
-
-    public IReadOnlyList<NotificationItem> VisibleNotifications =>
-        _notifications.Take(_maxVisible).ToList();
-
-    public int OverflowCount => Math.Max(0, _notifications.Count - _maxVisible);
 
     public event Action? OnChange;
 

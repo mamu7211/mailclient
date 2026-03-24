@@ -97,34 +97,6 @@ public class NotificationServiceTests : IDisposable
     }
 
     [Fact]
-    public void VisibleNotifications_ReturnsMaxFive()
-    {
-        for (var i = 0; i < 7; i++)
-            _sut.Add($"Message {i}", NotificationSeverity.Error);
-
-        _sut.VisibleNotifications.Should().HaveCount(5);
-        _sut.Notifications.Should().HaveCount(7);
-    }
-
-    [Fact]
-    public void OverflowCount_ReturnsExcessCount()
-    {
-        for (var i = 0; i < 7; i++)
-            _sut.Add($"Message {i}", NotificationSeverity.Error);
-
-        _sut.OverflowCount.Should().Be(2);
-    }
-
-    [Fact]
-    public void OverflowCount_WhenUnderMax_ReturnsZero()
-    {
-        _sut.Add("One", NotificationSeverity.Info);
-        _sut.Add("Two", NotificationSeverity.Info);
-
-        _sut.OverflowCount.Should().Be(0);
-    }
-
-    [Fact]
     public async Task Add_InfoNotification_AutoDismissesAfterDelayAsync()
     {
         _sut.Add("Test", NotificationSeverity.Info);
@@ -160,13 +132,13 @@ public class NotificationServiceTests : IDisposable
     }
 
     [Fact]
-    public void VisibleNotifications_PreservesInsertionOrder()
+    public void Notifications_PreservesInsertionOrder()
     {
         _sut.Add("First", NotificationSeverity.Error);
         _sut.Add("Second", NotificationSeverity.Error);
         _sut.Add("Third", NotificationSeverity.Error);
 
-        _sut.VisibleNotifications.Select(n => n.Message)
+        _sut.Notifications.Select(n => n.Message)
             .Should().ContainInOrder("First", "Second", "Third");
     }
 }

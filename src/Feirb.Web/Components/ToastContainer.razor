@@ -2,27 +2,31 @@
 @implements IDisposable
 
 <div class="toast-container" role="alert" aria-live="polite">
-    @foreach (var notification in NotificationService.VisibleNotifications)
+    @foreach (var notification in NotificationService.Notifications)
     {
         <div class="toast-item toast-@GetSeverityClass(notification.Severity) toast-enter">
-            <div class="toast-icon">
-                <i class="bi bi-@GetIcon(notification.Severity)"></i>
+            <div class="toast-indicator">
+                @if (GetDismissSeconds(notification.Severity) is { } seconds)
+                {
+                    <div class="toast-indicator-fill"
+                         style="animation-duration: @(seconds)s;">
+                    </div>
+                }
+                else
+                {
+                    <div class="toast-indicator-fill toast-indicator-static"></div>
+                }
             </div>
-            <div class="toast-body">
-                @notification.Message
-            </div>
-            <button type="button"
-                    class="btn-close btn-close-sm"
-                    aria-label="Close"
-                    @onclick="() => NotificationService.Dismiss(notification.Id)">
-            </button>
-        </div>
-    }
-    @if (NotificationService.OverflowCount > 0)
-    {
-        <div class="toast-item toast-overflow">
-            <div class="toast-body">
-                @NotificationService.OverflowCount more notification@(NotificationService.OverflowCount != 1 ? "s" : "")
+            <div class="toast-content">
+                <i class="bi bi-@GetIcon(notification.Severity) toast-icon"></i>
+                <div class="toast-body">
+                    @notification.Message
+                </div>
+                <button type="button"
+                        class="btn-close btn-close-sm"
+                        aria-label="Close"
+                        @onclick="() => NotificationService.Dismiss(notification.Id)">
+                </button>
             </div>
         </div>
     }
@@ -51,5 +55,13 @@
         NotificationSeverity.Success => "check-circle",
         NotificationSeverity.Info => "info-circle",
         _ => "info-circle",
+    };
+
+    private static int? GetDismissSeconds(NotificationSeverity severity) => severity switch
+    {
+        NotificationSeverity.Warning => 30,
+        NotificationSeverity.Success => 10,
+        NotificationSeverity.Info => 10,
+        _ => null,
     };
 }
