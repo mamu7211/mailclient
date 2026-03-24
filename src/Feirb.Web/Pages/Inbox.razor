@@ -1,8 +1,136 @@
 @page "/mail/inbox"
 @attribute [Authorize]
+@using Feirb.Shared.Mail
+@inject HttpClient Http
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
 
 <PageTitle>@L["PageTitleInbox"]</PageTitle>
 
-<h1>@L["NavInbox"]</h1>
-<p class="text-muted">@L["StubComingSoon"]</p>
+<h1 class="mb-4">@L["NavInbox"]</h1>
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["LoadingMessages"]</span>
+        </div>
+        <p class="mt-2 text-muted">@L["LoadingMessages"]</p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+}
+else if (_messages is null || _messages.Items.Count == 0)
+{
+    <p class="text-muted">@L["NoMessagesFound"]</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>@L["ColumnMailbox"]</th>
+                    <th>@L["ColumnFrom"]</th>
+                    <th>@L["ColumnSubject"]</th>
+                    <th>@L["ColumnDate"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var msg in _messages.Items)
+                {
+                    <tr role="button" @onclick="() => NavigateToMessage(msg.Id)" style="cursor: pointer;">
+                        <td>
+                            <span class="badge" style="background-color: @(msg.MailboxBadgeColor ?? "#6c757d");">
+                                @msg.MailboxName
+                            </span>
+                        </td>
+                        <td>@msg.From</td>
+                        <td>
+                            @msg.Subject
+                            @if (msg.HasAttachments)
+                            {
+                                <span class="material-symbols-outlined ms-1" style="font-size: 1rem; vertical-align: middle;">attachment</span>
+                            }
+                        </td>
+                        <td class="text-nowrap">@msg.Date.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (TotalPages > 1)
+    {
+        <nav aria-label="pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(_currentPage <= 1 ? "disabled" : "")">
+                    <button class="page-link" @onclick="PreviousPageAsync" disabled="@(_currentPage <= 1)">@L["PaginationPrevious"]</button>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">@string.Format(L["PaginationPageOf"], _currentPage, TotalPages)</span>
+                </li>
+                <li class="page-item @(_currentPage >= TotalPages ? "disabled" : "")">
+                    <button class="page-link" @onclick="NextPageAsync" disabled="@(_currentPage >= TotalPages)">@L["PaginationNext"]</button>
+                </li>
+            </ul>
+        </nav>
+    }
+}
+
+@code {
+    private PaginatedResponse<MessageListItemResponse>? _messages;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private int _currentPage = 1;
+    private const int PageSize = 25;
+
+    private int TotalPages => _messages is null || _messages.TotalCount == 0
+        ? 1
+        : (int)Math.Ceiling((double)_messages.TotalCount / PageSize);
+
+    protected override async Task OnInitializedAsync() =>
+        await LoadMessagesAsync();
+
+    private async Task LoadMessagesAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        try
+        {
+            _messages = await Http.GetFromJsonAsync<PaginatedResponse<MessageListItemResponse>>(
+                $"/api/mail/messages?page={_currentPage}&pageSize={PageSize}");
+        }
+        catch
+        {
+            _errorMessage = L["ErrorLoadFailed"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task PreviousPageAsync()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            await LoadMessagesAsync();
+        }
+    }
+
+    private async Task NextPageAsync()
+    {
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+            await LoadMessagesAsync();
+        }
+    }
+
+    private void NavigateToMessage(Guid id) =>
+        Navigation.NavigateTo($"/mail/inbox/{id}");
+}

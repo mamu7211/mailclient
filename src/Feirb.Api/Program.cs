@@ -148,6 +148,7 @@ settingsGroup.MapProfileEndpoints();
 // Mail test endpoints (per-user, JWT required)
 var mailGroup = apiGroup.MapGroup("/mail");
 mailGroup.MapMailTestEndpoints();
+mailGroup.MapMessageEndpoints();
 
 app.MapFallbackToFile("index.html");
 

@@ -18,6 +18,7 @@ builder.Services.AddAuthorizationCore(options =>
 });
 
 builder.Services.AddScoped<ToolbarStateService>();
+builder.Services.AddScoped<BreadcrumbOverrideService>();
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
     sp.GetRequiredService<JwtAuthenticationStateProvider>());

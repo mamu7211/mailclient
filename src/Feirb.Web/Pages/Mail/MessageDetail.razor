@@ -1,0 +1,138 @@
+@page "/mail/inbox/{Id:guid}"
+@attribute [Authorize]
+@using Feirb.Shared.Mail
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject BreadcrumbOverrideService BreadcrumbOverride
+@implements IDisposable
+
+<PageTitle>@L["PageTitleMessageDetail"]</PageTitle>
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["LoadingMessage"]</span>
+        </div>
+        <p class="mt-2 text-muted">@L["LoadingMessage"]</p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@_errorMessage</div>
+}
+else if (_message is not null)
+{
+    <div class="mb-3">
+        <span class="badge" style="background-color: @(_message.MailboxBadgeColor ?? "#6c757d");">
+            @_message.MailboxName
+        </span>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-2">@L["LabelFrom"]</dt>
+                <dd class="col-sm-10">@_message.From</dd>
+
+                <dt class="col-sm-2">@L["LabelTo"]</dt>
+                <dd class="col-sm-10">@_message.To</dd>
+
+                @if (!string.IsNullOrEmpty(_message.Cc))
+                {
+                    <dt class="col-sm-2">@L["LabelCc"]</dt>
+                    <dd class="col-sm-10">@_message.Cc</dd>
+                }
+
+                @if (!string.IsNullOrEmpty(_message.ReplyTo) && _message.ReplyTo != _message.From)
+                {
+                    <dt class="col-sm-2">@L["LabelReplyTo"]</dt>
+                    <dd class="col-sm-10">@_message.ReplyTo</dd>
+                }
+
+                <dt class="col-sm-2">@L["LabelDate"]</dt>
+                <dd class="col-sm-10">@_message.Date.LocalDateTime.ToString("yyyy-MM-dd HH:mm")</dd>
+
+                <dt class="col-sm-2">@L["LabelSubject"]</dt>
+                <dd class="col-sm-10">@_message.Subject</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(_message.BodyHtml))
+            {
+                @((MarkupString)HtmlSanitizer.Sanitize(_message.BodyHtml))
+            }
+            else if (!string.IsNullOrEmpty(_message.BodyPlainText))
+            {
+                <div style="white-space: pre-wrap;">@_message.BodyPlainText</div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">@L["NoMessagesFound"]</p>
+            }
+        </div>
+    </div>
+
+    @if (_message.Attachments.Count > 0)
+    {
+        <h5>@L["AttachmentsHeading"]</h5>
+        <div class="list-group">
+            @foreach (var attachment in _message.Attachments)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="material-symbols-outlined me-2" style="font-size: 1.2rem; vertical-align: middle;">attachment</span>
+                        @attachment.Filename
+                    </div>
+                    <div class="text-muted small">
+                        @FormatFileSize(attachment.Size) &middot; @attachment.MimeType
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private MessageDetailResponse? _message;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _message = await Http.GetFromJsonAsync<MessageDetailResponse>($"/api/mail/messages/{Id}");
+            if (_message is not null)
+            {
+                BreadcrumbOverride.SetLastSegmentLabel(
+                    $"{_message.From} \u2014 {_message.Subject} \u2014 {_message.Date.LocalDateTime:yyyy-MM-dd HH:mm}");
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ErrorMessageNotFound"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    public void Dispose() => BreadcrumbOverride.Clear();
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes >= 1024 * 1024)
+            return $"{bytes / (1024.0 * 1024.0):F1} MB";
+        if (bytes >= 1024)
+            return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes} B";
+    }
+}

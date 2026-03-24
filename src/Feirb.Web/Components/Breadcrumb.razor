@@ -1,5 +1,6 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
+@inject BreadcrumbOverrideService BreadcrumbOverride
 @implements IDisposable
 
 <nav aria-label="breadcrumb">
@@ -27,10 +28,17 @@
     protected override void OnInitialized()
     {
         Navigation.LocationChanged += OnLocationChanged;
+        BreadcrumbOverride.OnChange += OnOverrideChanged;
         BuildSegments();
     }
 
     private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        BuildSegments();
+        StateHasChanged();
+    }
+
+    private void OnOverrideChanged()
     {
         BuildSegments();
         StateHasChanged();
@@ -53,6 +61,12 @@
             var label = ResolveLabel(currentPath, part);
             var href = ResolveHref(currentPath);
             _segments.Add(new BreadcrumbSegment(label, href));
+        }
+
+        if (BreadcrumbOverride.LastSegmentLabel is not null && _segments.Count > 1)
+        {
+            var last = _segments[^1];
+            _segments[^1] = last with { Label = BreadcrumbOverride.LastSegmentLabel };
         }
     }
 
@@ -88,7 +102,11 @@
             _ => $"/{fullPath}"
         };
 
-    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+        BreadcrumbOverride.OnChange -= OnOverrideChanged;
+    }
 
     private sealed record BreadcrumbSegment(string Label, string Href);
 }

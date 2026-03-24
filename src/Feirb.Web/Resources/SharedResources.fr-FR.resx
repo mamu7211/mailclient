@@ -747,4 +747,64 @@
   <data name="PageTitleArchive" xml:space="preserve">
     <value>Archives - Feirb</value>
   </data>
+  <data name="PageTitleMessageDetail" xml:space="preserve">
+    <value>Message - Feirb</value>
+  </data>
+  <data name="ColumnMailbox" xml:space="preserve">
+    <value>Boîte</value>
+  </data>
+  <data name="ColumnFrom" xml:space="preserve">
+    <value>De</value>
+  </data>
+  <data name="ColumnSubject" xml:space="preserve">
+    <value>Objet</value>
+  </data>
+  <data name="ColumnDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="LoadingMessages" xml:space="preserve">
+    <value>Chargement des messages...</value>
+  </data>
+  <data name="NoMessagesFound" xml:space="preserve">
+    <value>Aucun message dans votre boîte de réception.</value>
+  </data>
+  <data name="ErrorLoadFailed" xml:space="preserve">
+    <value>Échec du chargement des messages.</value>
+  </data>
+  <data name="LoadingMessage" xml:space="preserve">
+    <value>Chargement du message...</value>
+  </data>
+  <data name="ErrorMessageNotFound" xml:space="preserve">
+    <value>Message introuvable.</value>
+  </data>
+  <data name="LabelFrom" xml:space="preserve">
+    <value>De</value>
+  </data>
+  <data name="LabelTo" xml:space="preserve">
+    <value>À</value>
+  </data>
+  <data name="LabelCc" xml:space="preserve">
+    <value>Copie</value>
+  </data>
+  <data name="LabelReplyTo" xml:space="preserve">
+    <value>Répondre à</value>
+  </data>
+  <data name="LabelDate" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="LabelSubject" xml:space="preserve">
+    <value>Objet</value>
+  </data>
+  <data name="AttachmentsHeading" xml:space="preserve">
+    <value>Pièces jointes</value>
+  </data>
+  <data name="PaginationPrevious" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="PaginationNext" xml:space="preserve">
+    <value>Suivant</value>
+  </data>
+  <data name="PaginationPageOf" xml:space="preserve">
+    <value>Page {0} sur {1}</value>
+  </data>
 </root>

@@ -99,6 +99,9 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>System-SMTP-Einstellungen nicht gefunden.</value>
   </data>
+  <data name="MessageNotFound" xml:space="preserve">
+    <value>Nachricht nicht gefunden.</value>
+  </data>
   <data name="ResetEmailSubject" xml:space="preserve">
     <value>Setze dein Feirb-Passwort zurück</value>
   </data>

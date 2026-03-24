@@ -78,6 +78,26 @@ public class ResourceCompletenessTests
         "PlaceholderDisplayName",
         "PlaceholderImapHost",
         "PlaceholderSmtpHostMailbox",
+        "PageTitleMessageDetail",
+        "ColumnMailbox",
+        "ColumnFrom",
+        "ColumnSubject",
+        "ColumnDate",
+        "LoadingMessages",
+        "NoMessagesFound",
+        "ErrorLoadFailed",
+        "LoadingMessage",
+        "ErrorMessageNotFound",
+        "LabelFrom",
+        "LabelTo",
+        "LabelCc",
+        "LabelReplyTo",
+        "LabelDate",
+        "LabelSubject",
+        "AttachmentsHeading",
+        "PaginationPrevious",
+        "PaginationNext",
+        "PaginationPageOf",
     ];
 
     /// <summary>Keys that may be identical across languages (brand names, universal terms).</summary>
@@ -85,6 +105,7 @@ public class ResourceCompletenessTests
     [
         "AppName", "PageTitleHome", "NavHome", "LabelPassword",
         "LabelMailboxName", "LabelImapPassword", "LabelSmtpPasswordMailbox",
+        "LabelCc", "ColumnDate", "LabelDate", "PageTitleMessageDetail",
     ];
 
     private static readonly ResourceManager _resourceManager = new(

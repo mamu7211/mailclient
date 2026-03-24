@@ -99,6 +99,9 @@
   <data name="SmtpSettingsNotFound" xml:space="preserve">
     <value>Paramètres SMTP système introuvables.</value>
   </data>
+  <data name="MessageNotFound" xml:space="preserve">
+    <value>Message introuvable.</value>
+  </data>
   <data name="ResetEmailSubject" xml:space="preserve">
     <value>Réinitialisez votre mot de passe Feirb</value>
   </data>
