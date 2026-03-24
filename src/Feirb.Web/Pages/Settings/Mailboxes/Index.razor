@@ -9,7 +9,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-0">@L["MailboxesHeading"]</h1>
     <a class="btn btn-primary" href="/settings/mailboxes/new">
-        <span class="material-symbols-outlined me-1" style="font-size: 1.2rem; vertical-align: middle;">add</span>@L["ButtonAddMailbox"]
+        <i class="bi bi-plus-lg me-1" style="font-size: 1.2rem; vertical-align: middle;"></i>@L["ButtonAddMailbox"]
     </a>
 </div>
 
@@ -32,7 +32,7 @@ else
         @foreach (var mailbox in _mailboxes)
         {
             <NavigationItem
-                Icon="mail"
+                Icon="envelope"
                 Title="@mailbox.Name"
                 Subtitle="@mailbox.EmailAddress"
                 Href="@($"/settings/mailboxes/{mailbox.Id}")" />

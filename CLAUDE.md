@@ -73,6 +73,7 @@ dotnet format
 - Record types for all DTOs in `Feirb.Shared`
 - All async methods suffixed with `Async`
 - Expression-bodied members for single-line implementations
+- **Icons:** Bootstrap Icons (`<i class="bi bi-icon-name"></i>`). Do NOT use Google Material Symbols
 - See `.editorconfig` for full formatting rules
 
 ### Testing

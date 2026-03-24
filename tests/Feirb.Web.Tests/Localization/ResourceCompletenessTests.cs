@@ -99,6 +99,8 @@ public class ResourceCompletenessTests
         "PaginationNext",
         "PaginationPageOf",
         "NoBodyContent",
+        "ConnectionLost",
+        "ServerError",
     ];
 
     /// <summary>Keys that may be identical across languages (brand names, universal terms).</summary>

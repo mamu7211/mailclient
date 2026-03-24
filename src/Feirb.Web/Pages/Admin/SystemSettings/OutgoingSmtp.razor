@@ -6,6 +6,7 @@
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 @inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
 @implements IDisposable
 
 <PageTitle>@L["AdminOutgoingSmtpTitle"] - Feirb</PageTitle>
@@ -127,7 +128,7 @@ else if (_model is not null)
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check")
+            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check-lg")
         ]);
 
         try
@@ -179,6 +180,7 @@ else if (_model is not null)
             {
                 _model.Password = null;
                 _successMessage = L["SuccessSmtpSettingsUpdated"];
+                Notifications.Add(L["SuccessSmtpSettingsUpdated"], NotificationSeverity.Success);
             }
             else
             {

@@ -2,7 +2,7 @@
 
 <div class="nav-item-card" @onclick="Navigate" role="button" tabindex="0">
     <div class="nav-item-left">
-        <span class="material-symbols-outlined nav-item-icon">@Icon</span>
+        <i class="bi bi-@Icon nav-item-icon"></i>
         <div class="nav-item-text">
             <span class="nav-item-title">@Title</span>
             @if (!string.IsNullOrEmpty(Subtitle))
@@ -11,7 +11,7 @@
             }
         </div>
     </div>
-    <span class="material-symbols-outlined nav-item-chevron">chevron_right</span>
+    <i class="bi bi-chevron-right nav-item-chevron"></i>
 </div>
 
 @code {

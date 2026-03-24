@@ -810,4 +810,10 @@
   <data name="NoBodyContent" xml:space="preserve">
     <value>This message has no content.</value>
   </data>
+  <data name="ConnectionLost" xml:space="preserve">
+    <value>Unable to reach the server</value>
+  </data>
+  <data name="ServerError" xml:space="preserve">
+    <value>An unexpected server error occurred</value>
+  </data>
 </root>

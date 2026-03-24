@@ -1,0 +1,55 @@
+@inject NotificationService NotificationService
+@implements IDisposable
+
+<div class="toast-container" role="alert" aria-live="polite">
+    @foreach (var notification in NotificationService.VisibleNotifications)
+    {
+        <div class="toast-item toast-@GetSeverityClass(notification.Severity) toast-enter">
+            <div class="toast-icon">
+                <i class="bi bi-@GetIcon(notification.Severity)"></i>
+            </div>
+            <div class="toast-body">
+                @notification.Message
+            </div>
+            <button type="button"
+                    class="btn-close btn-close-sm"
+                    aria-label="Close"
+                    @onclick="() => NotificationService.Dismiss(notification.Id)">
+            </button>
+        </div>
+    }
+    @if (NotificationService.OverflowCount > 0)
+    {
+        <div class="toast-item toast-overflow">
+            <div class="toast-body">
+                @NotificationService.OverflowCount more notification@(NotificationService.OverflowCount != 1 ? "s" : "")
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized() =>
+        NotificationService.OnChange += StateHasChanged;
+
+    public void Dispose() =>
+        NotificationService.OnChange -= StateHasChanged;
+
+    private static string GetSeverityClass(NotificationSeverity severity) => severity switch
+    {
+        NotificationSeverity.Error => "danger",
+        NotificationSeverity.Warning => "warning",
+        NotificationSeverity.Success => "success",
+        NotificationSeverity.Info => "info",
+        _ => "info",
+    };
+
+    private static string GetIcon(NotificationSeverity severity) => severity switch
+    {
+        NotificationSeverity.Error => "exclamation-circle",
+        NotificationSeverity.Warning => "exclamation-triangle",
+        NotificationSeverity.Success => "check-circle",
+        NotificationSeverity.Info => "info-circle",
+        _ => "info-circle",
+    };
+}

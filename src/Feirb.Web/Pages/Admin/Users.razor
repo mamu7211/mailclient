@@ -6,13 +6,14 @@
 @inject IStringLocalizer<SharedResources> L
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime Js
+@inject NotificationService Notifications
 
 <PageTitle>@L["PageTitleAdminUsers"]</PageTitle>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-0">@L["AdminUsersHeading"]</h1>
     <button class="btn btn-primary" @onclick="ShowCreateModal">
-        <span class="material-symbols-outlined me-1" style="font-size: 1.2rem; vertical-align: middle;">add</span>@L["ButtonCreateUser"]
+        <i class="bi bi-plus-lg me-1" style="font-size: 1.2rem; vertical-align: middle;"></i>@L["ButtonCreateUser"]
     </button>
 </div>
 
@@ -235,7 +236,7 @@ else
                         <div class="input-group mb-3">
                             <input type="text" class="form-control font-monospace small" value="@_resetLink" readonly />
                             <button class="btn btn-outline-secondary" type="button" @onclick="CopyResetLinkAsync" title="@L["ButtonCopyLink"]">
-                                <span class="material-symbols-outlined" style="font-size: 1.2rem;">@(_copied ? "check" : "content_copy")</span>
+                                <i class="bi @(_copied ? "bi-check-lg" : "bi-clipboard")" style="font-size: 1.2rem;"></i>
                             </button>
                         </div>
                         <p class="text-muted small">@L["ResetLinkNote"]</p>
@@ -384,6 +385,7 @@ else
             {
                 CloseModals();
                 _successMessage = L["SuccessUserCreated"];
+                Notifications.Add(L["SuccessUserCreated"], NotificationSeverity.Success);
                 await LoadUsersAsync();
             }
             else
@@ -416,6 +418,7 @@ else
             {
                 CloseModals();
                 _successMessage = L["SuccessUserUpdated"];
+                Notifications.Add(L["SuccessUserUpdated"], NotificationSeverity.Success);
                 await LoadUsersAsync();
             }
             else
@@ -447,6 +450,7 @@ else
             {
                 CloseModals();
                 _successMessage = L["SuccessUserDeleted"];
+                Notifications.Add(L["SuccessUserDeleted"], NotificationSeverity.Success);
                 await LoadUsersAsync();
             }
             else
@@ -479,6 +483,7 @@ else
                 var result = await response.Content.ReadFromJsonAsync<ResetPasswordResponse>();
                 _resetLink = result?.ResetLink;
                 _successMessage = L["SuccessPasswordReset"];
+                Notifications.Add(L["SuccessPasswordReset"], NotificationSeverity.Success);
             }
             else
             {

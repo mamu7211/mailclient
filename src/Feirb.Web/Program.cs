@@ -17,6 +17,7 @@ builder.Services.AddAuthorizationCore(options =>
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
 });
 
+builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddScoped<ToolbarStateService>();
 builder.Services.AddScoped<BreadcrumbOverrideService>();
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
@@ -25,8 +26,10 @@ builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
 
 builder.Services.AddTransient<CultureDelegatingHandler>();
 builder.Services.AddTransient<AuthDelegatingHandler>();
+builder.Services.AddTransient<ErrorNotificationDelegatingHandler>();
 builder.Services.AddHttpClient("FeirbApi", client =>
         client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+    .AddHttpMessageHandler<ErrorNotificationDelegatingHandler>()
     .AddHttpMessageHandler<CultureDelegatingHandler>()
     .AddHttpMessageHandler<AuthDelegatingHandler>();
 builder.Services.AddScoped(sp =>

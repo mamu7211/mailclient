@@ -6,6 +6,7 @@
 @inject IStringLocalizer<SharedResources> L
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject NotificationService Notifications
 
 <PageTitle>@L["PageTitleSecurity"]</PageTitle>
 
@@ -116,6 +117,7 @@
                 }
 
                 _successMessage = L["SuccessPasswordChanged"];
+                Notifications.Add(L["SuccessPasswordChanged"], NotificationSeverity.Success);
                 _passwordModel = new PasswordFormModel();
             }
             else

@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
 @inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
 @implements IDisposable
 
 <PageTitle>@L["PageTitleEditMailbox"]</PageTitle>
@@ -215,8 +216,8 @@ else if (_model is not null)
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check"),
-            new ToolbarAction(L["ButtonDelete"], "btn-outline-danger", () => { _showDeleteModal = true; StateHasChanged(); return Task.CompletedTask; }, "delete")
+            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check-lg"),
+            new ToolbarAction(L["ButtonDelete"], "btn-outline-danger", () => { _showDeleteModal = true; StateHasChanged(); return Task.CompletedTask; }, "trash")
         ]);
 
         try
@@ -276,6 +277,7 @@ else if (_model is not null)
                 _model.ImapPassword = null;
                 _model.SmtpPassword = null;
                 _successMessage = L["SuccessMailboxUpdated"];
+                Notifications.Add(L["SuccessMailboxUpdated"], NotificationSeverity.Success);
             }
             else
             {

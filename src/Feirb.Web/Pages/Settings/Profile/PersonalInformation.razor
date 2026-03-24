@@ -4,6 +4,7 @@
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 @inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
 @implements IDisposable
 
 <PageTitle>@L["PageTitlePersonalInformation"]</PageTitle>
@@ -39,7 +40,7 @@ else if (_model is not null)
 
         <div class="d-flex justify-content-center mb-4">
             <div style="width: 96px; height: 96px; border: 2px dashed #dee2e6; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <span class="material-symbols-outlined text-muted" style="font-size: 48px;">person</span>
+                <i class="bi bi-person text-muted" style="font-size: 48px;"></i>
             </div>
         </div>
 
@@ -72,7 +73,7 @@ else if (_model is not null)
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check")
+            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check-lg")
         ]);
 
         try
@@ -116,6 +117,7 @@ else if (_model is not null)
             if (response.IsSuccessStatusCode)
             {
                 _successMessage = L["SuccessProfileUpdated"];
+                Notifications.Add(L["SuccessProfileUpdated"], NotificationSeverity.Success);
             }
             else
             {

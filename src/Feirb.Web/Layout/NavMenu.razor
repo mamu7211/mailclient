@@ -26,7 +26,7 @@
             <ul class="nav-list">
                 <li>
                     <NavLink class="nav-entry" href="" Match="NavLinkMatch.All">
-                        <span class="material-symbols-outlined">dashboard</span>
+                        <i class="bi bi-speedometer2"></i>
                         <span>@L["NavDashboard"]</span>
                     </NavLink>
                 </li>
@@ -39,19 +39,19 @@
             <ul class="nav-list">
                 <li>
                     <NavLink class="nav-entry" href="mail/inbox">
-                        <span class="material-symbols-outlined">inbox</span>
+                        <i class="bi bi-inbox"></i>
                         <span>@L["NavInbox"]</span>
                     </NavLink>
                 </li>
                 <li>
                     <NavLink class="nav-entry" href="mail/sent">
-                        <span class="material-symbols-outlined">send</span>
+                        <i class="bi bi-send"></i>
                         <span>@L["NavSent"]</span>
                     </NavLink>
                 </li>
                 <li>
                     <NavLink class="nav-entry" href="mail/drafts">
-                        <span class="material-symbols-outlined">draft</span>
+                        <i class="bi bi-pencil-square"></i>
                         <span>@L["NavDrafts"]</span>
                     </NavLink>
                 </li>
@@ -63,13 +63,13 @@
             <ul class="nav-list">
                 <li>
                     <NavLink class="nav-entry" href="mail/trash">
-                        <span class="material-symbols-outlined">delete</span>
+                        <i class="bi bi-trash"></i>
                         <span>@L["NavTrash"]</span>
                     </NavLink>
                 </li>
                 <li>
                     <NavLink class="nav-entry" href="mail/archive">
-                        <span class="material-symbols-outlined">archive</span>
+                        <i class="bi bi-archive"></i>
                         <span>@L["NavArchive"]</span>
                     </NavLink>
                 </li>
@@ -80,14 +80,14 @@
     <!-- Bottom Section -->
     <div class="sidebar-bottom">
         <div class="sidebar-lang">
-            <span class="material-symbols-outlined">language</span>
+            <i class="bi bi-translate"></i>
             <Feirb.Web.Components.LanguageSwitcher ButtonClass="btn-outline-secondary btn-sm" />
         </div>
 
         <ul class="nav-list">
             <li>
                 <NavLink class="nav-entry" href="settings">
-                    <span class="material-symbols-outlined">settings</span>
+                    <i class="bi bi-gear"></i>
                     <span>@L["NavSettings"]</span>
                 </NavLink>
             </li>
@@ -96,7 +96,7 @@
                 <Authorized>
                     <li>
                         <NavLink class="nav-entry" href="admin">
-                            <span class="material-symbols-outlined">admin_panel_settings</span>
+                            <i class="bi bi-shield-lock"></i>
                             <span>@L["NavAdmin"]</span>
                         </NavLink>
                     </li>
@@ -105,7 +105,7 @@
 
             <li>
                 <button class="nav-entry nav-entry-button" @onclick="LogoutAsync">
-                    <span class="material-symbols-outlined">logout</span>
+                    <i class="bi bi-box-arrow-right"></i>
                     <span>@L["NavLogout"]</span>
                 </button>
             </li>
