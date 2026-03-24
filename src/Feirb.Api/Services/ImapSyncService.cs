@@ -181,19 +181,18 @@ public class ImapSyncService(
                 {
                     Id = Guid.NewGuid(),
                     Filename = a is MimePart part ? part.FileName ?? "unnamed" : "unnamed",
-                    Size = EstimateAttachmentSize(a),
+                    Size = a is MimePart mp ? EstimateAttachmentSize(mp) : 0,
                     MimeType = a.ContentType.MimeType,
                 })
                 .ToList(),
         };
 
-    private static long EstimateAttachmentSize(MimeEntity attachment)
+    private static long EstimateAttachmentSize(MimePart part)
     {
-        if (attachment is not MimePart part || part.Content is null)
-            return 0;
+        var stream = part.Content?.Stream;
+        if (stream is { CanSeek: true })
+            return stream.Length;
 
-        using var stream = new MemoryStream();
-        part.Content.DecodeTo(stream);
-        return stream.Length;
+        return 0;
     }
 }
