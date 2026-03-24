@@ -20,49 +20,60 @@ Start working on a feature tracked by a GitHub issue.
 
 3. **Read the feature spec** to understand deliverables and acceptance criteria.
 
-4. **Check for uncommitted changes** before switching branches:
+4. **Check for dependent issues** mentioned in the issue body:
+   - Look for references to other issues (e.g., "Depends on: #68", "Depends on: Feature 3.1 (#68)")
+   - For each referenced issue, check its state:
+     ```bash
+     gh issue view {dep_number} --json number,title,state
+     ```
+   - If any dependency is still **open**, stop and inform the user:
+     - List the open dependencies with their title and number
+     - Ask whether to proceed anyway, work on the dependency first, or abort
+   - If all dependencies are **closed**, continue normally
+
+5. **Check for uncommitted changes** before switching branches:
    ```bash
    git status
    ```
    - If there are uncommitted changes, stop and ask the user what to do (commit, stash, or discard).
 
-5. **Ensure main is up to date:**
+6. **Ensure main is up to date:**
    ```bash
    git checkout main
    git pull origin main
    ```
 
-6. **Create a feature branch from main** using the issue number and a slug derived from the issue title:
+7. **Create a feature branch from main** using the issue number and a slug derived from the issue title:
    ```bash
    git checkout -b feature/#{issue_number}-{slug}
    ```
    Example: `feature/#4-auth-infrastructure`
 
-7. **Plan the implementation** based on the feature spec:
+8. **Plan the implementation** based on the feature spec:
    - Identify files to create/modify
    - Determine the order of changes (data model → service → API → UI → tests)
    - Check for existing patterns in the codebase to follow
    - Check for existing stub/placeholder pages at the same routes — delete them before creating replacements to avoid ambiguous route errors
 
-8. **Implement the feature** following project conventions from CLAUDE.md:
+9. **Implement the feature** following project conventions from CLAUDE.md:
    - File-scoped namespaces, primary constructors, record DTOs
    - Minimal APIs grouped by feature
    - xUnit + FluentAssertions for tests
    - Async methods suffixed with `Async`
 
-9. **Verify the implementation:**
+10. **Verify the implementation:**
    ```bash
    dotnet build Feirb.sln
    dotnet test Feirb.sln --verbosity normal
    dotnet format Feirb.sln --verify-no-changes
    ```
 
-10. **Commit with conventional commits** referencing the issue:
+11. **Commit with conventional commits** referencing the issue:
     ```
     feat(api): add JWT authentication service (#4)
     ```
 
-11. **Push and create a PR** that closes the issue:
+12. **Push and create a PR** that closes the issue:
     ```bash
     git push -u origin feature/#{issue_number}-{slug}
     gh pr create --title "..." --body "... Closes #{issue_number}"
