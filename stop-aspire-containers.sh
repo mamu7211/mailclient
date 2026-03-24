@@ -38,31 +38,7 @@ mapfile -t CONTAINERS < <($RT ps -a --format "{{.Names}}" | grep -E "^feirb-" ||
 if [ ${#CONTAINERS[@]} -eq 0 ]; then
     echo -e "  ${YELLOW}⚠  No Feirb containers found.${RESET}"
     echo ""
-
-    # Check for orphaned volumes
-    mapfile -t ORPHAN_VOLS < <($RT volume ls --format "{{.Name}}" | grep -E "^feirb\." || true)
-    if [ ${#ORPHAN_VOLS[@]} -gt 0 ]; then
-        echo -e "  ${BOLD}Orphaned volumes:${RESET}"
-        echo ""
-        for vol in "${ORPHAN_VOLS[@]}"; do
-            echo -e "       ${GRAY}└── $vol${RESET}"
-        done
-        echo ""
-        read -rp "  Delete orphaned volumes? [y/N] " vol_choice
-        echo ""
-        if [[ "$vol_choice" =~ ^[yY]$ ]]; then
-            for vol in "${ORPHAN_VOLS[@]}"; do
-                echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
-                $RT volume rm "$vol" 2>/dev/null || true
-            done
-            echo ""
-            echo -e "  ${GREEN}✓  Orphaned volumes removed.${RESET}"
-        else
-            echo -e "  ${YELLOW}Cancelled.${RESET}"
-        fi
-        echo ""
-    fi
-
+    cleanup_orphaned_volumes
     exit 0
 fi
 
@@ -79,6 +55,33 @@ get_volumes() {
     local orphaned
     orphaned=$($RT volume ls --format "{{.Name}}" | grep -F "$service_name" || true)
     echo "$mounted $orphaned" | tr ' ' '\n' | sort -u | tr '\n' ' '
+}
+
+cleanup_orphaned_volumes() {
+    mapfile -t ORPHAN_VOLS < <($RT volume ls --format "{{.Name}}" | grep -E "^feirb\." || true)
+    if [ ${#ORPHAN_VOLS[@]} -eq 0 ]; then
+        return
+    fi
+
+    echo -e "  ${BOLD}Orphaned volumes:${RESET}"
+    echo ""
+    for vol in "${ORPHAN_VOLS[@]}"; do
+        echo -e "       ${GRAY}└── $vol${RESET}"
+    done
+    echo ""
+    read -rp "  Delete orphaned volumes? [y/N] " vol_choice
+    echo ""
+    if [[ "$vol_choice" =~ ^[yY]$ ]]; then
+        for vol in "${ORPHAN_VOLS[@]}"; do
+            echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
+            $RT volume rm "$vol" 2>/dev/null || true
+        done
+        echo ""
+        echo -e "  ${GREEN}✓  Orphaned volumes removed.${RESET}"
+    else
+        echo -e "  ${YELLOW}Skipped.${RESET}"
+    fi
+    echo ""
 }
 
 get_status() {
@@ -136,6 +139,8 @@ case "$choice" in
             echo ""
         done
         echo -e "  ${GREEN}✓  All Feirb containers removed.${RESET}"
+        echo ""
+        cleanup_orphaned_volumes
         ;;
     q|Q)
         echo -e "  ${YELLOW}Cancelled.${RESET}"
@@ -146,6 +151,8 @@ case "$choice" in
             remove_container "${CONTAINERS[$((choice-1))]}"
             echo ""
             echo -e "  ${GREEN}✓  Done.${RESET}"
+            echo ""
+            cleanup_orphaned_volumes
         else
             echo -e "  ${RED}✗  Invalid selection.${RESET}"
             exit 1
