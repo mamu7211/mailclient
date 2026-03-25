@@ -1,6 +1,9 @@
 @inherits LayoutComponentBase
 
 <Feirb.Web.Components.ToastContainer />
-<div class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background-color: #f8f9fa;">
+<div class="position-relative d-flex align-items-center justify-content-center" style="min-height: 100vh; background-color: #f8f9fa;">
+    <div class="position-absolute top-0 end-0 p-3">
+        <Feirb.Web.Components.LanguageSwitcher ButtonClass="btn-outline-secondary btn-sm" />
+    </div>
     @Body
 </div>
