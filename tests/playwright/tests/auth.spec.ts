@@ -1,31 +1,40 @@
 import { test, expect } from "@playwright/test";
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "TestPassword123!";
+const TEST_USERNAME = `e2euser_${Date.now()}`;
+const TEST_EMAIL = `${TEST_USERNAME}@feirb.local`;
+const TEST_PASSWORD = "TestPassword123!";
 
 test.describe("Login and logout flow", () => {
-  test.beforeEach(async ({ page }) => {
-    // Ensure setup is complete before running auth tests
-    const statusResponse = await page.request.get("/api/setup/status");
+  test.beforeAll(async ({ request }) => {
+    // Ensure setup is complete
+    const statusResponse = await request.get("/api/setup/status");
     const status = await statusResponse.json();
     test.skip(!status.isComplete, "Setup not completed — run setup.spec.ts first");
+
+    // Register a fresh test user via API
+    const registerResponse = await request.post("/api/auth/register", {
+      data: {
+        username: TEST_USERNAME,
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      },
+    });
+    expect(registerResponse.ok()).toBeTruthy();
   });
 
   test("logs in, reaches dashboard, and logs out", async ({ page }) => {
-    // Navigate to login page
     await page.goto("/login");
     await expect(page.locator("#username")).toBeVisible();
 
     // Fill login form
-    await page.locator("#username").fill(ADMIN_USERNAME);
-    await page.locator("#password").fill(ADMIN_PASSWORD);
+    await page.locator("#username").fill(TEST_USERNAME);
+    await page.locator("#password").fill(TEST_PASSWORD);
 
     // Submit login
     await page.getByRole("button", { name: "Log In" }).click();
 
-    // Verify redirect to dashboard
-    await page.waitForURL("/");
-    await expect(page.getByText("Dashboard")).toBeVisible();
+    // Verify redirect to dashboard (Blazor WASM client-side navigation)
+    await expect(page.getByLabel("breadcrumb").getByText("Dashboard")).toBeVisible({ timeout: 15000 });
 
     // Click logout button in the nav menu
     await page.getByRole("button", { name: "Logout" }).click();
