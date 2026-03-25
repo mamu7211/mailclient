@@ -1,0 +1,32 @@
+@inject IStringLocalizer<SharedResources> L
+
+<div class="widget-catalog-sidebar bg-white border-start shadow-sm p-3" style="width: 300px; overflow-y: auto;">
+    <h6 class="fw-bold mb-3">@L["WidgetCatalogTitle"]</h6>
+    <input type="text" class="form-control form-control-sm mb-3"
+           placeholder="@L["WidgetCatalogSearch"]"
+           @bind="_searchTerm" @bind:event="oninput" />
+
+    @foreach (var widget in FilteredWidgets)
+    {
+        <div class="card mb-2 widget-catalog-item" role="button" @onclick="() => OnWidgetSelected.InvokeAsync(widget)">
+            <div class="card-body p-2">
+                <div class="fw-semibold small">@L[widget.NameKey]</div>
+                <div class="text-muted" style="font-size: 0.75rem;">@L[widget.DescriptionKey]</div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback<WidgetDefinition> OnWidgetSelected { get; set; }
+
+    private string _searchTerm = string.Empty;
+
+    private IEnumerable<WidgetDefinition> FilteredWidgets =>
+        string.IsNullOrWhiteSpace(_searchTerm)
+            ? WidgetRegistry.All
+            : WidgetRegistry.All.Where(w =>
+                L[w.NameKey].Value.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                L[w.DescriptionKey].Value.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase));
+}

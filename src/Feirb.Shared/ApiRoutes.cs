@@ -12,4 +12,5 @@ public static class ApiRoutes
     public const string Auth = "/api/auth";
     public const string Setup = "/api/setup";
     public const string Admin = "/api/admin";
+    public const string Dashboard = "/api/dashboard";
 }

@@ -816,4 +816,28 @@
   <data name="ServerError" xml:space="preserve">
     <value>Ein unerwarteter Serverfehler ist aufgetreten</value>
   </data>
+  <data name="DashboardEditButton" xml:space="preserve">
+    <value>Dashboard bearbeiten</value>
+  </data>
+  <data name="DashboardEditDone" xml:space="preserve">
+    <value>Fertig</value>
+  </data>
+  <data name="WidgetCatalogTitle" xml:space="preserve">
+    <value>Widgets hinzufügen</value>
+  </data>
+  <data name="WidgetCatalogSearch" xml:space="preserve">
+    <value>Widgets suchen...</value>
+  </data>
+  <data name="WidgetMailCountName" xml:space="preserve">
+    <value>E-Mails gesamt</value>
+  </data>
+  <data name="WidgetMailCountDescription" xml:space="preserve">
+    <value>Gesamtanzahl der E-Mails in allen Postfächern</value>
+  </data>
+  <data name="WidgetMailsPerDayName" xml:space="preserve">
+    <value>E-Mails pro Tag</value>
+  </data>
+  <data name="WidgetMailsPerDayDescription" xml:space="preserve">
+    <value>Balkendiagramm der empfangenen E-Mails pro Tag der letzten 7 Tage</value>
+  </data>
 </root>

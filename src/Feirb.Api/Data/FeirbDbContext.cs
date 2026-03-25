@@ -12,6 +12,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<Mailbox> Mailboxes => Set<Mailbox>();
     public DbSet<CachedMessage> CachedMessages => Set<CachedMessage>();
     public DbSet<CachedAttachment> CachedAttachments => Set<CachedAttachment>();
+    public DbSet<DashboardLayout> DashboardLayouts => Set<DashboardLayout>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -97,6 +98,17 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasOne(e => e.CachedMessage)
                 .WithMany(m => m.Attachments)
                 .HasForeignKey(e => e.CachedMessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<DashboardLayout>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.Property(e => e.LayoutJson).HasColumnType("jsonb");
+            entity.HasOne(e => e.User)
+                .WithOne()
+                .HasForeignKey<DashboardLayout>(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

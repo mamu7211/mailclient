@@ -1,0 +1,60 @@
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> L
+@implements IAsyncDisposable
+
+<div class="widget-card h-100 d-flex flex-column p-3">
+    <span class="text-muted small mb-2">@L["WidgetMailsPerDayName"]</span>
+    @if (_loading)
+    {
+        <div class="d-flex flex-grow-1 align-items-center justify-content-center">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+        </div>
+    }
+    else
+    {
+        <div class="flex-grow-1" style="position: relative; min-height: 0;">
+            <canvas id="@_canvasId"></canvas>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly string _canvasId = $"chart-{Guid.NewGuid():N}";
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var stats = await Http.GetFromJsonAsync<MailStatsResponse>("/api/mail/stats");
+            if (stats is not null)
+            {
+                _loading = false;
+                StateHasChanged();
+                await Task.Yield();
+
+                var labels = stats.MailsPerDay.Select(d => d.Date.ToString("MM/dd")).ToArray();
+                var data = stats.MailsPerDay.Select(d => d.Count).ToArray();
+                await JS.InvokeVoidAsync("chartjsInterop.renderBarChart",
+                    _canvasId, labels, data, L["WidgetMailsPerDayName"].Value);
+            }
+        }
+        catch
+        {
+            _loading = false;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("chartjsInterop.destroyChart", _canvasId);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignored during disposal
+        }
+    }
+}

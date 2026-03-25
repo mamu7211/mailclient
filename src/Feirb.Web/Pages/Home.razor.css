@@ -1,0 +1,34 @@
+::deep .grid-stack-item-content {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    position: relative;
+}
+
+::deep .widget-card {
+    height: 100%;
+}
+
+::deep .widget-remove-btn {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+}
+
+::deep .widget-catalog-sidebar {
+    height: calc(100vh - 120px);
+    position: sticky;
+    top: 80px;
+}
+
+::deep .widget-catalog-item {
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+::deep .widget-catalog-item:hover {
+    border-color: var(--bs-primary);
+}

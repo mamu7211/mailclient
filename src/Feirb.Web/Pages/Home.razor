@@ -1,8 +1,251 @@
 @page "/"
 @attribute [Authorize]
 @inject IStringLocalizer<SharedResources> L
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject ToolbarStateService ToolbarState
+@implements IAsyncDisposable
 
 <PageTitle>@L["PageTitleDashboard"]</PageTitle>
 
-<h1>@L["NavDashboard"]</h1>
-<p class="text-muted">@L["StubComingSoon"]</p>
+<div class="d-flex">
+    <div class="flex-grow-1">
+        <div class="grid-stack" id="dashboard-grid">
+            @foreach (var widget in _activeWidgets)
+            {
+                <div class="grid-stack-item" gs-id="@widget.InstanceId"
+                     gs-w="@widget.W" gs-h="@widget.H"
+                     gs-x="@widget.X" gs-y="@widget.Y">
+                    <div class="grid-stack-item-content">
+                        @if (_editMode)
+                        {
+                            <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-1 widget-remove-btn"
+                                    style="z-index: 10; padding: 0.1rem 0.35rem; line-height: 1;"
+                                    @onclick="() => RemoveWidgetAsync(widget.InstanceId)"
+                                    @onclick:stopPropagation="true">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        }
+                        <DynamicComponent Type="widget.Definition.ComponentType" />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (_editMode)
+    {
+        <WidgetCatalogSidebar OnWidgetSelected="AddWidgetAsync" />
+    }
+</div>
+
+@code {
+    private bool _editMode;
+    private bool _gridInitialized;
+    private bool _needsGridInit;
+    private DotNetObjectReference<Home>? _dotNetRef;
+    private readonly List<ActiveWidget> _activeWidgets = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await Http.GetFromJsonAsync<DashboardLayoutResponse>("/api/dashboard/layout");
+            if (response is not null && response.LayoutJson != "[]")
+            {
+                ParseLayoutIntoWidgets(response.LayoutJson);
+            }
+        }
+        catch
+        {
+            // Dashboard will show empty grid on error
+        }
+
+        _needsGridInit = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            SetToolbarActions();
+        }
+
+        if (_needsGridInit)
+        {
+            _needsGridInit = false;
+            await InitOrReInitGridAsync();
+        }
+    }
+
+    private async Task InitOrReInitGridAsync()
+    {
+        if (_gridInitialized)
+        {
+            await JS.InvokeVoidAsync("gridstackInterop.destroy");
+        }
+
+        await JS.InvokeVoidAsync("gridstackInterop.init", _dotNetRef, _editMode);
+        _gridInitialized = true;
+    }
+
+    private void SetToolbarActions()
+    {
+        if (_editMode)
+        {
+            ToolbarState.SetActions([
+                new ToolbarAction(L["DashboardEditDone"], "btn-primary", ExitEditModeAsync, "check-lg"),
+            ]);
+        }
+        else
+        {
+            ToolbarState.SetActions([
+                new ToolbarAction(L["DashboardEditButton"], "btn-outline-secondary", EnterEditModeAsync, "pencil"),
+            ]);
+        }
+    }
+
+    private Task EnterEditModeAsync()
+    {
+        _editMode = true;
+        _needsGridInit = true;
+        SetToolbarActions();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task ExitEditModeAsync()
+    {
+        var layoutJson = await JS.InvokeAsync<string>("gridstackInterop.serialize");
+        UpdateWidgetPositionsFromLayout(layoutJson);
+
+        _editMode = false;
+        _needsGridInit = true;
+        SetToolbarActions();
+        StateHasChanged();
+
+        await SaveLayoutAsync(layoutJson);
+    }
+
+    private void AddWidgetAsync(WidgetDefinition widget)
+    {
+        var instanceId = $"{widget.Id}-{Guid.NewGuid().ToString("N")[..8]}";
+        _activeWidgets.Add(new ActiveWidget(instanceId, widget, 0, 0, widget.DefaultWidth, widget.DefaultHeight));
+        _needsGridInit = true;
+        StateHasChanged();
+    }
+
+    private void RemoveWidgetAsync(string instanceId)
+    {
+        _activeWidgets.RemoveAll(w => w.InstanceId == instanceId);
+        _needsGridInit = true;
+        StateHasChanged();
+    }
+
+    private async Task SaveLayoutAsync(string layoutJson)
+    {
+        try
+        {
+            await Http.PutAsJsonAsync("/api/dashboard/layout", new DashboardLayoutRequest(layoutJson));
+        }
+        catch
+        {
+            // Silently fail on save error for the spike
+        }
+    }
+
+    private void ParseLayoutIntoWidgets(string layoutJson)
+    {
+        var items = System.Text.Json.JsonSerializer.Deserialize<List<LayoutItem>>(layoutJson,
+            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        if (items is null) return;
+
+        foreach (var item in items)
+        {
+            if (item.Id is null) continue;
+
+            var widgetTypeId = ExtractWidgetTypeId(item.Id);
+            var definition = WidgetRegistry.GetById(widgetTypeId);
+            if (definition is not null)
+            {
+                _activeWidgets.Add(new ActiveWidget(item.Id, definition, item.X, item.Y, item.W, item.H));
+            }
+        }
+    }
+
+    private void UpdateWidgetPositionsFromLayout(string layoutJson)
+    {
+        var items = System.Text.Json.JsonSerializer.Deserialize<List<LayoutItem>>(layoutJson,
+            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        if (items is null) return;
+
+        foreach (var item in items)
+        {
+            var widget = _activeWidgets.FirstOrDefault(w => w.InstanceId == item.Id);
+            if (widget is not null)
+            {
+                widget.X = item.X;
+                widget.Y = item.Y;
+                widget.W = item.W;
+                widget.H = item.H;
+            }
+        }
+    }
+
+    private static string ExtractWidgetTypeId(string instanceId)
+    {
+        foreach (var widget in WidgetRegistry.All)
+        {
+            if (instanceId.StartsWith(widget.Id + "-", StringComparison.Ordinal)
+                && instanceId.Length > widget.Id.Length + 1)
+            {
+                return widget.Id;
+            }
+        }
+
+        return instanceId;
+    }
+
+    [JSInvokable]
+    public void OnLayoutChanged(string layoutJson)
+    {
+        // Layout changes are tracked by GridStack; saved on exit edit mode
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        ToolbarState.Clear();
+        try
+        {
+            if (_gridInitialized)
+            {
+                await JS.InvokeVoidAsync("gridstackInterop.destroy");
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignored during disposal
+        }
+        _dotNetRef?.Dispose();
+    }
+
+    private sealed class ActiveWidget(string instanceId, WidgetDefinition definition, int x, int y, int w, int h)
+    {
+        public string InstanceId { get; } = instanceId;
+        public WidgetDefinition Definition { get; } = definition;
+        public int X { get; set; } = x;
+        public int Y { get; set; } = y;
+        public int W { get; set; } = w;
+        public int H { get; set; } = h;
+    }
+
+    private sealed class LayoutItem
+    {
+        public string? Id { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int W { get; set; }
+        public int H { get; set; }
+    }
+}
