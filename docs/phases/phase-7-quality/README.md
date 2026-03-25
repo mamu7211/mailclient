@@ -9,6 +9,7 @@ Cross-cutting quality features: internationalization, accessibility, and user do
 | 1 | Internationalization (i18n) | Multi-language support with en_US as default | [01-i18n.md](01-i18n.md) |
 | 2 | WCAG 2.2 Conformance | Accessibility compliance for all UI components | [02-wcag.md](02-wcag.md) |
 | 3 | User Documentation | End-user documentation for setup and usage | [03-user-documentation.md](03-user-documentation.md) |
+| 4 | End-to-End Testing | Playwright browser tests + Bruno API tests against live Aspire stack | [04-e2e-testing.md](04-e2e-testing.md) |
 
 ## Dependencies
 
