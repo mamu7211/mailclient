@@ -7,7 +7,7 @@ Establish end-to-end testing with Playwright (browser tests) and Bruno (API test
 ## Infrastructure
 
 - Tests run against a **locally running Aspire AppHost** (started separately, not auto-started by tests)
-- Base URL: `https://localhost:5001`
+- Base URL: `https://localhost:7272`
 - Not part of `Feirb.sln` or `dotnet test` — run manually via CLI
 - No CI/CD integration initially
 
