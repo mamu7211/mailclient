@@ -1,0 +1,25 @@
+meta {
+  name: Delete User
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/admin/users/{{testUserId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return confirmation message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}

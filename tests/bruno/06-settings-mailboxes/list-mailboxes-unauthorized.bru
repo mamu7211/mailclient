@@ -1,0 +1,17 @@
+meta {
+  name: List Mailboxes - Unauthorized
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/settings/mailboxes
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

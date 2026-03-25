@@ -1,0 +1,28 @@
+meta {
+  name: Get SMTP Settings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/admin/system-settings/smtp
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return SMTP settings", function() {
+    expect(res.body.host).to.be.a("string");
+    expect(res.body.port).to.be.a("number");
+    expect(res.body).to.have.property("useTls");
+    expect(res.body).to.have.property("requiresAuth");
+  });
+}

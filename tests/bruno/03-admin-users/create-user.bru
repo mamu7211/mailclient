@@ -1,0 +1,44 @@
+meta {
+  name: Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/admin/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "username": "bruno-testuser",
+    "email": "bruno-testuser@feirb.local",
+    "password": "bruno-testuser@feirb.local",
+    "isAdmin": false
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("testUserId", res.body.id);
+  }
+}
+
+tests {
+  test("should return 201 or 409 (idempotent)", function() {
+    expect([201, 409]).to.include(res.status);
+  });
+
+  test("should return user data on success", function() {
+    if (res.status === 201) {
+      expect(res.body.username).to.equal("bruno-testuser");
+      expect(res.body.email).to.equal("bruno-testuser@feirb.local");
+      expect(res.body.isAdmin).to.equal(false);
+    }
+  });
+}

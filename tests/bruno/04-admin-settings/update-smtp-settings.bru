@@ -1,0 +1,37 @@
+meta {
+  name: Update SMTP Settings
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/admin/system-settings/smtp
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "host": "localhost",
+    "port": 3025,
+    "useTls": false,
+    "requiresAuth": false,
+    "fromAddress": "noreply@feirb.local",
+    "fromName": "Feirb"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated settings", function() {
+    expect(res.body.host).to.equal("localhost");
+    expect(res.body.port).to.equal(3025);
+  });
+}

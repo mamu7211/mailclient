@@ -1,0 +1,52 @@
+meta {
+  name: Create Mailbox
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/settings/mailboxes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Bruno Test Mailbox",
+    "emailAddress": "brunotest-mailbox@feirb.local",
+    "displayName": "Bruno Test",
+    "imapHost": "localhost",
+    "imapPort": 3143,
+    "imapUsername": "brunotest-mailbox@feirb.local",
+    "imapPassword": "brunotest-mailbox@feirb.local",
+    "imapUseTls": false,
+    "smtpHost": "localhost",
+    "smtpPort": 3025,
+    "smtpUsername": "brunotest-mailbox@feirb.local",
+    "smtpPassword": "brunotest-mailbox@feirb.local",
+    "smtpUseTls": false,
+    "smtpRequiresAuth": false
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("testMailboxId", res.body.id);
+  }
+}
+
+tests {
+  test("should return 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("should return mailbox data", function() {
+    expect(res.body.name).to.equal("Bruno Test Mailbox");
+    expect(res.body.emailAddress).to.equal("brunotest-mailbox@feirb.local");
+    expect(res.body.id).to.be.a("string");
+  });
+}

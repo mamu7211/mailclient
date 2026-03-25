@@ -1,0 +1,29 @@
+meta {
+  name: Get Mailbox
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/settings/mailboxes/{{testMailboxId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return mailbox details", function() {
+    expect(res.body.id).to.equal(bru.getVar("testMailboxId"));
+    expect(res.body.name).to.be.a("string");
+    expect(res.body.emailAddress).to.be.a("string");
+    expect(res.body.imapHost).to.be.a("string");
+    expect(res.body.smtpHost).to.be.a("string");
+  });
+}

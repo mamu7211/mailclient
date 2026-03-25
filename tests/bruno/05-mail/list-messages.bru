@@ -1,0 +1,29 @@
+meta {
+  name: List Messages
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/mail/messages?page=1&pageSize=25
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return paginated response", function() {
+    expect(res.body).to.have.property("items");
+    expect(res.body).to.have.property("page");
+    expect(res.body).to.have.property("pageSize");
+    expect(res.body).to.have.property("totalCount");
+    expect(res.body.items).to.be.an("array");
+  });
+}

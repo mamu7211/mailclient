@@ -1,0 +1,40 @@
+meta {
+  name: Cleanup Test Users
+  type: http
+  seq: 0
+}
+
+get {
+  url: {{baseUrl}}/api/admin/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const testUsernames = ["brunotest", "bruno-testuser"];
+    const testUsers = res.body.filter(u => testUsernames.includes(u.username));
+    const baseUrl = bru.getEnvVar("baseUrl") || bru.getVar("baseUrl");
+    const token = bru.getVar("accessToken");
+
+    for (const user of testUsers) {
+      try {
+        await axios.delete(baseUrl + "/api/admin/users/" + user.id, {
+          headers: { "Authorization": "Bearer " + token }
+        });
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+    }
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

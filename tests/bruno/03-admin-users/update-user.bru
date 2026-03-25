@@ -1,0 +1,32 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/admin/users/{{testUserId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "email": "bruno-testuser-updated@feirb.local",
+    "isAdmin": false
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated email", function() {
+    expect(res.body.email).to.equal("bruno-testuser-updated@feirb.local");
+  });
+}

@@ -1,0 +1,17 @@
+meta {
+  name: List Messages - Unauthorized
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/mail/messages
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

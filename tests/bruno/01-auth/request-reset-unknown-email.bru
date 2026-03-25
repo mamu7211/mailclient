@@ -1,0 +1,27 @@
+meta {
+  name: Request Reset - Unknown Email
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/auth/request-reset
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "nonexistent@feirb.local"
+  }
+}
+
+tests {
+  test("should return 200 (does not reveal existence)", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}

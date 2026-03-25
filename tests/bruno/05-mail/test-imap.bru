@@ -1,0 +1,35 @@
+meta {
+  name: Test IMAP Connection
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/mail/test/imap
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "host": "localhost",
+    "port": 3143,
+    "username": "admin@feirb.local",
+    "password": "admin@feirb.local",
+    "useTls": false
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return success", function() {
+    expect(res.body.success).to.equal(true);
+  });
+}

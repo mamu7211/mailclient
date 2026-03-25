@@ -1,0 +1,27 @@
+meta {
+  name: Request Password Reset
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/auth/request-reset
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "admin@feirb.local"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return message", function() {
+    expect(res.body.message).to.be.a("string");
+  });
+}

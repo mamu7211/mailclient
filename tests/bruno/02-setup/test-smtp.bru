@@ -1,0 +1,30 @@
+meta {
+  name: Test SMTP Connection
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/setup/test-smtp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "host": "localhost",
+    "port": 3025,
+    "useTls": false,
+    "requiresAuth": false
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return success", function() {
+    expect(res.body.success).to.equal(true);
+  });
+}

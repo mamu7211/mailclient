@@ -1,0 +1,17 @@
+meta {
+  name: Get Profile - Unauthorized
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/settings/profile
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

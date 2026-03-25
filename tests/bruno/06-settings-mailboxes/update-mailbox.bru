@@ -1,0 +1,44 @@
+meta {
+  name: Update Mailbox
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/settings/mailboxes/{{testMailboxId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Bruno Test Mailbox Updated",
+    "emailAddress": "brunotest-mailbox@feirb.local",
+    "displayName": "Bruno Test Updated",
+    "imapHost": "localhost",
+    "imapPort": 3143,
+    "imapUsername": "brunotest-mailbox@feirb.local",
+    "imapPassword": "brunotest-mailbox@feirb.local",
+    "imapUseTls": false,
+    "smtpHost": "localhost",
+    "smtpPort": 3025,
+    "smtpUsername": "brunotest-mailbox@feirb.local",
+    "smtpPassword": "brunotest-mailbox@feirb.local",
+    "smtpUseTls": false,
+    "smtpRequiresAuth": false
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated name", function() {
+    expect(res.body.name).to.equal("Bruno Test Mailbox Updated");
+  });
+}

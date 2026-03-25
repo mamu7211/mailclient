@@ -1,0 +1,17 @@
+meta {
+  name: Validate Reset Token - Invalid
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/auth/validate-reset-token/invalid-token-value
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

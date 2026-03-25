@@ -1,0 +1,33 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/settings/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "username": "admin",
+    "email": "admin@feirb.local"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated profile", function() {
+    expect(res.body.username).to.equal("admin");
+    expect(res.body.email).to.equal("admin@feirb.local");
+  });
+}

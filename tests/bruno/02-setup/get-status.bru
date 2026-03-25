@@ -1,0 +1,25 @@
+meta {
+  name: Get Setup Status
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/setup/status
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return isComplete boolean", function() {
+    expect(res.body.isComplete).to.be.a("boolean");
+  });
+
+  test("should be complete (seeded database)", function() {
+    expect(res.body.isComplete).to.equal(true);
+  });
+}
