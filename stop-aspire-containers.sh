@@ -1,5 +1,6 @@
 #!/bin/bash
 # Stops and removes Aspire containers including associated volumes
+# Ollama volumes are preserved to avoid re-downloading large AI models
 # Supports Docker and Podman
 
 set -e
@@ -58,7 +59,7 @@ get_volumes() {
 }
 
 cleanup_orphaned_volumes() {
-    mapfile -t ORPHAN_VOLS < <($RT volume ls --format "{{.Name}}" | grep -E "^feirb\." || true)
+    mapfile -t ORPHAN_VOLS < <($RT volume ls --format "{{.Name}}" | grep -E "^feirb\." | grep -v "ollama" || true)
     if [ ${#ORPHAN_VOLS[@]} -eq 0 ]; then
         return
     fi
@@ -94,6 +95,10 @@ get_status() {
     esac
 }
 
+is_ollama_container() {
+    [[ "$1" == *ollama* ]]
+}
+
 remove_container() {
     local container="$1"
     local volumes
@@ -105,10 +110,14 @@ remove_container() {
     echo -e "  ${RED}✗${RESET}  Removing ${BOLD}$container${RESET} ..."
     $RT rm "$container" 2>/dev/null || true
 
-    for vol in $volumes; do
-        echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
-        $RT volume rm "$vol" 2>/dev/null || true
-    done
+    if is_ollama_container "$container"; then
+        echo -e "  ${CYAN}⏩${RESET}  Keeping Ollama volumes (model data)"
+    else
+        for vol in $volumes; do
+            echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
+            $RT volume rm "$vol" 2>/dev/null || true
+        done
+    fi
 }
 
 # ── List containers ──────────────────────────────────────────

@@ -7,6 +7,8 @@ namespace Feirb.Api.Endpoints;
 
 public static class MailStatsEndpoints
 {
+    private static readonly int[] _allowedDays = [7, 14, 30, 90, 180, 365];
+
     public static RouteGroupBuilder MapMailStatsEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/stats", GetStatsAsync);
@@ -15,25 +17,29 @@ public static class MailStatsEndpoints
 
     private static async Task<IResult> GetStatsAsync(
         HttpContext httpContext,
-        FeirbDbContext db)
+        FeirbDbContext db,
+        int days = 7)
     {
         var userId = GetCurrentUserId(httpContext);
+
+        if (!_allowedDays.Contains(days))
+            days = 7;
 
         var totalCount = await db.CachedMessages
             .Where(m => m.Mailbox.UserId == userId)
             .CountAsync();
 
         var todayUtc = DateTimeOffset.UtcNow.Date;
-        var sevenDaysAgo = new DateTimeOffset(todayUtc.AddDays(-6), TimeSpan.Zero);
+        var startDate = new DateTimeOffset(todayUtc.AddDays(-(days - 1)), TimeSpan.Zero);
 
         var dailyCounts = await db.CachedMessages
-            .Where(m => m.Mailbox.UserId == userId && m.Date >= sevenDaysAgo)
+            .Where(m => m.Mailbox.UserId == userId && m.Date >= startDate)
             .GroupBy(m => m.Date.Date)
             .Select(g => new { Date = g.Key, Count = g.Count() })
             .ToListAsync();
 
-        var mailsPerDay = Enumerable.Range(0, 7)
-            .Select(i => todayUtc.AddDays(-6 + i))
+        var mailsPerDay = Enumerable.Range(0, days)
+            .Select(i => todayUtc.AddDays(-(days - 1) + i))
             .Select(date => new DailyMailCountItem(
                 DateOnly.FromDateTime(date),
                 dailyCounts.FirstOrDefault(d => d.Date == date)?.Count ?? 0))

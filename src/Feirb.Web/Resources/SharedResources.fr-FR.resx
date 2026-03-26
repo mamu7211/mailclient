@@ -840,4 +840,22 @@
   <data name="WidgetMailsPerDayDescription" xml:space="preserve">
     <value>Diagramme en barres des e-mails reçus par jour au cours des 7 derniers jours</value>
   </data>
+  <data name="ChartRange7Days" xml:space="preserve">
+    <value>7 jours</value>
+  </data>
+  <data name="ChartRange14Days" xml:space="preserve">
+    <value>14 jours</value>
+  </data>
+  <data name="ChartRange1Month" xml:space="preserve">
+    <value>1 mois</value>
+  </data>
+  <data name="ChartRange3Months" xml:space="preserve">
+    <value>3 mois</value>
+  </data>
+  <data name="ChartRange6Months" xml:space="preserve">
+    <value>6 mois</value>
+  </data>
+  <data name="ChartRange1Year" xml:space="preserve">
+    <value>1 an</value>
+  </data>
 </root>

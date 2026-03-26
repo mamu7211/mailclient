@@ -4,7 +4,18 @@
 @implements IAsyncDisposable
 
 <div class="widget-card h-100 d-flex flex-column p-3">
-    <span class="text-muted small mb-2">@L["WidgetMailsPerDayName"]</span>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted small">@L["WidgetMailsPerDayName"]</span>
+        <select class="form-select form-select-sm" style="width: auto; font-size: 0.75rem;"
+                value="@_selectedDays" @onchange="OnRangeChangedAsync">
+            <option value="7">@L["ChartRange7Days"]</option>
+            <option value="14">@L["ChartRange14Days"]</option>
+            <option value="30">@L["ChartRange1Month"]</option>
+            <option value="90">@L["ChartRange3Months"]</option>
+            <option value="180">@L["ChartRange6Months"]</option>
+            <option value="365">@L["ChartRange1Year"]</option>
+        </select>
+    </div>
     @if (_loading)
     {
         <div class="d-flex flex-grow-1 align-items-center justify-content-center">
@@ -22,12 +33,27 @@
 @code {
     private readonly string _canvasId = $"chart-{Guid.NewGuid():N}";
     private bool _loading = true;
+    private int _selectedDays = 7;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() =>
+        await LoadChartAsync();
+
+    private async Task OnRangeChangedAsync(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var days))
+        {
+            _selectedDays = days;
+            _loading = true;
+            StateHasChanged();
+            await LoadChartAsync();
+        }
+    }
+
+    private async Task LoadChartAsync()
     {
         try
         {
-            var stats = await Http.GetFromJsonAsync<MailStatsResponse>("/api/mail/stats");
+            var stats = await Http.GetFromJsonAsync<MailStatsResponse>($"/api/mail/stats?days={_selectedDays}");
             if (stats is not null)
             {
                 _loading = false;
