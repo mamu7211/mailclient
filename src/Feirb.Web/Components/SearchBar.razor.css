@@ -1,0 +1,27 @@
+.search-bar {
+    position: relative;
+    width: 25%;
+    min-width: 12rem;
+}
+
+.search-bar .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--feirb-outline);
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.search-bar .form-control {
+    border-radius: 9999px;
+    padding-left: 2.5rem;
+    font-size: 0.875rem;
+}
+
+.search-bar .form-control:disabled {
+    background-color: var(--feirb-surface);
+    opacity: 0.7;
+    cursor: not-allowed;
+}

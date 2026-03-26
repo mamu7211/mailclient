@@ -876,4 +876,16 @@
   <data name="ChartRange1Year" xml:space="preserve">
     <value>1 Jahr</value>
   </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>E-Mails, Personen, Dateien suchen...</value>
+  </data>
+  <data name="SettingsPreferencesTitle" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="SettingsLanguageTitle" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="SettingsLanguageSubtitle" xml:space="preserve">
+    <value>Anzeigesprache auswählen</value>
+  </data>
 </root>

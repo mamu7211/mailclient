@@ -13,11 +13,17 @@ main {
     top: 0;
     z-index: 100;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
     padding: 0.75rem 2rem;
     background-color: var(--bs-body-bg);
     border-bottom: 1px solid var(--bs-border-color);
+}
+
+.top-bar-row-1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.5rem;
 }
 
 .content {

@@ -1,6 +1,8 @@
 @page "/settings"
 @attribute [Authorize]
 @inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime Js
+@inject NavigationManager Navigation
 
 <PageTitle>@L["PageTitleSettings"]</PageTitle>
 
@@ -28,4 +30,42 @@
         Title="@L["SettingsMailboxesTitle"]"
         Subtitle="@L["SettingsMailboxesSubtitle"]"
         Href="/settings/mailboxes" />
+
+    <h5 class="text-muted mb-0 mt-3">@L["SettingsPreferencesTitle"]</h5>
+
+    <ContentSection Icon="translate" Title="@L["SettingsLanguageTitle"]" Subtitle="@L["SettingsLanguageSubtitle"]">
+        <div class="d-flex flex-column gap-2">
+            @foreach (var lang in Languages)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="language"
+                           id="lang-@lang.Code" value="@lang.Code"
+                           checked="@(lang.Code == _currentCulture)"
+                           @onchange="() => SetCultureAsync(lang.Code)" />
+                    <label class="form-check-label" for="lang-@lang.Code">@lang.Label</label>
+                </div>
+            }
+        </div>
+    </ContentSection>
 </div>
+
+@code {
+    private string _currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+
+    private static readonly (string Code, string Label)[] Languages =
+    [
+        ("en-US", "English"),
+        ("de-DE", "Deutsch"),
+        ("fr-FR", "Fran\u00e7ais"),
+        ("it-IT", "Italiano"),
+    ];
+
+    private async Task SetCultureAsync(string cultureName)
+    {
+        if (cultureName == _currentCulture)
+            return;
+
+        await Js.InvokeVoidAsync("blazorCulture.set", cultureName);
+        Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
+    }
+}

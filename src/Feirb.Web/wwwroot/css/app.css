@@ -123,6 +123,11 @@ a:hover, .btn-link:hover {
     box-shadow: 0 0 0 0.2rem rgba(182, 0, 79, 0.15);
 }
 
+.form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
 /* Validation */
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
