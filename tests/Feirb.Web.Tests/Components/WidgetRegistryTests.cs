@@ -64,4 +64,22 @@ public class WidgetRegistryTests
         widget.Should().NotBeNull();
         widget!.ComponentType.Should().Be(expectedType);
     }
+
+    [Fact]
+    public void MailsPerDayWidget_HasDefaultConfig()
+    {
+        var widget = WidgetRegistry.GetById("mails-per-day");
+
+        widget.Should().NotBeNull();
+        widget!.DefaultConfig.Should().Be("7");
+    }
+
+    [Fact]
+    public void MailCountWidget_HasNoDefaultConfig()
+    {
+        var widget = WidgetRegistry.GetById("mail-count");
+
+        widget.Should().NotBeNull();
+        widget!.DefaultConfig.Should().BeNull();
+    }
 }

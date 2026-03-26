@@ -840,6 +840,18 @@
   <data name="WidgetMailsPerDayDescription" xml:space="preserve">
     <value>Balkendiagramm der empfangenen E-Mails pro Tag der letzten 7 Tage</value>
   </data>
+  <data name="WidgetSettingsTitle" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="WidgetSettingsSave" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="WidgetSettingsClose" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="WidgetMailsPerDaySettingsRange" xml:space="preserve">
+    <value>Zeitraum</value>
+  </data>
   <data name="ChartRange7Days" xml:space="preserve">
     <value>7 Tage</value>
   </data>

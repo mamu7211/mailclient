@@ -840,6 +840,18 @@
   <data name="WidgetMailsPerDayDescription" xml:space="preserve">
     <value>Bar chart showing emails received per day over the last 7 days</value>
   </data>
+  <data name="WidgetSettingsTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="WidgetSettingsSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="WidgetSettingsClose" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="WidgetMailsPerDaySettingsRange" xml:space="preserve">
+    <value>Time range</value>
+  </data>
   <data name="ChartRange7Days" xml:space="preserve">
     <value>7 days</value>
   </data>

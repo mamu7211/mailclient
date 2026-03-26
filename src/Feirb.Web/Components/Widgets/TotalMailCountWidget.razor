@@ -1,21 +1,27 @@
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 
-<div class="widget-card h-100 d-flex flex-column align-items-center justify-content-center p-3">
-    <span class="text-muted small">@L["WidgetMailCountName"]</span>
-    @if (_loading)
-    {
-        <div class="spinner-border spinner-border-sm mt-2" role="status"></div>
-    }
-    else
-    {
-        <span class="display-3 fw-bold text-primary">@_totalCount</span>
-    }
-</div>
+<WidgetCard InstanceId="@InstanceId">
+    <Content>
+        <div class="h-100 d-flex flex-column align-items-center justify-content-center">
+            <span class="text-muted small">@L["WidgetMailCountName"]</span>
+            @if (_loading)
+            {
+                <div class="spinner-border spinner-border-sm mt-2" role="status"></div>
+            }
+            else
+            {
+                <span class="display-3 fw-bold text-primary">@_totalCount</span>
+            }
+        </div>
+    </Content>
+</WidgetCard>
 
 @code {
     private int _totalCount;
     private bool _loading = true;
+
+    [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
 
     protected override async Task OnInitializedAsync()
     {

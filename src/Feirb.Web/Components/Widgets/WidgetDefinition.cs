@@ -6,4 +6,5 @@ public sealed record WidgetDefinition(
     string DescriptionKey,
     Type ComponentType,
     int DefaultWidth = 4,
-    int DefaultHeight = 2);
+    int DefaultHeight = 2,
+    string? DefaultConfig = null);

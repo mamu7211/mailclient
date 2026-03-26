@@ -154,6 +154,7 @@ mailGroup.MapMailStatsEndpoints();
 // Dashboard endpoints (per-user, JWT required)
 var dashboardGroup = apiGroup.MapGroup("/dashboard");
 dashboardGroup.MapDashboardEndpoints();
+dashboardGroup.MapWidgetConfigEndpoints();
 
 app.MapFallbackToFile("index.html");
 
