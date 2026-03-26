@@ -1,0 +1,80 @@
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+
+<div class="widget-card h-100 d-flex flex-column p-3 position-relative">
+    @if (ConfigDialog is not null)
+    {
+        <button class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-1 widget-config-btn"
+                @onclick="OpenSettings"
+                @onclick:stopPropagation="true">
+            <i class="bi bi-gear"></i>
+        </button>
+    }
+    @Content
+</div>
+
+@if (ConfigDialog is not null)
+{
+    <WidgetSettingsDialog Visible="_settingsVisible"
+                          Title="@L["WidgetSettingsTitle"]"
+                          OnSave="SaveSettingsAsync"
+                          OnClose="CloseSettings">
+        @ConfigDialog
+    </WidgetSettingsDialog>
+}
+
+@code {
+    private string? _config;
+    private bool _settingsVisible;
+
+    [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
+    [Parameter, EditorRequired] public RenderFragment Content { get; set; } = null!;
+    [Parameter] public RenderFragment? ConfigDialog { get; set; }
+    [Parameter] public EventCallback<string?> OnConfigLoaded { get; set; }
+    [Parameter] public Func<string?>? GetPendingConfig { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ConfigDialog is null || string.IsNullOrEmpty(InstanceId)) return;
+
+        try
+        {
+            var response = await Http.GetAsync($"/api/dashboard/widgets/{InstanceId}/config");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<WidgetConfigResponse>();
+                _config = result?.ConfigValue;
+            }
+        }
+        catch
+        {
+            // Widget will use defaults if config load fails
+        }
+
+        await OnConfigLoaded.InvokeAsync(_config);
+    }
+
+    private void OpenSettings() => _settingsVisible = true;
+
+    private void CloseSettings() => _settingsVisible = false;
+
+    private async Task SaveSettingsAsync()
+    {
+        var newConfig = GetPendingConfig?.Invoke();
+        if (newConfig is null || string.IsNullOrEmpty(InstanceId)) return;
+
+        try
+        {
+            await Http.PutAsJsonAsync($"/api/dashboard/widgets/{InstanceId}/config",
+                new WidgetConfigRequest(newConfig));
+            _config = newConfig;
+            await OnConfigLoaded.InvokeAsync(_config);
+        }
+        catch
+        {
+            // Silently fail on save error
+        }
+
+        _settingsVisible = false;
+    }
+}

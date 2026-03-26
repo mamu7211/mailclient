@@ -18,6 +18,16 @@
     font-size: 0.75rem;
 }
 
+::deep .widget-config-btn {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 0.75rem;
+    z-index: 10;
+    padding: 0.1rem 0.35rem;
+    line-height: 1;
+}
+
 ::deep .widget-catalog-sidebar {
     height: calc(100vh - 120px);
     position: sticky;

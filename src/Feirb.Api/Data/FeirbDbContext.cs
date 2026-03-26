@@ -13,6 +13,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<CachedMessage> CachedMessages => Set<CachedMessage>();
     public DbSet<CachedAttachment> CachedAttachments => Set<CachedAttachment>();
     public DbSet<DashboardLayout> DashboardLayouts => Set<DashboardLayout>();
+    public DbSet<WidgetConfig> WidgetConfigs => Set<WidgetConfig>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -109,6 +110,18 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasOne(e => e.User)
                 .WithOne()
                 .HasForeignKey<DashboardLayout>(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<WidgetConfig>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.WidgetInstanceId }).IsUnique();
+            entity.Property(e => e.WidgetInstanceId).HasMaxLength(256);
+            entity.Property(e => e.ConfigValue).HasMaxLength(4096);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

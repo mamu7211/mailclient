@@ -26,7 +26,8 @@
                                 <i class="bi bi-x"></i>
                             </button>
                         }
-                        <DynamicComponent Type="widget.Definition.ComponentType" />
+                        <DynamicComponent Type="widget.Definition.ComponentType"
+                                         Parameters="@(new Dictionary<string, object> { ["InstanceId"] = widget.InstanceId })" />
                     </div>
                 </div>
             }
@@ -128,17 +129,45 @@
         await SaveLayoutAsync(layoutJson);
     }
 
-    private void AddWidgetAsync(WidgetDefinition widget)
+    private async Task AddWidgetAsync(WidgetDefinition widget)
     {
         var instanceId = $"{widget.Id}-{Guid.NewGuid().ToString("N")[..8]}";
         _activeWidgets.Add(new ActiveWidget(instanceId, widget, 0, 0, widget.DefaultWidth, widget.DefaultHeight));
+
+        if (widget.DefaultConfig is not null)
+        {
+            try
+            {
+                await Http.PostAsJsonAsync($"/api/dashboard/widgets/{instanceId}/config",
+                    new WidgetConfigRequest(widget.DefaultConfig));
+            }
+            catch
+            {
+                // Widget will use defaults if config creation fails
+            }
+        }
+
         _needsGridInit = true;
         StateHasChanged();
     }
 
-    private void RemoveWidgetAsync(string instanceId)
+    private async Task RemoveWidgetAsync(string instanceId)
     {
+        var widget = _activeWidgets.FirstOrDefault(w => w.InstanceId == instanceId);
         _activeWidgets.RemoveAll(w => w.InstanceId == instanceId);
+
+        if (widget?.Definition.DefaultConfig is not null)
+        {
+            try
+            {
+                await Http.DeleteAsync($"/api/dashboard/widgets/{instanceId}/config");
+            }
+            catch
+            {
+                // Orphan config is acceptable
+            }
+        }
+
         _needsGridInit = true;
         StateHasChanged();
     }
