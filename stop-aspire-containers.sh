@@ -26,23 +26,6 @@ else
     exit 1
 fi
 
-echo ""
-echo -e "${BOLD}${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
-echo -e "${BOLD}${CYAN}  ║     Feirb Aspire Container Cleanup        ║${RESET}"
-echo -e "${BOLD}${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
-echo -e "  ${DIM}Runtime: ${RT}${RESET}"
-echo ""
-
-# ── Find containers ──────────────────────────────────────────
-mapfile -t CONTAINERS < <($RT ps -a --format "{{.Names}}" | grep -E "^feirb-" || true)
-
-if [ ${#CONTAINERS[@]} -eq 0 ]; then
-    echo -e "  ${YELLOW}⚠  No Feirb containers found.${RESET}"
-    echo ""
-    cleanup_orphaned_volumes
-    exit 0
-fi
-
 # ── Helper functions ─────────────────────────────────────────
 
 get_volumes() {
@@ -67,21 +50,11 @@ cleanup_orphaned_volumes() {
     echo -e "  ${BOLD}Orphaned volumes:${RESET}"
     echo ""
     for vol in "${ORPHAN_VOLS[@]}"; do
-        echo -e "       ${GRAY}└── $vol${RESET}"
+        echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
+        $RT volume rm "$vol" 2>/dev/null || true
     done
     echo ""
-    read -rp "  Delete orphaned volumes? [y/N] " vol_choice
-    echo ""
-    if [[ "$vol_choice" =~ ^[yY]$ ]]; then
-        for vol in "${ORPHAN_VOLS[@]}"; do
-            echo -e "  ${RED}✗${RESET}  Removing volume ${DIM}$vol${RESET}"
-            $RT volume rm "$vol" 2>/dev/null || true
-        done
-        echo ""
-        echo -e "  ${GREEN}✓  Orphaned volumes removed.${RESET}"
-    else
-        echo -e "  ${YELLOW}Skipped.${RESET}"
-    fi
+    echo -e "  ${GREEN}✓  Orphaned volumes removed.${RESET}"
     echo ""
 }
 
@@ -119,6 +92,24 @@ remove_container() {
         done
     fi
 }
+
+# ── Header ────────────────────────────────────────────────────
+echo ""
+echo -e "${BOLD}${CYAN}  ╔══════════════════════════════════════════╗${RESET}"
+echo -e "${BOLD}${CYAN}  ║     Feirb Aspire Container Cleanup       ║${RESET}"
+echo -e "${BOLD}${CYAN}  ╚══════════════════════════════════════════╝${RESET}"
+echo -e "  ${DIM}Runtime: ${RT}${RESET}"
+echo ""
+
+# ── Find containers ──────────────────────────────────────────
+mapfile -t CONTAINERS < <($RT ps -a --format "{{.Names}}" | grep -E "^feirb-" || true)
+
+if [ ${#CONTAINERS[@]} -eq 0 ]; then
+    echo -e "  ${YELLOW}⚠  No Feirb containers found.${RESET}"
+    echo ""
+    cleanup_orphaned_volumes
+    exit 0
+fi
 
 # ── List containers ──────────────────────────────────────────
 echo -e "  ${BOLD}Aspire containers:${RESET}"
