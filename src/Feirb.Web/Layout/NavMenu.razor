@@ -19,6 +19,14 @@
         </Authorized>
     </AuthorizeView>
 
+    <!-- Compose Button -->
+    <div class="sidebar-compose">
+        <NavLink class="btn btn-primary" href="compose">
+            <i class="bi bi-pencil-fill"></i>
+            <span>@L["NavCompose"]</span>
+        </NavLink>
+    </div>
+
     <!-- Navigation -->
     <nav class="sidebar-nav">
         <!-- Dashboard -->
@@ -55,12 +63,6 @@
                         <span>@L["NavDrafts"]</span>
                     </NavLink>
                 </li>
-            </ul>
-        </div>
-
-        <!-- Folders Section -->
-        <div class="nav-section">
-            <ul class="nav-list">
                 <li>
                     <NavLink class="nav-entry" href="mail/trash">
                         <i class="bi bi-trash"></i>
@@ -79,11 +81,6 @@
 
     <!-- Bottom Section -->
     <div class="sidebar-bottom">
-        <div class="sidebar-lang">
-            <i class="bi bi-translate"></i>
-            <Feirb.Web.Components.LanguageSwitcher ButtonClass="btn-outline-secondary btn-sm" />
-        </div>
-
         <ul class="nav-list">
             <li>
                 <NavLink class="nav-entry" href="settings">

@@ -726,8 +726,14 @@
   <data name="BreadcrumbArchive" xml:space="preserve">
     <value>Archiv</value>
   </data>
+  <data name="BreadcrumbCompose" xml:space="preserve">
+    <value>Verfassen</value>
+  </data>
   <data name="NavDashboard" xml:space="preserve">
     <value>Dashboard</value>
+  </data>
+  <data name="NavCompose" xml:space="preserve">
+    <value>Verfassen</value>
   </data>
   <data name="PageTitleDashboard" xml:space="preserve">
     <value>Dashboard - Feirb</value>
