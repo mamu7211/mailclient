@@ -48,7 +48,7 @@ a:hover, .btn-link:hover {
 
 /* Buttons */
 .btn {
-    border-radius: var(--feirb-radius-input);
+    border-radius: 9999px;
     font-weight: 500;
 }
 
@@ -72,6 +72,30 @@ a:hover, .btn-link:hover {
 .btn-outline-primary:hover {
     background-color: var(--bs-primary);
     color: #fff;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: var(--feirb-on-surface);
+    border-color: var(--feirb-on-surface);
+}
+
+.btn-secondary:hover {
+    background-color: var(--feirb-surface-container);
+    border-color: var(--feirb-on-surface);
+    color: var(--feirb-on-surface);
+}
+
+.btn-outline-secondary {
+    color: var(--feirb-on-surface);
+    border-color: var(--feirb-on-surface);
+    background-color: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--feirb-surface-container);
+    border-color: var(--feirb-on-surface);
+    color: var(--feirb-on-surface);
 }
 
 /* Cards */
