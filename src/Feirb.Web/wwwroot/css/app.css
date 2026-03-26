@@ -1,18 +1,29 @@
-/* Feirb Design Tokens (see docs/DESIGN.md) */
+/* Feirb Design Tokens – Electric Iris (see docs/DESIGN.md) */
 :root {
-    --bs-primary: #FF2D78;
-    --bs-primary-rgb: 255, 45, 120;
-    --bs-secondary: #00FFCC;
-    --bs-secondary-rgb: 0, 255, 204;
+    --bs-primary: #b6004f;
+    --bs-primary-rgb: 182, 0, 79;
+    --feirb-primary-container: #ff7195;
+    --bs-secondary: #006852;
+    --bs-secondary-rgb: 0, 104, 82;
+    --feirb-secondary-container: #00fcca;
+    --feirb-tertiary: #6b5b00;
+    --feirb-tertiary-container: #fedf49;
     --bs-warning: #FFE04A;
     --bs-warning-rgb: 255, 224, 74;
-    --bs-dark: #28283E;
-    --bs-body-bg: #F4F5FB;
-    --bs-body-color: #28283E;
+    --bs-dark: #2d2d43;
+    --bs-body-bg: #f8f5ff;
+    --bs-body-color: #2d2d43;
+    --feirb-on-surface: #2d2d43;
+    --feirb-on-surface-variant: #5a5972;
+    --feirb-surface: #F4F5FB;
+    --feirb-surface-container: #e8e5ff;
+    --feirb-outline: #75748e;
+    --feirb-outline-variant: #acaac6;
+    --feirb-error: #b31b25;
     --bs-border-radius: 1rem;
     --bs-border-radius-lg: 1.5rem;
-    --bs-link-color: #FF2D78;
-    --bs-link-hover-color: #d9206a;
+    --bs-link-color: #b6004f;
+    --bs-link-hover-color: #8a003c;
     --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     --feirb-radius-input: 0.75rem;
 }
@@ -49,8 +60,8 @@ a:hover, .btn-link:hover {
 }
 
 .btn-primary:hover {
-    background-color: #d9206a;
-    border-color: #d9206a;
+    background-color: #8a003c;
+    border-color: #8a003c;
 }
 
 .btn-outline-primary {
@@ -80,11 +91,11 @@ a:hover, .btn-link:hover {
 
 .form-control:focus {
     border-color: var(--bs-primary);
-    box-shadow: 0 0 0 0.2rem rgba(255, 45, 120, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(182, 0, 79, 0.15);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(255, 45, 120, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(182, 0, 79, 0.15);
 }
 
 /* Validation */
@@ -93,11 +104,11 @@ a:hover, .btn-link:hover {
 }
 
 .invalid {
-    outline: 1px solid var(--bs-primary);
+    outline: 1px solid var(--feirb-error);
 }
 
 .validation-message {
-    color: var(--bs-primary);
+    color: var(--feirb-error);
     font-size: 0.875rem;
     margin-top: 0.25rem;
 }
