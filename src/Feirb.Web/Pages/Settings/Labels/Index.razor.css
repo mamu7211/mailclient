@@ -1,0 +1,28 @@
+.label-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.label-card:hover {
+    border-color: var(--bs-primary);
+    box-shadow: var(--feirb-shadow);
+}
+
+.label-swatch {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.min-width-0 {
+    min-width: 0;
+}

@@ -888,4 +888,73 @@
   <data name="SettingsLanguageSubtitle" xml:space="preserve">
     <value>Anzeigesprache auswählen</value>
   </data>
+  <data name="SettingsLabelsTitle" xml:space="preserve">
+    <value>Labels</value>
+  </data>
+  <data name="SettingsLabelsSubtitle" xml:space="preserve">
+    <value>Organisiere deine E-Mails mit eigenen Labels</value>
+  </data>
+  <data name="PageTitleLabels" xml:space="preserve">
+    <value>Labels - Feirb</value>
+  </data>
+  <data name="BreadcrumbLabels" xml:space="preserve">
+    <value>Labels</value>
+  </data>
+  <data name="LabelsHeading" xml:space="preserve">
+    <value>Labels</value>
+  </data>
+  <data name="LabelsSubtitle" xml:space="preserve">
+    <value>Erstelle und verwalte Labels, um deine E-Mails zu kategorisieren. Labels helfen dir, deinen Posteingang zu organisieren und Nachrichten schnell zu finden.</value>
+  </data>
+  <data name="ButtonCreateLabel" xml:space="preserve">
+    <value>Label erstellen</value>
+  </data>
+  <data name="NoLabelsFound" xml:space="preserve">
+    <value>Noch keine Labels erstellt.</value>
+  </data>
+  <data name="LoadingLabels" xml:space="preserve">
+    <value>Labels werden geladen...</value>
+  </data>
+  <data name="LabelNameField" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="LabelDescriptionField" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="LabelColorField" xml:space="preserve">
+    <value>Farbe</value>
+  </data>
+  <data name="PlaceholderLabelName" xml:space="preserve">
+    <value>z.B. Arbeit, Privat, Dringend</value>
+  </data>
+  <data name="PlaceholderLabelDescription" xml:space="preserve">
+    <value>Optionale Beschreibung für dieses Label</value>
+  </data>
+  <data name="ButtonRandomizeColor" xml:space="preserve">
+    <value>Zufällig</value>
+  </data>
+  <data name="CreateLabelTitle" xml:space="preserve">
+    <value>Label erstellen</value>
+  </data>
+  <data name="EditLabelTitle" xml:space="preserve">
+    <value>Label bearbeiten</value>
+  </data>
+  <data name="ConfirmDeleteLabelTitle" xml:space="preserve">
+    <value>Label löschen</value>
+  </data>
+  <data name="ConfirmDeleteLabelMessage" xml:space="preserve">
+    <value>Möchtest du das Label „{0}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</value>
+  </data>
+  <data name="SuccessLabelCreated" xml:space="preserve">
+    <value>Label erfolgreich erstellt.</value>
+  </data>
+  <data name="SuccessLabelUpdated" xml:space="preserve">
+    <value>Label erfolgreich aktualisiert.</value>
+  </data>
+  <data name="SuccessLabelDeleted" xml:space="preserve">
+    <value>Label erfolgreich gelöscht.</value>
+  </data>
+  <data name="ErrorLabelFailed" xml:space="preserve">
+    <value>Beim Verarbeiten des Labels ist ein Fehler aufgetreten.</value>
+  </data>
 </root>
