@@ -133,7 +133,8 @@ Shared library: DTOs (record types), interfaces, enums, route constants. Referen
 | **Minimal APIs** | Lightweight, less ceremony, fits the API surface well |
 | **PostgreSQL** | Full-text search for mail, concurrent access, managed as Aspire container |
 | **MailKit/MimeKit** | Gold standard for .NET mail — robust IMAP/SMTP, proper MIME handling |
-| **OllamaSharp** | Typed .NET client for Ollama, streaming support, clean DI integration |
+| **Microsoft.Extensions.AI** | Provider-agnostic LLM abstraction (`IChatClient`), enables swapping between Ollama, OpenAI, Claude, etc. |
+| **OllamaSharp** | Default `IChatClient` provider — typed .NET client for Ollama, streaming support, clean DI integration |
 | **Bootstrap 5** | Proven, responsive, no build toolchain required |
 
 ## Internationalization (i18n)

@@ -106,18 +106,24 @@ Writing and sending emails.
 
 ## Phase 6: AI Features
 
-LLM-powered mail intelligence.
+LLM-powered mail intelligence. Uses `Microsoft.Extensions.AI` (`IChatClient`) with OllamaSharp as the default provider, enabling future provider swapping (OpenAI, Claude, etc.).
 
 | Layer | Deliverable |
 |-------|-------------|
-| **API** | `POST /api/ai/summarize` — summarize a message |
+| **Data Model** | Label, ClassificationRule, ClassificationQueue, MessageLabel, JobSettings entities |
+| **Infrastructure** | Job settings system (cron-based, admin-configurable) |
+| **Integration** | `IChatClient` via Microsoft.Extensions.AI + OllamaSharp, connected to qwen3:4b |
+| **API** | Label CRUD, Classification rule CRUD, Job settings admin API |
+| | `POST /api/ai/summarize` — summarize a message |
 | | `POST /api/ai/draft-reply` — generate reply draft |
-| | `POST /api/ai/categorize` — categorize messages |
-| | Rate limiting on AI endpoints |
-| **Integration** | OllamaSharp client via DI, connected to qwen3:4b |
-| **UI** | AI sidebar panel (summary, draft reply, categories) |
-| | Toggle AI features on/off in user preferences |
-| **Tests** | AI endpoint tests (mock Ollama responses) |
+| **Background** | Classification pipeline (queue-based, sequential, one message at a time) |
+| **UI** | Settings > Labels (card-based CRUD) |
+| | Settings > Classification rules (card-based CRUD) |
+| | Admin > Jobs (card-based schedule management) |
+| | AI sidebar panel (summary, draft reply) |
+| **Tests** | AI endpoint tests (mock IChatClient responses) |
+
+Mail categorization is split into five sub-issues (#123-#127) — see [Phase 4 README](phases/phase-4-llm/README.md).
 
 ## Phase 7: Quality & Compliance
 

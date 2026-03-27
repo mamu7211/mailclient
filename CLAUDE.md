@@ -105,13 +105,14 @@ dotnet format
 
 ## LLM Integration
 
-- **Client:** OllamaSharp, registered via DI
+- **Abstraction:** `Microsoft.Extensions.AI` (`IChatClient` interface)
+- **Default Provider:** OllamaSharp (implements `IChatClient`), registered via DI
 - **Model:** `qwen3:4b` (configurable via Aspire/appsettings)
 - **Aspire:** `CommunityToolkit.Aspire.Hosting.Ollama` for container management
 - **Features:**
+  - Automatic mail categorization (labels + classification rules + LLM pipeline)
   - Mail summarization
   - Smart reply draft generation
-  - Automatic mail categorization
 
 ## Internationalization (i18n)
 

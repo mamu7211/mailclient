@@ -76,13 +76,37 @@ JWT Bearer authentication. Obtain a token via `/api/auth/login`, include it as `
 | GET | `/api/settings/preferences` | Get user preferences | Future |
 | PUT | `/api/settings/preferences` | Update user preferences | Future |
 
+### Labels — `/api/labels` (requires auth)
+
+| Method | Path | Description | Issue |
+|--------|------|-------------|-------|
+| GET | `/api/labels` | List all labels for current user | #123 |
+| POST | `/api/labels` | Create a label | #123 |
+| PUT | `/api/labels/{id}` | Update a label | #123 |
+| DELETE | `/api/labels/{id}` | Delete a label | #123 |
+
+### Rules — `/api/rules` (requires auth)
+
+| Method | Path | Description | Issue |
+|--------|------|-------------|-------|
+| GET | `/api/rules` | List all classification rules for current user | #124 |
+| POST | `/api/rules` | Create a classification rule | #124 |
+| PUT | `/api/rules/{id}` | Update a classification rule | #124 |
+| DELETE | `/api/rules/{id}` | Delete a classification rule | #124 |
+
+### Admin Jobs — `/api/admin/jobs` (requires admin role)
+
+| Method | Path | Description | Issue |
+|--------|------|-------------|-------|
+| GET | `/api/admin/jobs` | List all job settings | #125 |
+| PUT | `/api/admin/jobs/{id}` | Update job schedule and enabled state | #125 |
+
 ### AI — `/api/ai`
 
 | Method | Path | Description | Phase |
 |--------|------|-------------|-------|
 | POST | `/api/ai/summarize` | Summarize a mail message | 6 |
 | POST | `/api/ai/draft-reply` | Generate a reply draft | 6 |
-| POST | `/api/ai/categorize` | Categorize messages | 6 |
 
 ## Error Codes
 
