@@ -1,3 +1,4 @@
+@using Feirb.Web.Components.UI
 @using Feirb.Web.Services
 @inject IStringLocalizer<SharedResources> L
 @inject AuthenticationStateProvider AuthStateProvider
@@ -22,95 +23,46 @@
     <!-- Compose Button -->
     <div class="sidebar-compose">
         <NavLink class="btn btn-primary" href="compose">
-            <i class="bi bi-pencil-fill"></i>
+            <Icon Name="pencil-fill" />
             <span>@L["NavCompose"]</span>
         </NavLink>
     </div>
 
     <!-- Navigation -->
-    <nav class="sidebar-nav">
-        <!-- Dashboard -->
-        <div class="nav-section">
-            <ul class="nav-list">
-                <li>
-                    <NavLink class="nav-entry" href="" Match="NavLinkMatch.All">
-                        <i class="bi bi-speedometer2"></i>
-                        <span>@L["NavDashboard"]</span>
-                    </NavLink>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Main Section -->
-        <div class="nav-section">
-            <p class="nav-section-label">@L["NavMain"]</p>
-            <ul class="nav-list">
-                <li>
-                    <NavLink class="nav-entry" href="mail/inbox">
-                        <i class="bi bi-inbox"></i>
-                        <span>@L["NavInbox"]</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink class="nav-entry" href="mail/sent">
-                        <i class="bi bi-send"></i>
-                        <span>@L["NavSent"]</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink class="nav-entry" href="mail/drafts">
-                        <i class="bi bi-pencil-square"></i>
-                        <span>@L["NavDrafts"]</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink class="nav-entry" href="mail/trash">
-                        <i class="bi bi-trash"></i>
-                        <span>@L["NavTrash"]</span>
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink class="nav-entry" href="mail/archive">
-                        <i class="bi bi-archive"></i>
-                        <span>@L["NavArchive"]</span>
-                    </NavLink>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Bottom Section -->
-    <div class="sidebar-bottom">
-        <ul class="nav-list">
-            <li>
-                <NavLink class="nav-entry" href="settings">
-                    <i class="bi bi-gear"></i>
-                    <span>@L["NavSettings"]</span>
-                </NavLink>
-            </li>
-
-            <AuthorizeView Policy="RequireAdmin">
-                <Authorized>
-                    <li>
-                        <NavLink class="nav-entry" href="admin">
-                            <i class="bi bi-shield-lock"></i>
-                            <span>@L["NavAdmin"]</span>
-                        </NavLink>
-                    </li>
-                </Authorized>
-            </AuthorizeView>
-
-            <li>
-                <button class="nav-entry nav-entry-button" @onclick="LogoutAsync">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>@L["NavLogout"]</span>
-                </button>
-            </li>
-        </ul>
-    </div>
+    <SidebarMenu Sections="_sections" BottomItems="_bottomItems" />
 </aside>
 
 @code {
+    private IReadOnlyList<SidebarMenuSection> _sections = [];
+    private IReadOnlyList<SidebarMenuItem> _bottomItems = [];
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _isAdmin = authState.User.IsInRole("Admin");
+
+        _sections =
+        [
+            new([new("speedometer2", L["NavDashboard"], Href: "")]),
+            new(
+            [
+                new("inbox", L["NavInbox"], Href: "mail/inbox"),
+                new("send", L["NavSent"], Href: "mail/sent"),
+                new("pencil-square", L["NavDrafts"], Href: "mail/drafts"),
+                new("trash", L["NavTrash"], Href: "mail/trash"),
+                new("archive", L["NavArchive"], Href: "mail/archive")
+            ], Label: L["NavMain"])
+        ];
+
+        _bottomItems =
+        [
+            new("gear", L["NavSettings"], Href: "settings"),
+            new("shield-lock", L["NavAdmin"], Href: "admin", Visible: () => _isAdmin),
+            new("box-arrow-right", L["NavLogout"], OnClick: LogoutAsync)
+        ];
+    }
+
     private async Task LogoutAsync()
     {
         if (AuthStateProvider is JwtAuthenticationStateProvider jwtProvider)

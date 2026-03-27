@@ -1,97 +1,46 @@
 @page "/components-showcase"
+@page "/components-showcase/{Section}"
 @attribute [AllowAnonymous]
 @layout Feirb.Web.Layout.ShowcaseLayout
 @inject IJSRuntime JS
 
-<div class="showcase-container">
-    <!-- Mobile hamburger -->
-    <button class="showcase-hamburger d-md-none" @onclick="ToggleSidebar" aria-label="Toggle sidebar">
-        <Icon Name="list" Size="IconSize.Large" />
-    </button>
-
-    <!-- Sidebar backdrop (mobile) -->
-    @if (_sidebarOpen)
-    {
-        <div class="showcase-backdrop d-md-none" @onclick="ToggleSidebar"></div>
-    }
-
-    <!-- Sidebar -->
-    <aside class="showcase-sidebar @(_sidebarOpen ? "open" : "")" role="navigation" aria-label="Component navigation">
-        <div class="showcase-sidebar-header">
-            <Heading Level="HeadingLevel.Small" Icon="palette2">Feirb Components</Heading>
+@switch (Section)
+{
+    case null:
+    case "":
+        @RenderDesignFundamentalsSection()
+        break;
+    case "icon":
+        @RenderIconSection()
+        break;
+    case "heading":
+        @RenderHeadingSection()
+        break;
+    case "button":
+        @RenderButtonSection()
+        break;
+    case "circular-button":
+        @RenderCircularButtonSection()
+        break;
+    case "card":
+        @RenderCardSection()
+        break;
+    case "navigation-item":
+        @RenderNavigationItemSection()
+        break;
+    case "content-section":
+        @RenderContentSectionSection()
+        break;
+    case "sidebar-menu":
+        @RenderSidebarMenuSection()
+        break;
+    default:
+        <div class="text-center py-5">
+            <Icon Name="palette2" Size="IconSize.Large" Class="mb-3 d-block mx-auto" />
+            <p class="text-muted">Component not found.</p>
         </div>
-
-        @foreach (var category in _categories)
-        {
-            <div class="showcase-nav-section">
-                <button class="showcase-nav-section-label"
-                        @onclick="() => ToggleCategory(category.Name)"
-                        aria-expanded="@category.IsExpanded">
-                    <Icon Name="@(category.IsExpanded ? "chevron-down" : "chevron-right")" Size="IconSize.Small" />
-                    <span>@category.Name</span>
-                </button>
-                @if (category.IsExpanded)
-                {
-                    <ul class="showcase-nav-list">
-                        @foreach (var component in category.Components)
-                        {
-                            <li>
-                                <button class="showcase-nav-entry @(_selectedComponent == component ? "active" : "")"
-                                        @onclick="() => SelectComponent(component)">
-                                    @component
-                                </button>
-                            </li>
-                        }
-                        @if (category.Components.Length == 0)
-                        {
-                            <li class="showcase-nav-empty">No components yet</li>
-                        }
-                    </ul>
-                }
-            </div>
-        }
-    </aside>
-
-    <!-- Main content -->
-    <main class="showcase-main">
-        @switch (_selectedComponent)
-        {
-            case "Design Fundamentals":
-                @RenderDesignFundamentalsSection()
-                break;
-            case "Icon":
-                @RenderIconSection()
-                break;
-            case "Heading":
-                @RenderHeadingSection()
-                break;
-            case "Button":
-                @RenderButtonSection()
-                break;
-            case "CircularButton":
-                @RenderCircularButtonSection()
-                break;
-            case "Card":
-                @RenderCardSection()
-                break;
-            case "NavigationItem":
-                @RenderNavigationItemSection()
-                break;
-            case "ContentSection":
-                @RenderContentSectionSection()
-                break;
-            case "NavMenu":
-                @RenderNavMenuSection()
-                break;
-            default:
-                <div class="text-center py-5">
-                    <Icon Name="palette2" Size="IconSize.Large" Class="mb-3 d-block mx-auto" />
-                    <p class="text-muted">Select a component from the sidebar.</p>
-                </div>
-                break;
-        }
-    </main>
-</div>
+        break;
+}
 
 @* ────────────── Design Fundamentals ────────────── *@
 @{
@@ -623,106 +572,82 @@
         </div>;
 }
 
-@* ────────────── NavMenu Section ────────────── *@
+@* ────────────── SidebarMenu Section ────────────── *@
 @{
-    RenderFragment RenderNavMenuSection() =>
+    RenderFragment RenderSidebarMenuSection() =>
         @<div>
-            <Heading Level="HeadingLevel.Large" Icon="layout-sidebar">NavMenu</Heading>
+            <Heading Level="HeadingLevel.Large" Icon="layout-sidebar">SidebarMenu</Heading>
 
             <Card Class="mb-3 p-4">
                 <Heading Level="HeadingLevel.Small">Info</Heading>
-                <p>Fixed sidebar navigation used in <code>MainLayout</code>. Contains user profile, compose button, mail folder links, and bottom actions (settings, admin, logout). This is a layout component, not a reusable primitive.</p>
+                <p>Data-driven sidebar navigation with optional section headers and a bottom-pinned slot. Uses <code>NavLink</code> internally for link items with automatic active state tracking. Items can alternatively render as buttons via an <code>OnClick</code> callback.</p>
                 <table class="table table-sm">
-                    <thead><tr><th>Aspect</th><th>Details</th></tr></thead>
+                    <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
                     <tbody>
-                        <tr><td>Location</td><td><code>src/Feirb.Web/Layout/NavMenu.razor</code></td></tr>
-                        <tr><td>Width</td><td>16rem (fixed)</td></tr>
-                        <tr><td>Position</td><td>Fixed left, full viewport height</td></tr>
-                        <tr><td>Z-index</td><td>40</td></tr>
+                        <tr><td><code>Sections</code></td><td><code>IReadOnlyList&lt;SidebarMenuSection&gt;</code></td><td>required</td><td>Menu sections for the main scrollable area</td></tr>
+                        <tr><td><code>BottomItems</code></td><td><code>IReadOnlyList&lt;SidebarMenuItem&gt;?</code></td><td><code>null</code></td><td>Items pinned to the bottom of the sidebar</td></tr>
+                        <tr><td><code>AriaLabel</code></td><td><code>string</code></td><td><code>"Sidebar navigation"</code></td><td>Accessible label for the nav element</td></tr>
+                        <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
                     </tbody>
                 </table>
             </Card>
 
             <Card Class="mb-3 p-4">
-                <Heading Level="HeadingLevel.Small">Structure</Heading>
-                <p>The sidebar is divided into four sections:</p>
+                <Heading Level="HeadingLevel.Small">SidebarMenuItem</Heading>
+                <table class="table table-sm">
+                    <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>Icon</code></td><td><code>string</code></td><td>Bootstrap Icon name (required)</td></tr>
+                        <tr><td><code>Label</code></td><td><code>string</code></td><td>Display text (required)</td></tr>
+                        <tr><td><code>Href</code></td><td><code>string?</code></td><td>Navigation target; rendered via NavLink</td></tr>
+                        <tr><td><code>OnClick</code></td><td><code>Func&lt;Task&gt;?</code></td><td>Action callback; renders as button when set</td></tr>
+                        <tr><td><code>Visible</code></td><td><code>Func&lt;bool&gt;?</code></td><td>Controls visibility; defaults to always visible</td></tr>
+                    </tbody>
+                </table>
+            </Card>
+
+            <Card Class="mb-3 p-4">
+                <Heading Level="HeadingLevel.Small">SidebarMenuSection</Heading>
+                <table class="table table-sm">
+                    <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>Items</code></td><td><code>IReadOnlyList&lt;SidebarMenuItem&gt;</code></td><td>Menu items in this section (required)</td></tr>
+                        <tr><td><code>Label</code></td><td><code>string?</code></td><td>Optional section header text</td></tr>
+                    </tbody>
+                </table>
+            </Card>
+
+            <Card Class="mb-3 p-4">
+                <Heading Level="HeadingLevel.Small">Preview</Heading>
+                <p class="text-muted mb-3">The sidebar on this page is a live example of SidebarMenu. The main app NavMenu also uses it.</p>
                 <div class="showcase-preview-area">
                     <div class="showcase-navmenu-demo">
-                        <!-- Profile -->
-                        <div class="d-flex align-items-center gap-3 mb-3 pb-3" style="border-bottom: 1px solid rgba(0,0,0,0.08);">
-                            <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold" style="width: 2.5rem; height: 2.5rem; background-color: var(--bs-primary);">A</div>
-                            <div class="d-flex flex-column">
-                                <span class="fw-semibold" style="font-size: 0.875rem;">Admin</span>
-                                <span class="text-muted" style="font-size: 0.75rem;">admin@@feirb.local</span>
-                            </div>
-                        </div>
-
-                        <!-- Compose -->
-                        <div class="mb-3">
-                            <Button Variant="ButtonVariant.Primary" Icon="pencil-fill" Class="w-100 justify-content-center">Compose</Button>
-                        </div>
-
-                        <!-- Nav entries -->
-                        <div class="mb-3">
-                            <div class="d-flex align-items-center gap-3 px-3 py-2" style="color: var(--bs-primary); background: rgba(255,113,149,0.15); border-right: 3px solid var(--bs-primary); font-size: 0.875rem; font-weight: 500;">
-                                <Icon Name="speedometer2" /> <span>Dashboard</span>
-                            </div>
-                        </div>
-
                         <p class="px-3 mb-2" style="font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--feirb-on-surface-variant); font-weight: 600;">Main</p>
-                        @foreach (var (icon, label) in new[] { ("inbox", "Inbox"), ("send", "Sent"), ("pencil-square", "Drafts"), ("trash", "Trash"), ("archive", "Archive") })
+                        @foreach (var (icon, label) in new[] { ("inbox", "Inbox"), ("send", "Sent"), ("pencil-square", "Drafts") })
                         {
                             <div class="d-flex align-items-center gap-3 px-3 py-2" style="color: var(--feirb-on-surface-variant); font-size: 0.875rem; font-weight: 500;">
                                 <Icon Name="@icon" /> <span>@label</span>
                             </div>
                         }
-
-                        <!-- Bottom -->
                         <div class="mt-3 pt-3" style="border-top: 1px solid rgba(0,0,0,0.08);">
-                            @foreach (var (icon, label) in new[] { ("gear", "Settings"), ("shield-lock", "Admin"), ("box-arrow-right", "Logout") })
-                            {
-                                <div class="d-flex align-items-center gap-3 px-3 py-2" style="color: var(--feirb-on-surface-variant); font-size: 0.875rem; font-weight: 500;">
-                                    <Icon Name="@icon" /> <span>@label</span>
-                                </div>
-                            }
+                            <div class="d-flex align-items-center gap-3 px-3 py-2" style="color: var(--feirb-on-surface-variant); font-size: 0.875rem; font-weight: 500;">
+                                <Icon Name="gear" /> <span>Settings</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </Card>
 
             <Card Class="p-4">
-                <Heading Level="HeadingLevel.Small">CSS Classes</Heading>
-                <table class="table table-sm mb-0">
-                    <thead><tr><th>Class</th><th>Description</th></tr></thead>
-                    <tbody>
-                        <tr><td><code>.feirb-sidebar</code></td><td>Main sidebar container (fixed, 16rem, white bg)</td></tr>
-                        <tr><td><code>.sidebar-profile</code></td><td>User avatar + name/email section</td></tr>
-                        <tr><td><code>.nav-section</code></td><td>Grouped navigation block</td></tr>
-                        <tr><td><code>.nav-section-label</code></td><td>Section header (uppercase, 0.625rem, letter-spacing)</td></tr>
-                        <tr><td><code>.nav-entry</code></td><td>Individual nav link (flex, icon + label)</td></tr>
-                        <tr><td><code>.nav-entry.active</code></td><td>Active state (primary color, pink bg, right border)</td></tr>
-                        <tr><td><code>.sidebar-bottom</code></td><td>Bottom-pinned section (settings, admin, logout)</td></tr>
-                    </tbody>
-                </table>
+                <Heading Level="HeadingLevel.Small">Code</Heading>
+                <pre><code class="language-xml" @ref="_codeElement"></code></pre>
             </Card>
         </div>;
 }
 
 @code {
-    // Sidebar state
-    private bool _sidebarOpen;
-    private string _selectedComponent = "Design Fundamentals";
-
-    // Category model
-    private List<CategoryModel> _categories = new()
-    {
-        new("Foundations", true, "Design Fundamentals"),
-        new("Primitives", true, "Icon", "Heading", "Button", "CircularButton", "Card"),
-        new("Composite", false),
-        new("Forms", false),
-        new("Feedback", false),
-        new("Navigation", true, "NavigationItem", "ContentSection", "NavMenu")
-    };
+    [Parameter]
+    public string? Section { get; set; }
 
     // Icon playground
     private IconSize _iconSize = IconSize.Default;
@@ -759,15 +684,16 @@
     // Code highlight ref
     private ElementReference _codeElement;
 
-    private string CurrentCode => _selectedComponent switch
+    private string CurrentCode => Section switch
     {
-        "Icon" => GetIconCode(),
-        "Heading" => GetHeadingCode(),
-        "Button" => GetButtonCode(),
-        "CircularButton" => GetCircularButtonCode(),
-        "Card" => GetCardCode(),
-        "NavigationItem" => GetNavigationItemCode(),
-        "ContentSection" => GetContentSectionCode(),
+        "icon" => GetIconCode(),
+        "heading" => GetHeadingCode(),
+        "button" => GetButtonCode(),
+        "circular-button" => GetCircularButtonCode(),
+        "card" => GetCardCode(),
+        "navigation-item" => GetNavigationItemCode(),
+        "content-section" => GetContentSectionCode(),
+        "sidebar-menu" => GetSidebarMenuCode(),
         _ => ""
     };
 
@@ -781,21 +707,6 @@
         {
             // highlight.js may not be loaded yet on first render
         }
-    }
-
-    private void ToggleSidebar() => _sidebarOpen = !_sidebarOpen;
-
-    private void ToggleCategory(string name)
-    {
-        var category = _categories.Find(c => c.Name == name);
-        if (category is not null)
-            category.IsExpanded = !category.IsExpanded;
-    }
-
-    private void SelectComponent(string name)
-    {
-        _selectedComponent = name;
-        _sidebarOpen = false;
     }
 
     private static IconSize GetCircularIconSize(ButtonSize size) => size switch
@@ -878,10 +789,26 @@
             """;
     }
 
-    private class CategoryModel(string name, bool isExpanded, params string[] components)
-    {
-        public string Name { get; } = name;
-        public bool IsExpanded { get; set; } = isExpanded;
-        public string[] Components { get; } = components;
-    }
+    private static string GetSidebarMenuCode() =>
+        """
+        <SidebarMenu Sections="_sections" BottomItems="_bottomItems" />
+
+        @code {
+            private IReadOnlyList<SidebarMenuSection> _sections =
+            [
+                new([new("speedometer2", "Dashboard", Href: "")]),
+                new(
+                [
+                    new("inbox", "Inbox", Href: "mail/inbox"),
+                    new("send", "Sent", Href: "mail/sent")
+                ], Label: "Main")
+            ];
+
+            private IReadOnlyList<SidebarMenuItem> _bottomItems =
+            [
+                new("gear", "Settings", Href: "settings"),
+                new("box-arrow-right", "Logout", OnClick: LogoutAsync)
+            ];
+        }
+        """;
 }

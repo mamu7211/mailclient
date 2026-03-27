@@ -1,5 +1,37 @@
+@using Feirb.Web.Components.UI
 @inherits LayoutComponentBase
 
-<div class="showcase-layout">
-    @Body
+<div class="showcase-container">
+    <aside class="showcase-sidebar" role="complementary">
+        <div class="showcase-sidebar-header">
+            <Heading Level="HeadingLevel.Small" Icon="palette2">Feirb Components</Heading>
+        </div>
+
+        <SidebarMenu Sections="_sections" />
+    </aside>
+
+    <main class="showcase-main">
+        @Body
+    </main>
 </div>
+
+@code {
+    private static readonly IReadOnlyList<SidebarMenuSection> _sections =
+    [
+        new([new("brush", "Design Fundamentals", Href: "components-showcase")]),
+        new(
+        [
+            new("image", "Icon", Href: "components-showcase/icon"),
+            new("type-h1", "Heading", Href: "components-showcase/heading"),
+            new("hand-index-thumb", "Button", Href: "components-showcase/button"),
+            new("circle", "CircularButton", Href: "components-showcase/circular-button"),
+            new("card-text", "Card", Href: "components-showcase/card")
+        ], Label: "Primitives"),
+        new(
+        [
+            new("box-arrow-right", "NavigationItem", Href: "components-showcase/navigation-item"),
+            new("layout-text-sidebar", "ContentSection", Href: "components-showcase/content-section"),
+            new("layout-sidebar", "SidebarMenu", Href: "components-showcase/sidebar-menu")
+        ], Label: "Navigation")
+    ];
+}

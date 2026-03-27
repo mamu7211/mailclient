@@ -142,6 +142,60 @@ Card with header (icon + heading) and body for child content. Located in `src/Fe
 
 **Primitives used:** `Icon` (for header icon), `Heading` (for title/subtitle)
 
+## SidebarMenu
+
+Data-driven sidebar navigation with optional section headers and a bottom-pinned slot. Uses `NavLink` internally for active state tracking.
+
+```razor
+<SidebarMenu Sections="_sections" BottomItems="_bottomItems" />
+
+@code {
+    private IReadOnlyList<SidebarMenuSection> _sections =
+    [
+        new([new("speedometer2", "Dashboard", Href: "")]),
+        new(
+        [
+            new("inbox", "Inbox", Href: "mail/inbox"),
+            new("send", "Sent", Href: "mail/sent")
+        ], Label: "Main")
+    ];
+
+    private IReadOnlyList<SidebarMenuItem> _bottomItems =
+    [
+        new("gear", "Settings", Href: "settings"),
+        new("box-arrow-right", "Logout", OnClick: LogoutAsync)
+    ];
+}
+```
+
+### SidebarMenu Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Sections` | `IReadOnlyList<SidebarMenuSection>` (required) | — | Menu sections for the main scrollable area |
+| `BottomItems` | `IReadOnlyList<SidebarMenuItem>?` | `null` | Items pinned to the bottom |
+| `AriaLabel` | `string` | `"Sidebar navigation"` | Accessible label for the nav element |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+### SidebarMenuItem Record
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Icon` | `string` (required) | — | Bootstrap Icon name without `bi-` prefix |
+| `Label` | `string` (required) | — | Display text |
+| `Href` | `string?` | `null` | Navigation target (renders via `NavLink`) |
+| `OnClick` | `Func<Task>?` | `null` | Action callback (renders as `<button>` when set) |
+| `Visible` | `Func<bool>?` | `null` | Controls visibility; defaults to always visible |
+
+### SidebarMenuSection Record
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Items` | `IReadOnlyList<SidebarMenuItem>` (required) | — | Menu items in this section |
+| `Label` | `string?` | `null` | Optional section header text |
+
+**Primitives used:** `Icon` (for item icons)
+
 ## Enums
 
 Defined in `UIEnums.cs`:

@@ -1,0 +1,100 @@
+@namespace Feirb.Web.Components.UI
+
+@* Data-driven sidebar menu with optional section headers and a bottom-pinned slot. *@
+<nav class="feirb-sidebar-menu @Class" aria-label="@AriaLabel">
+    <div class="sidebar-menu-main">
+        @foreach (var menuSection in Sections)
+        {
+            <div class="sidebar-menu-section">
+                @if (!string.IsNullOrEmpty(menuSection.Label))
+                {
+                    <p class="sidebar-menu-section-label">@menuSection.Label</p>
+                }
+                <ul class="sidebar-menu-list">
+                    @foreach (var item in menuSection.Items)
+                    {
+                        if (item.Visible is not null && !item.Visible())
+                        {
+                            continue;
+                        }
+
+                        <li>
+                            @if (item.OnClick is not null)
+                            {
+                                <button class="sidebar-menu-entry" @onclick="item.OnClick">
+                                    <Icon Name="@item.Icon" />
+                                    <span>@item.Label</span>
+                                </button>
+                            }
+                            else
+                            {
+                                var match = string.IsNullOrEmpty(item.Href) || item.Href == "/"
+                                    ? NavLinkMatch.All
+                                    : NavLinkMatch.Prefix;
+
+                                <NavLink class="sidebar-menu-entry" href="@item.Href" Match="@match">
+                                    <Icon Name="@item.Icon" />
+                                    <span>@item.Label</span>
+                                </NavLink>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+
+    @if (BottomItems is { Count: > 0 })
+    {
+        <div class="sidebar-menu-bottom">
+            <ul class="sidebar-menu-list">
+                @foreach (var item in BottomItems)
+                {
+                    if (item.Visible is not null && !item.Visible())
+                    {
+                        continue;
+                    }
+
+                    <li>
+                        @if (item.OnClick is not null)
+                        {
+                            <button class="sidebar-menu-entry" @onclick="item.OnClick">
+                                <Icon Name="@item.Icon" />
+                                <span>@item.Label</span>
+                            </button>
+                        }
+                        else
+                        {
+                            var match = string.IsNullOrEmpty(item.Href) || item.Href == "/"
+                                ? NavLinkMatch.All
+                                : NavLinkMatch.Prefix;
+
+                            <NavLink class="sidebar-menu-entry" href="@item.Href" Match="@match">
+                                <Icon Name="@item.Icon" />
+                                <span>@item.Label</span>
+                            </NavLink>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</nav>
+
+@code {
+    /// <summary>Menu sections for the main scrollable area.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<SidebarMenuSection> Sections { get; set; } = [];
+
+    /// <summary>Items pinned to the bottom of the sidebar.</summary>
+    [Parameter]
+    public IReadOnlyList<SidebarMenuItem>? BottomItems { get; set; }
+
+    /// <summary>Accessible label for the nav element.</summary>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Sidebar navigation";
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}
