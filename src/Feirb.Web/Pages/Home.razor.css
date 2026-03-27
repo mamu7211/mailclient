@@ -1,31 +1,71 @@
 ::deep .grid-stack-item-content {
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 1rem;
+    border-radius: 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     position: relative;
 }
 
+::deep .grid-stack-item-content.edit-mode {
+    cursor: grab;
+}
+
+::deep .grid-stack-item-content.edit-mode:active {
+    cursor: grabbing;
+}
+
 ::deep .widget-card {
     height: 100%;
+    overflow: hidden;
+    border-radius: 2rem;
 }
 
-::deep .widget-remove-btn {
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-}
-
-::deep .widget-config-btn {
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
+/* Edit-mode controls container: top-right */
+::deep .widget-edit-controls {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.4rem;
     z-index: 10;
-    padding: 0.1rem 0.35rem;
-    line-height: 1;
+}
+
+/* Edit-mode circular buttons */
+::deep .widget-corner-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    padding: 0;
+}
+
+::deep .widget-corner-btn:hover {
+    opacity: 0.85;
+}
+
+/* Settings (gear) */
+::deep .widget-settings-btn {
+    background-color: var(--feirb-on-surface);
+    color: var(--feirb-surface);
+}
+
+/* Close/Remove */
+::deep .widget-close-btn {
+    background-color: var(--bs-primary);
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+/* Hide GridStack native resize handle */
+::deep .grid-stack-item > .ui-resizable-handle {
+    display: none !important;
 }
 
 ::deep .widget-catalog-sidebar {

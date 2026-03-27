@@ -10,6 +10,7 @@
     {
         <div class="card mb-2 widget-catalog-item" role="button" @onclick="() => OnWidgetSelected.InvokeAsync(widget)">
             <div class="card-body p-2">
+                <i class="bi @widget.Icon d-block mb-1" style="font-size: 2rem; color: var(--feirb-on-surface);"></i>
                 <div class="fw-semibold small">@L[widget.NameKey]</div>
                 <div class="text-muted" style="font-size: 0.75rem;">@L[widget.DescriptionKey]</div>
             </div>

@@ -1,7 +1,7 @@
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 
-<WidgetCard InstanceId="@InstanceId">
+<WidgetCard InstanceId="@InstanceId" EditMode="EditMode" OnRemove="OnRemove">
     <Content>
         <div class="h-100 d-flex flex-column align-items-center justify-content-center">
             <span class="text-muted small">@L["WidgetMailCountName"]</span>
@@ -11,7 +11,7 @@
             }
             else
             {
-                <span class="display-3 fw-bold text-primary">@_totalCount</span>
+                <span class="fw-bold text-primary" style="font-size: 6rem; line-height: 1;">@_totalCount</span>
             }
         </div>
     </Content>
@@ -22,6 +22,8 @@
     private bool _loading = true;
 
     [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
+    [Parameter] public bool EditMode { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

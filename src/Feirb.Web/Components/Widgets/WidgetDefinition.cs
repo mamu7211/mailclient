@@ -5,6 +5,7 @@ public sealed record WidgetDefinition(
     string NameKey,
     string DescriptionKey,
     Type ComponentType,
+    string Icon = "bi-puzzle",
     int DefaultWidth = 4,
     int DefaultHeight = 2,
     string? DefaultConfig = null);

@@ -17,7 +17,7 @@ window.gridstackInterop = {
             column: 12,
             animate: true,
             disableDrag: !isEditMode,
-            disableResize: !isEditMode,
+            disableResize: true,
             float: false,
         }, el);
 
@@ -33,13 +33,7 @@ window.gridstackInterop = {
 
     setEditMode: function (enabled) {
         if (!this._grid) return;
-        if (enabled) {
-            this._grid.enableMove(true);
-            this._grid.enableResize(true);
-        } else {
-            this._grid.enableMove(false);
-            this._grid.enableResize(false);
-        }
+        this._grid.enableMove(enabled);
     },
 
     serialize: function () {

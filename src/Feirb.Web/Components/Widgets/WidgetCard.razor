@@ -2,13 +2,20 @@
 @inject IStringLocalizer<SharedResources> L
 
 <div class="widget-card h-100 d-flex flex-column p-3 position-relative">
-    @if (ConfigDialog is not null)
+    @if (EditMode)
     {
-        <button class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-1 widget-config-btn"
-                @onclick="OpenSettings"
-                @onclick:stopPropagation="true">
-            <i class="bi bi-gear"></i>
-        </button>
+        <div class="widget-edit-controls">
+            <button class="widget-corner-btn widget-settings-btn"
+                    @onclick="OpenSettings"
+                    @onclick:stopPropagation="true">
+                <i class="bi bi-gear"></i>
+            </button>
+            <button class="widget-corner-btn widget-close-btn"
+                    @onclick="OnRemove"
+                    @onclick:stopPropagation="true">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
     }
     @Content
 </div>
@@ -29,6 +36,8 @@
 
     [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
     [Parameter, EditorRequired] public RenderFragment Content { get; set; } = null!;
+    [Parameter] public bool EditMode { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public RenderFragment? ConfigDialog { get; set; }
     [Parameter] public EventCallback<string?> OnConfigLoaded { get; set; }
     [Parameter] public Func<string?>? GetPendingConfig { get; set; }

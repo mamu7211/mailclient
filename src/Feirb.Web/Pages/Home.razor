@@ -13,21 +13,12 @@
         <div class="grid-stack" id="dashboard-grid">
             @foreach (var widget in _activeWidgets)
             {
-                <div class="grid-stack-item" gs-id="@widget.InstanceId"
+                <div @key="widget.InstanceId" class="grid-stack-item" gs-id="@widget.InstanceId"
                      gs-w="@widget.W" gs-h="@widget.H"
                      gs-x="@widget.X" gs-y="@widget.Y">
-                    <div class="grid-stack-item-content">
-                        @if (_editMode)
-                        {
-                            <button class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-1 widget-remove-btn"
-                                    style="z-index: 10; padding: 0.1rem 0.35rem; line-height: 1;"
-                                    @onclick="() => RemoveWidgetAsync(widget.InstanceId)"
-                                    @onclick:stopPropagation="true">
-                                <i class="bi bi-x"></i>
-                            </button>
-                        }
+                    <div class="grid-stack-item-content @(_editMode ? "edit-mode" : "")">
                         <DynamicComponent Type="widget.Definition.ComponentType"
-                                         Parameters="@(new Dictionary<string, object> { ["InstanceId"] = widget.InstanceId })" />
+                                         Parameters="@(new Dictionary<string, object> { ["InstanceId"] = widget.InstanceId, ["EditMode"] = _editMode, ["OnRemove"] = EventCallback.Factory.Create(this, () => RemoveWidgetAsync(widget.InstanceId)) })" />
                     </div>
                 </div>
             }

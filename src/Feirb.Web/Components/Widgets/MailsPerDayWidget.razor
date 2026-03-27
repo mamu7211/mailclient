@@ -4,6 +4,8 @@
 @implements IAsyncDisposable
 
 <WidgetCard InstanceId="@InstanceId"
+            EditMode="EditMode"
+            OnRemove="OnRemove"
             OnConfigLoaded="OnConfigLoadedAsync"
             GetPendingConfig="GetPendingConfig">
     <Content>
@@ -45,6 +47,8 @@
     private int _pendingDays = 7;
 
     [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
+    [Parameter] public bool EditMode { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
 
     private async Task OnConfigLoadedAsync(string? config)
     {
