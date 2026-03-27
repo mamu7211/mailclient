@@ -888,4 +888,73 @@
   <data name="SettingsLanguageSubtitle" xml:space="preserve">
     <value>Scegli la lingua di visualizzazione</value>
   </data>
+  <data name="SettingsLabelsTitle" xml:space="preserve">
+    <value>Etichette</value>
+  </data>
+  <data name="SettingsLabelsSubtitle" xml:space="preserve">
+    <value>Organizza le tue e-mail con etichette personalizzate</value>
+  </data>
+  <data name="PageTitleLabels" xml:space="preserve">
+    <value>Etichette - Feirb</value>
+  </data>
+  <data name="BreadcrumbLabels" xml:space="preserve">
+    <value>Etichette</value>
+  </data>
+  <data name="LabelsHeading" xml:space="preserve">
+    <value>Etichette</value>
+  </data>
+  <data name="LabelsSubtitle" xml:space="preserve">
+    <value>Crea e gestisci etichette per categorizzare le tue e-mail. Le etichette ti aiutano a organizzare la posta in arrivo e a trovare i messaggi rapidamente.</value>
+  </data>
+  <data name="ButtonCreateLabel" xml:space="preserve">
+    <value>Crea etichetta</value>
+  </data>
+  <data name="NoLabelsFound" xml:space="preserve">
+    <value>Nessuna etichetta creata.</value>
+  </data>
+  <data name="LoadingLabels" xml:space="preserve">
+    <value>Caricamento etichette...</value>
+  </data>
+  <data name="LabelNameField" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="LabelDescriptionField" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="LabelColorField" xml:space="preserve">
+    <value>Colore</value>
+  </data>
+  <data name="PlaceholderLabelName" xml:space="preserve">
+    <value>es. Lavoro, Personale, Urgente</value>
+  </data>
+  <data name="PlaceholderLabelDescription" xml:space="preserve">
+    <value>Descrizione opzionale per questa etichetta</value>
+  </data>
+  <data name="ButtonRandomizeColor" xml:space="preserve">
+    <value>Casuale</value>
+  </data>
+  <data name="CreateLabelTitle" xml:space="preserve">
+    <value>Crea etichetta</value>
+  </data>
+  <data name="EditLabelTitle" xml:space="preserve">
+    <value>Modifica etichetta</value>
+  </data>
+  <data name="ConfirmDeleteLabelTitle" xml:space="preserve">
+    <value>Elimina etichetta</value>
+  </data>
+  <data name="ConfirmDeleteLabelMessage" xml:space="preserve">
+    <value>Sei sicuro di voler eliminare l'etichetta "{0}"? Questa azione non può essere annullata.</value>
+  </data>
+  <data name="SuccessLabelCreated" xml:space="preserve">
+    <value>Etichetta creata con successo.</value>
+  </data>
+  <data name="SuccessLabelUpdated" xml:space="preserve">
+    <value>Etichetta aggiornata con successo.</value>
+  </data>
+  <data name="SuccessLabelDeleted" xml:space="preserve">
+    <value>Etichetta eliminata con successo.</value>
+  </data>
+  <data name="ErrorLabelFailed" xml:space="preserve">
+    <value>Si è verificato un errore durante l'elaborazione dell'etichetta.</value>
+  </data>
 </root>

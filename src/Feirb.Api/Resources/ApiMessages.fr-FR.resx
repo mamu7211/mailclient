@@ -120,4 +120,10 @@
   <data name="ResetEmailDisclaimer" xml:space="preserve">
     <value>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet e-mail.</value>
   </data>
+  <data name="LabelNotFound" xml:space="preserve">
+    <value>Label introuvable.</value>
+  </data>
+  <data name="LabelDeleted" xml:space="preserve">
+    <value>Label supprimé avec succès.</value>
+  </data>
 </root>

@@ -1,0 +1,339 @@
+@page "/settings/labels"
+@attribute [Authorize]
+@using Feirb.Shared.Settings
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
+@implements IDisposable
+
+<PageTitle>@L["PageTitleLabels"]</PageTitle>
+
+<div class="mb-4">
+    <h1 class="mb-1">@L["LabelsHeading"]</h1>
+    <p class="text-muted mb-0">@L["LabelsSubtitle"]</p>
+</div>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible py-2" role="alert">
+        @_errorMessage
+        <button type="button" class="btn-close" @onclick="() => _errorMessage = null"></button>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["LoadingLabels"]</span>
+        </div>
+        <p class="mt-2 text-muted">@L["LoadingLabels"]</p>
+    </div>
+}
+else if (_labels is null || _labels.Count == 0)
+{
+    <p class="text-muted">@L["NoLabelsFound"]</p>
+}
+else
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var label in _labels)
+        {
+            <div class="label-card">
+                <div class="d-flex align-items-center gap-3 flex-grow-1 min-width-0">
+                    <span class="label-swatch" style="background-color: @(label.Color ?? "#888888");"></span>
+                    <div class="min-width-0">
+                        <div class="fw-semibold">@label.Name</div>
+                        @if (!string.IsNullOrEmpty(label.Description))
+                        {
+                            <div class="text-muted small text-truncate">@label.Description</div>
+                        }
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => OpenEditModal(label)" title="@L["ButtonEdit"]">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(label)" title="@L["ButtonDelete"]">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@* Create / Edit Modal *@
+@if (_showEditModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@(_editingLabel is null ? L["CreateLabelTitle"] : L["EditLabelTitle"])</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <EditForm Model="_formModel" OnValidSubmit="HandleSaveAsync">
+                    <DataAnnotationsValidator />
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="labelName" class="form-label">@L["LabelNameField"]</label>
+                            <InputText id="labelName" class="form-control" @bind-Value="_formModel.Name" placeholder="@L["PlaceholderLabelName"]" />
+                            <ValidationMessage For="() => _formModel.Name" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="labelDescription" class="form-label">@L["LabelDescriptionField"]</label>
+                            <InputTextArea id="labelDescription" class="form-control" rows="3" @bind-Value="_formModel.Description" placeholder="@L["PlaceholderLabelDescription"]" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="labelColor" class="form-label">@L["LabelColorField"]</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="color" id="labelColor" class="form-control form-control-color"
+                                       value="@_formModel.Color" @onchange="OnColorChanged" />
+                                <input type="text" class="form-control" style="max-width: 8rem;"
+                                       value="@_formModel.Color" @onchange="OnColorTextChanged" />
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RandomizeColor">
+                                    <i class="bi bi-shuffle me-1"></i>@L["ButtonRandomizeColor"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">@L["ButtonCancel"]</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                            @if (_isSaving)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            }
+                            @L["ButtonSave"]
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@* Delete Confirmation Modal *@
+@if (_showDeleteModal && _deletingLabel is not null)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@L["ConfirmDeleteLabelTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="() => _showDeleteModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@string.Format(L["ConfirmDeleteLabelMessage"], _deletingLabel.Name)</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteModal = false">@L["ButtonCancel"]</button>
+                    <button type="button" class="btn btn-danger" @onclick="HandleDeleteAsync" disabled="@_isDeleting">
+                        @if (_isDeleting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                        }
+                        @L["ButtonConfirm"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<LabelResponse>? _labels;
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private bool _isDeleting;
+    private string? _errorMessage;
+
+    private bool _showEditModal;
+    private bool _showDeleteModal;
+    private LabelResponse? _editingLabel;
+    private LabelResponse? _deletingLabel;
+    private LabelFormModel _formModel = new();
+
+    protected override void OnInitialized()
+    {
+        ToolbarState.SetActions(
+        [
+            new ToolbarAction(L["ButtonCreateLabel"], "btn-primary", () => { OpenCreateModal(); return Task.CompletedTask; }, "plus-lg")
+        ]);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadLabelsAsync();
+    }
+
+    public void Dispose() => ToolbarState.Clear();
+
+    private async Task LoadLabelsAsync()
+    {
+        try
+        {
+            _labels = await Http.GetFromJsonAsync<List<LabelResponse>>("/api/settings/labels");
+        }
+        catch
+        {
+            _errorMessage = L["ErrorLabelFailed"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        _editingLabel = null;
+        _formModel = new LabelFormModel { Color = GenerateRandomColor() };
+        _showEditModal = true;
+        StateHasChanged();
+    }
+
+    private void OpenEditModal(LabelResponse label)
+    {
+        _editingLabel = label;
+        _formModel = new LabelFormModel
+        {
+            Name = label.Name,
+            Description = label.Description,
+            Color = label.Color ?? "#888888",
+        };
+        _showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        _showEditModal = false;
+        _editingLabel = null;
+    }
+
+    private void OpenDeleteModal(LabelResponse label)
+    {
+        _deletingLabel = label;
+        _showDeleteModal = true;
+    }
+
+    private async Task HandleSaveAsync()
+    {
+        if (_isSaving) return;
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            HttpResponseMessage response;
+
+            if (_editingLabel is null)
+            {
+                var request = new CreateLabelRequest(_formModel.Name!, _formModel.Color, _formModel.Description);
+                response = await Http.PostAsJsonAsync("/api/settings/labels", request);
+            }
+            else
+            {
+                var request = new UpdateLabelRequest(_formModel.Name!, _formModel.Color, _formModel.Description);
+                response = await Http.PutAsJsonAsync($"/api/settings/labels/{_editingLabel.Id}", request);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                var message = _editingLabel is null ? L["SuccessLabelCreated"] : L["SuccessLabelUpdated"];
+                Notifications.Add(message, NotificationSeverity.Success);
+                CloseEditModal();
+                _isLoading = true;
+                await LoadLabelsAsync();
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                _errorMessage = error?.Message ?? L["ErrorLabelFailed"];
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ErrorLabelFailed"];
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private async Task HandleDeleteAsync()
+    {
+        if (_isDeleting || _deletingLabel is null) return;
+        _isDeleting = true;
+
+        try
+        {
+            var response = await Http.DeleteAsync($"/api/settings/labels/{_deletingLabel.Id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["SuccessLabelDeleted"], NotificationSeverity.Success);
+                _showDeleteModal = false;
+                _deletingLabel = null;
+                _isLoading = true;
+                await LoadLabelsAsync();
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                _errorMessage = error?.Message ?? L["ErrorLabelFailed"];
+                _showDeleteModal = false;
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ErrorLabelFailed"];
+            _showDeleteModal = false;
+        }
+        finally
+        {
+            _isDeleting = false;
+        }
+    }
+
+    private void OnColorChanged(ChangeEventArgs e)
+    {
+        _formModel.Color = e.Value?.ToString() ?? "#888888";
+    }
+
+    private void OnColorTextChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? "";
+        if (value.Length == 7 && value.StartsWith('#'))
+            _formModel.Color = value;
+    }
+
+    private void RandomizeColor()
+    {
+        _formModel.Color = GenerateRandomColor();
+    }
+
+    private static string GenerateRandomColor()
+    {
+        var bytes = new byte[3];
+        Random.Shared.NextBytes(bytes);
+        return $"#{bytes[0]:X2}{bytes[1]:X2}{bytes[2]:X2}";
+    }
+
+    private sealed class LabelFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(50)]
+        public string? Name { get; set; }
+
+        public string? Description { get; set; }
+
+        [System.ComponentModel.DataAnnotations.StringLength(7)]
+        public string? Color { get; set; }
+    }
+
+    private sealed record ErrorResponse(string Message);
+}
