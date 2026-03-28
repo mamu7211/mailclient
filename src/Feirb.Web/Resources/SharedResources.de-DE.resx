@@ -1077,6 +1077,9 @@
   <data name="PageHelpOutgoingSmtp" xml:space="preserve">
     <value>Der System-SMTP-Server wird für den Versand von Systembenachrichtigungen und E-Mails verwendet, die nicht an ein bestimmtes Benutzerpostfach gebunden sind. Konfigurieren Sie die Serververbindung und die Standard-Absenderidentität.</value>
   </data>
+  <data name="LabelPreview" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
   <data name="ButtonDiscard" xml:space="preserve">
     <value>Verwerfen</value>
   </data>

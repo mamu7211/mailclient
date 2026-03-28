@@ -41,9 +41,8 @@ else
         {
             <div class="label-card">
                 <div class="d-flex align-items-center gap-3 flex-grow-1 min-width-0">
-                    <span class="label-swatch" style="background-color: @(label.Color ?? "#888888");"></span>
+                    <LabelPill Name="@label.Name" Color="@label.Color" />
                     <div class="min-width-0">
-                        <div class="fw-semibold">@label.Name</div>
                         @if (!string.IsNullOrEmpty(label.Description))
                         {
                             <div class="text-muted small text-truncate">@label.Description</div>
@@ -95,6 +94,14 @@ else
                                 <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="RandomizeColor" Icon="shuffle">
                                     @L["ButtonRandomizeColor"]
                                 </Button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">@L["LabelPreview"]</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <LabelPill Name="@(_formModel.Name ?? "Label")" Color="@_formModel.Color" Size="LabelPillSize.Small" />
+                                <LabelPill Name="@(_formModel.Name ?? "Label")" Color="@_formModel.Color" Size="LabelPillSize.Medium" />
+                                <LabelPill Name="@(_formModel.Name ?? "Label")" Color="@_formModel.Color" Size="LabelPillSize.Large" />
                             </div>
                         </div>
                     </div>

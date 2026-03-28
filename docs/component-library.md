@@ -258,6 +258,26 @@ Mutually exclusive toggle buttons with radio group semantics. Exactly one item i
 
 **Accessibility:** `role="radiogroup"` on container, `role="radio"` + `aria-checked` on each button. Arrow keys move selection, Home/End jump to first/last.
 
+## LabelPill
+
+Tag-shaped badge for displaying user-created labels. Has a pointed right edge (arrow) and a rounded left edge. Text color (white or black) is automatically determined by WCAG relative luminance of the background color.
+
+```razor
+<LabelPill Name="Important" Color="#b6004f" />
+<LabelPill Name="Work" Color="#1D76DB" Size="LabelPillSize.Small" />
+<LabelPill Name="Personal" Color="#0E8A16" Size="LabelPillSize.Large" />
+<LabelPill Name="Uncategorized" />  @* Falls back to black background *@
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Name` | `string` (required) | — | Label display name |
+| `Color` | `string?` | `null` | Hex color for background (e.g. `#b6004f`). Falls back to `#000000` |
+| `Size` | `LabelPillSize` | `Medium` | `Small`, `Medium`, `Large` |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+Long label names are truncated with ellipsis at `max-width: 12rem`. The `title` attribute shows the full name on hover.
+
 ## Enums
 
 Defined in `UIEnums.cs`:
@@ -267,6 +287,7 @@ Defined in `UIEnums.cs`:
 - **`ButtonSize`**: `Small`, `Medium`, `Large`
 - **`IconPosition`**: `Left`, `Right`
 - **`HeadingLevel`**: `Large`, `Medium`, `Small`
+- **`LabelPillSize`**: `Small`, `Medium`, `Large`
 
 ## Design Tokens
 

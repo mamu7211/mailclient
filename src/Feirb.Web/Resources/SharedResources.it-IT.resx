@@ -1077,6 +1077,9 @@
   <data name="PageHelpOutgoingSmtp" xml:space="preserve">
     <value>Il server SMTP di sistema viene utilizzato per inviare notifiche di sistema e e-mail non legate a una casella di posta utente specifica. Configura la connessione al server e l'identità del mittente predefinita.</value>
   </data>
+  <data name="LabelPreview" xml:space="preserve">
+    <value>Anteprima</value>
+  </data>
   <data name="ButtonDiscard" xml:space="preserve">
     <value>Scarta</value>
   </data>

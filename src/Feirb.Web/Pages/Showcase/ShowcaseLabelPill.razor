@@ -1,0 +1,118 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="LabelPill" Icon="tag" Subtitle="Colored pill badge for user-created labels with WCAG contrast" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Colored pill badge for displaying user-created labels. Text color (white or black) is automatically determined by WCAG relative luminance of the background color.</p>
+    <table class="table table-sm">
+        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+            <tr><td><code>Name</code></td><td><code>string</code></td><td>required</td><td>Label display name</td></tr>
+            <tr><td><code>Color</code></td><td><code>string?</code></td><td><code>null</code></td><td>Hex background color. Falls back to <code>#000000</code></td></tr>
+            <tr><td><code>Size</code></td><td><code>LabelPillSize</code></td><td><code>Medium</code></td><td>Small, Medium, Large</td></tr>
+            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
+        </tbody>
+    </table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Name:</label>
+            <input type="text" class="form-control form-control-sm" style="max-width: 12rem;"
+                   @bind="_name" @bind:event="oninput" />
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Color:</label>
+            <input type="color" class="form-control form-control-color form-control-sm"
+                   value="@_color" @onchange="e => _color = e.Value?.ToString() ?? _color" />
+            <input type="text" class="form-control form-control-sm" style="max-width: 7rem;"
+                   value="@_color" @onchange="OnColorTextChanged" />
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Size:</label>
+            <select class="form-select form-select-sm w-auto" @bind="_size">
+                <option value="@LabelPillSize.Small">Small</option>
+                <option value="@LabelPillSize.Medium">Medium</option>
+                <option value="@LabelPillSize.Large">Large</option>
+            </select>
+        </div>
+    </div>
+    <div class="showcase-preview-area">
+        <LabelPill Name="@_name" Color="@_color" Size="@_size" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Size Variants</Heading>
+    <div class="d-flex align-items-center gap-3">
+        <LabelPill Name="Small" Color="@_color" Size="LabelPillSize.Small" />
+        <LabelPill Name="Medium" Color="@_color" Size="LabelPillSize.Medium" />
+        <LabelPill Name="Large" Color="@_color" Size="LabelPillSize.Large" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Contrast Examples</Heading>
+    <p class="text-muted mb-3">Text color is automatically white or black based on background luminance.</p>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        @foreach (var (name, color) in _contrastExamples)
+        {
+            <LabelPill Name="@name" Color="@color" />
+        }
+        <LabelPill Name="No color" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Truncation</Heading>
+    <p class="text-muted mb-3">Long names are truncated with ellipsis. Hover to see the full name.</p>
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <LabelPill Name="Short" Color="#6f42c1" />
+        <LabelPill Name="A moderately long label name" Color="#6f42c1" />
+        <LabelPill Name="An extremely long label name that should definitely be truncated with an ellipsis" Color="#6f42c1" />
+    </div>
+</Card>
+
+@code {
+    private string _name = "Important";
+    private string _color = "#b6004f";
+    private LabelPillSize _size = LabelPillSize.Medium;
+    private ElementReference _codeElement;
+
+    private static readonly (string Name, string Color)[] _contrastExamples =
+    [
+        ("White bg", "#ffffff"),
+        ("Black bg", "#000000"),
+        ("Primary", "#b6004f"),
+        ("Warning", "#FFE04A"),
+        ("Green", "#198754"),
+        ("Blue", "#0d6efd"),
+        ("Purple", "#6f42c1"),
+        ("Teal", "#20c997")
+    ];
+
+    private void OnColorTextChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString() ?? "";
+        if (value.Length == 7 && value.StartsWith('#'))
+            _color = value;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        $"""<LabelPill Name="{_name}" Color="{_color}"{(_size != LabelPillSize.Medium ? $" Size=\"LabelPillSize.{_size}\"" : "")} />""";
+}

@@ -1,0 +1,63 @@
+@namespace Feirb.Web.Components.UI
+
+@* Tag-shaped badge for displaying user-created labels. *@
+<span class="feirb-label-pill @SizeCss @Class"
+      style="background-color: @BackgroundColor; color: @TextColor;"
+      title="@Name">
+    <span class="feirb-label-pill-hole"></span>@Name
+</span>
+
+@code {
+    /// <summary>Label display name.</summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+
+    /// <summary>Hex color for the pill background (e.g. "#b6004f"). Falls back to black.</summary>
+    [Parameter]
+    public string? Color { get; set; }
+
+    /// <summary>Pill size.</summary>
+    [Parameter]
+    public LabelPillSize Size { get; set; } = LabelPillSize.Medium;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string BackgroundColor => string.IsNullOrWhiteSpace(Color) ? "#000000" : Color;
+
+    private string TextColor => GetContrastColor(BackgroundColor);
+
+    private string SizeCss => Size switch
+    {
+        LabelPillSize.Small => "feirb-label-pill-sm",
+        LabelPillSize.Large => "feirb-label-pill-lg",
+        _ => ""
+    };
+
+    /// <summary>
+    /// Returns white or black text based on WCAG relative luminance of the background color.
+    /// Uses the sRGB luminance formula: L = 0.2126R + 0.7152G + 0.0722B
+    /// with linearization of each channel.
+    /// </summary>
+    internal static string GetContrastColor(string hexColor)
+    {
+        var hex = hexColor.TrimStart('#');
+        if (hex.Length != 6)
+            return "#ffffff";
+
+        if (!int.TryParse(hex[..2], System.Globalization.NumberStyles.HexNumber, null, out var r) ||
+            !int.TryParse(hex[2..4], System.Globalization.NumberStyles.HexNumber, null, out var g) ||
+            !int.TryParse(hex[4..6], System.Globalization.NumberStyles.HexNumber, null, out var b))
+            return "#ffffff";
+
+        var luminance = 0.2126 * Linearize(r) + 0.7152 * Linearize(g) + 0.0722 * Linearize(b);
+        return luminance > 0.179 ? "#000000" : "#ffffff";
+    }
+
+    private static double Linearize(int channel)
+    {
+        var srgb = channel / 255.0;
+        return srgb <= 0.04045 ? srgb / 12.92 : Math.Pow((srgb + 0.055) / 1.055, 2.4);
+    }
+}

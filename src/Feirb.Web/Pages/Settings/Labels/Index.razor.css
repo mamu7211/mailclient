@@ -14,15 +14,6 @@
     box-shadow: var(--feirb-shadow);
 }
 
-.label-swatch {
-    display: inline-block;
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 1px solid var(--feirb-border-color-input);
-}
-
 .min-width-0 {
     min-width: 0;
 }

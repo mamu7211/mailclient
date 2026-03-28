@@ -39,3 +39,11 @@ public enum HeadingLevel
     Medium,
     Small
 }
+
+/// <summary>Size for label pill rendering.</summary>
+public enum LabelPillSize
+{
+    Small,
+    Medium,
+    Large
+}
