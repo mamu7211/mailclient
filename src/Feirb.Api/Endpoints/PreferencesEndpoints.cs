@@ -10,7 +10,12 @@ namespace Feirb.Api.Endpoints;
 public static class PreferencesEndpoints
 {
     private static readonly HashSet<string> _validThemes =
-        ["green-light", "green-dark", "pink-light", "pink-dark", "blue-light", "blue-dark"];
+    [
+        "red-light", "red-dark", "orange-light", "orange-dark",
+        "green-light", "green-dark", "teal-light", "teal-dark",
+        "blue-light", "blue-dark", "purple-light", "purple-dark",
+        "pink-light", "pink-dark"
+    ];
 
     public static RouteGroupBuilder MapPreferencesEndpoints(this RouteGroupBuilder group)
     {

@@ -82,16 +82,24 @@
 
     private readonly IReadOnlyList<ToggleButtonItem> _lightThemes =
     [
+        new("red-light", "Red"),
+        new("orange-light", "Orange"),
         new("green-light", "Green"),
-        new("pink-light", "Pink"),
+        new("teal-light", "Teal"),
         new("blue-light", "Blue"),
+        new("purple-light", "Purple"),
+        new("pink-light", "Pink"),
     ];
 
     private readonly IReadOnlyList<ToggleButtonItem> _darkThemes =
     [
+        new("red-dark", "Red"),
+        new("orange-dark", "Orange"),
         new("green-dark", "Green"),
-        new("pink-dark", "Pink"),
+        new("teal-dark", "Teal"),
         new("blue-dark", "Blue"),
+        new("purple-dark", "Purple"),
+        new("pink-dark", "Pink"),
     ];
 
     private static readonly (string Code, string Label)[] Languages =
@@ -144,12 +152,20 @@
 
     private string GetThemeDisplayName(string themeId) => themeId switch
     {
+        "red-light" => L["ThemeRedLight"],
+        "red-dark" => L["ThemeRedDark"],
+        "orange-light" => L["ThemeOrangeLight"],
+        "orange-dark" => L["ThemeOrangeDark"],
         "green-light" => L["ThemeGreenLight"],
         "green-dark" => L["ThemeGreenDark"],
-        "pink-light" => L["ThemePinkLight"],
-        "pink-dark" => L["ThemePinkDark"],
+        "teal-light" => L["ThemeTealLight"],
+        "teal-dark" => L["ThemeTealDark"],
         "blue-light" => L["ThemeBlueLight"],
         "blue-dark" => L["ThemeBlueDark"],
+        "purple-light" => L["ThemePurpleLight"],
+        "purple-dark" => L["ThemePurpleDark"],
+        "pink-light" => L["ThemePinkLight"],
+        "pink-dark" => L["ThemePinkDark"],
         _ => themeId
     };
 
