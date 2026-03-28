@@ -62,13 +62,13 @@
 
     <ContentSection Icon="palette" Title="@L["SettingsThemeTitle"]" Subtitle="@L["SettingsThemeSubtitle"]">
         <div class="d-flex flex-column gap-3">
-            <div>
-                <label class="form-label fw-semibold mb-2">@L["ThemeLightLabel"]</label>
+            <div class="d-flex align-items-center gap-3">
+                <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">@L["ThemeLightLabel"]</label>
                 <ToggleButtonGroup Items="_lightThemes" SelectedId="@_selectedTheme"
                                    SelectedIdChanged="OnThemeSelectedAsync" />
             </div>
-            <div>
-                <label class="form-label fw-semibold mb-2">@L["ThemeDarkLabel"]</label>
+            <div class="d-flex align-items-center gap-3">
+                <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">@L["ThemeDarkLabel"]</label>
                 <ToggleButtonGroup Items="_darkThemes" SelectedId="@_selectedTheme"
                                    SelectedIdChanged="OnThemeSelectedAsync" />
             </div>
