@@ -1,86 +1,114 @@
 @using Feirb.Web.Components.UI
+@inject IJSRuntime Js
 
-<InfoHeader Title="Design Fundamentals" Icon="palette2" Subtitle="Color tokens, typography, surfaces, and visual style rules" />
+<InfoHeader Title="Design Fundamentals" Icon="palette2" Subtitle="Color tokens, themes, typography, surfaces, and visual style rules" />
 
 <Card Class="mb-3 p-4">
-    <Heading Level="HeadingLevel.Small">Theme</Heading>
-    <p>Feirb uses the <strong class="showcase-color-name">Emerald Grove</strong> theme — a modern, soft light UI with subtle green accents, rounded surfaces, and generous spacing. No neon or glow effects; colors are flat. Pure black is avoided in favor of a deep emerald neutral.</p>
+    <Heading Level="HeadingLevel.Small">Theme System</Heading>
+    <p>Feirb ships with <strong>14 predesigned themes</strong> (7 accent colors in light and dark variants). Themes are applied instantly via CSS custom properties on <code>&lt;html data-theme="..."&gt;</code>. The default theme is <strong>Green Light</strong>.</p>
+    <p class="mb-0">All UI components reference design tokens (<code>--bs-*</code> and <code>--feirb-*</code> variables) rather than hardcoded colors, so every theme is fully supported without component changes.</p>
 </Card>
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Color Palette</Heading>
+    <p class="mb-3">These swatches reflect the <strong>active theme</strong>. Switch themes below to see how tokens change.</p>
     <div class="showcase-color-grid">
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #10B981;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--bs-primary);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Primary</strong>
-                <code class="showcase-color-token">#10B981 --bs-primary</code>
+                <code class="showcase-color-token">--bs-primary</code>
                 <span class="showcase-color-usage text-muted">CTAs, active states, links</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #D1FAE5;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--feirb-primary-container);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Primary Container</strong>
-                <code class="showcase-color-token">#D1FAE5 --feirb-primary-container</code>
+                <code class="showcase-color-token">--feirb-primary-container</code>
                 <span class="showcase-color-usage text-muted">Selection highlights, hover tints</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #D1FAE5;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--bs-secondary);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Secondary</strong>
-                <code class="showcase-color-token">#D1FAE5 --bs-secondary</code>
+                <code class="showcase-color-token">--bs-secondary</code>
                 <span class="showcase-color-usage text-muted">Secondary buttons, subtle backgrounds</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #FFE04A;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--bs-warning);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Warning</strong>
-                <code class="showcase-color-token">#FFE04A --bs-warning</code>
+                <code class="showcase-color-token">--bs-warning</code>
                 <span class="showcase-color-usage text-muted">Warnings, tags, highlights</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #b31b25;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--bs-danger);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Error</strong>
-                <code class="showcase-color-token">#b31b25 --bs-danger</code>
+                <code class="showcase-color-token">--bs-danger</code>
                 <span class="showcase-color-usage text-muted">Danger actions, validation errors</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #064E3B;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--feirb-on-surface);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">On Surface</strong>
-                <code class="showcase-color-token">#064E3B --feirb-on-surface</code>
+                <code class="showcase-color-token">--feirb-on-surface</code>
                 <span class="showcase-color-usage text-muted">Body text, headings</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #34766A;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--feirb-on-surface-variant);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">On Surface Variant</strong>
-                <code class="showcase-color-token">#34766A --feirb-on-surface-variant</code>
+                <code class="showcase-color-token">--feirb-on-surface-variant</code>
                 <span class="showcase-color-usage text-muted">Subtitles, secondary text</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #F0FDF4; border: 1px solid rgba(0,0,0,0.1);"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--bs-body-bg); border: 1px solid var(--feirb-border-color-input);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Background</strong>
-                <code class="showcase-color-token">#F0FDF4 --bs-body-bg</code>
-                <span class="showcase-color-usage text-muted">Page background (light mint)</span>
+                <code class="showcase-color-token">--bs-body-bg</code>
+                <span class="showcase-color-usage text-muted">Page background</span>
             </div>
         </div>
         <div class="showcase-color-item">
-            <div class="showcase-color-swatch" style="background-color: #D1FAE5;"></div>
+            <div class="showcase-color-swatch" style="background-color: var(--feirb-surface);  border: 1px solid var(--feirb-border-color-input);"></div>
+            <div class="showcase-color-info">
+                <strong class="showcase-color-name">Surface</strong>
+                <code class="showcase-color-token">--feirb-surface</code>
+                <span class="showcase-color-usage text-muted">Cards, inputs, sidebars</span>
+            </div>
+        </div>
+        <div class="showcase-color-item">
+            <div class="showcase-color-swatch" style="background-color: var(--feirb-surface-container);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Surface Container</strong>
-                <code class="showcase-color-token">#D1FAE5 --feirb-surface-container</code>
+                <code class="showcase-color-token">--feirb-surface-container</code>
                 <span class="showcase-color-usage text-muted">Hover backgrounds, input fills</span>
             </div>
+        </div>
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Theme Switcher</Heading>
+    <p class="mb-3">Preview how the showcase looks under each theme. This changes the active theme globally.</p>
+    <div class="d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">Light</label>
+            <ToggleButtonGroup Items="_lightThemes" SelectedId="@_currentTheme"
+                               SelectedIdChanged="OnThemeChangedAsync" />
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">Dark</label>
+            <ToggleButtonGroup Items="_darkThemes" SelectedId="@_currentTheme"
+                               SelectedIdChanged="OnThemeChangedAsync" />
         </div>
     </div>
 </Card>
@@ -110,10 +138,10 @@
             <tr><td>Border radius (lg)</td><td><code>1.5rem</code> (24px)</td><td>Large containers</td></tr>
             <tr><td>Input radius</td><td><code>0.75rem</code> (12px)</td><td>Form controls</td></tr>
             <tr><td>Button radius</td><td><code>9999px</code></td><td>Pill-shaped buttons</td></tr>
-            <tr><td>Shadow</td><td><code>0 8px 24px rgba(0,0,0,0.06)</code></td><td>Cards, primary buttons</td></tr>
+            <tr><td>Shadow</td><td><code>var(--feirb-shadow)</code></td><td>Cards, primary buttons</td></tr>
         </tbody>
     </table>
-    <p class="mt-3 mb-0"><strong class="showcase-color-name">Layering:</strong> Base background → Raised cards (white, shadow) → Interactive elements (accent colors)</p>
+    <p class="mt-3 mb-0"><strong class="showcase-color-name">Layering:</strong> Base background → Raised cards (surface, shadow) → Interactive elements (accent colors)</p>
 </Card>
 
 <Card Class="p-4">
@@ -134,3 +162,40 @@
         </div>
     </div>
 </Card>
+
+@code {
+    private string _currentTheme = "green-light";
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _lightThemes =
+    [
+        new("red-light", "Red"),
+        new("orange-light", "Orange"),
+        new("green-light", "Green"),
+        new("teal-light", "Teal"),
+        new("blue-light", "Blue"),
+        new("purple-light", "Purple"),
+        new("pink-light", "Pink"),
+    ];
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _darkThemes =
+    [
+        new("red-dark", "Red"),
+        new("orange-dark", "Orange"),
+        new("green-dark", "Green"),
+        new("teal-dark", "Teal"),
+        new("blue-dark", "Blue"),
+        new("purple-dark", "Purple"),
+        new("pink-dark", "Pink"),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentTheme = await Js.InvokeAsync<string>("blazorTheme.get");
+    }
+
+    private async Task OnThemeChangedAsync(string themeId)
+    {
+        _currentTheme = themeId;
+        await Js.InvokeVoidAsync("blazorTheme.set", themeId);
+    }
+}
