@@ -73,13 +73,13 @@
                     <InputCheckbox id="imapUseTls" class="form-check-input" @bind-Value="_model.ImapUseTls" />
                     <label for="imapUseTls" class="form-check-label">@L["LabelImapUseTls"]</label>
                 </div>
-                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestImapAsync" disabled="@_isTestingImap">
+                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="TestImapAsync" Disabled="_isTestingImap">
                     @if (_isTestingImap)
                     {
                         <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                     }
                     @L["ButtonTestConnection"]
-                </button>
+                </Button>
             </div>
             @if (_imapTestResult is not null)
             {
@@ -128,13 +128,13 @@
                         <label for="smtpRequiresAuth" class="form-check-label">@L["LabelSmtpRequiresAuthMailbox"]</label>
                     </div>
                 </div>
-                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestSmtpAsync" disabled="@_isTestingSmtp">
+                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="TestSmtpAsync" Disabled="_isTestingSmtp">
                     @if (_isTestingSmtp)
                     {
                         <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                     }
                     @L["ButtonTestConnection"]
-                </button>
+                </Button>
             </div>
             @if (_smtpTestResult is not null)
             {
@@ -160,7 +160,7 @@
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check-lg")
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg")
         ]);
     }
 

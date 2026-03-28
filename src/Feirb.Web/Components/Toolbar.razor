@@ -6,13 +6,9 @@
     <div class="toolbar-actions">
         @foreach (var action in ToolbarState.Actions)
         {
-            <button class="btn @action.CssClass btn-sm" @onclick="action.OnClickAsync">
-                @if (!string.IsNullOrEmpty(action.Icon))
-                {
-                    <i class="bi bi-@action.Icon me-1" style="font-size: 1rem; vertical-align: middle;"></i>
-                }
+            <Button Variant="action.Variant" Size="ButtonSize.Small" Icon="@action.Icon" OnClick="action.OnClickAsync">
                 @action.Label
-            </button>
+            </Button>
         }
     </div>
 }

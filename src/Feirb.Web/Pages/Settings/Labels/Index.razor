@@ -52,12 +52,12 @@ else
                     </div>
                 </div>
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => OpenEditModal(label)" title="@L["ButtonEdit"]">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteModal(label)" title="@L["ButtonDelete"]">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
+                    <CircularButton AriaLabel="@L["ButtonEdit"]" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="() => OpenEditModal(label)">
+                        <Icon Name="pencil" Size="IconSize.Small" />
+                    </CircularButton>
+                    <CircularButton AriaLabel="@L["ButtonDelete"]" Variant="ButtonVariant.Danger" Size="ButtonSize.Small" OnClick="() => OpenDeleteModal(label)">
+                        <Icon Name="x-lg" Size="IconSize.Small" />
+                    </CircularButton>
                 </div>
             </div>
         }
@@ -93,21 +93,21 @@ else
                                        value="@_formModel.Color" @onchange="OnColorChanged" />
                                 <input type="text" class="form-control" style="max-width: 8rem;"
                                        value="@_formModel.Color" @onchange="OnColorTextChanged" />
-                                <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RandomizeColor">
-                                    <i class="bi bi-shuffle me-1"></i>@L["ButtonRandomizeColor"]
-                                </button>
+                                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="RandomizeColor" Icon="shuffle">
+                                    @L["ButtonRandomizeColor"]
+                                </Button>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">@L["ButtonCancel"]</button>
-                        <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                        <Button Variant="ButtonVariant.Secondary" OnClick="CloseEditModal">@L["ButtonCancel"]</Button>
+                        <Button Variant="ButtonVariant.Primary" Type="submit" Disabled="_isSaving">
                             @if (_isSaving)
                             {
                                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                             }
                             @L["ButtonSave"]
-                        </button>
+                        </Button>
                     </div>
                 </EditForm>
             </div>
@@ -129,14 +129,14 @@ else
                     <p>@string.Format(L["ConfirmDeleteLabelMessage"], _deletingLabel.Name)</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteModal = false">@L["ButtonCancel"]</button>
-                    <button type="button" class="btn btn-danger" @onclick="HandleDeleteAsync" disabled="@_isDeleting">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="() => _showDeleteModal = false">@L["ButtonCancel"]</Button>
+                    <Button Variant="ButtonVariant.Danger" OnClick="HandleDeleteAsync" Disabled="_isDeleting">
                         @if (_isDeleting)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         }
                         @L["ButtonConfirm"]
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -160,7 +160,7 @@ else
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonCreateLabel"], "btn-primary", () => { OpenCreateModal(); return Task.CompletedTask; }, "plus-lg")
+            new ToolbarAction(L["ButtonCreateLabel"], ButtonVariant.Primary, () => { OpenCreateModal(); return Task.CompletedTask; }, "plus-lg")
         ]);
     }
 

@@ -62,9 +62,9 @@
                         }
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <Button Variant="ButtonVariant.Primary" Size="ButtonSize.Large" Type="submit" Class="w-100">
                         @L["ButtonNext"]
-                    </button>
+                    </Button>
                 </EditForm>
             }
             else if (_currentStep == 2)
@@ -114,25 +114,25 @@
                     }
 
                     <div class="d-flex gap-2 mb-3">
-                        <button type="button" class="btn btn-outline-secondary btn-lg flex-fill" @onclick="GoToStep1">
+                        <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Large" OnClick="GoToStep1" Class="flex-fill">
                             @L["ButtonBack"]
-                        </button>
-                        <button type="button" class="btn btn-outline-primary btn-lg flex-fill" disabled="@_isTestingSmtp" @onclick="HandleTestSmtpAsync">
+                        </Button>
+                        <Button Variant="ButtonVariant.Primary" Size="ButtonSize.Large" Disabled="_isTestingSmtp" OnClick="HandleTestSmtpAsync" Class="flex-fill">
                             @if (_isTestingSmtp)
                             {
                                 <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                             }
                             @L["ButtonTestConnection"]
-                        </button>
+                        </Button>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100" disabled="@_isSubmitting">
+                    <Button Variant="ButtonVariant.Primary" Size="ButtonSize.Large" Type="submit" Disabled="_isSubmitting" Class="w-100">
                         @if (_isSubmitting)
                         {
                             <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                         }
                         @L["ButtonCompleteSetup"]
-                    </button>
+                    </Button>
                 </EditForm>
             }
             else

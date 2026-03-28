@@ -49,13 +49,13 @@
                 <InputText id="confirmNewPassword" class="form-control" type="password" @bind-Value="_passwordModel.ConfirmNewPassword" />
                 <ValidationMessage For="() => _passwordModel.ConfirmNewPassword" />
             </div>
-            <button type="submit" class="btn btn-primary" disabled="@_isChangingPassword">
+            <Button Variant="ButtonVariant.Primary" Type="submit" Disabled="_isChangingPassword">
                 @if (_isChangingPassword)
                 {
                     <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                 }
                 @L["ButtonChangePassword"]
-            </button>
+            </Button>
         </EditForm>
     </div>
 </div>
@@ -65,13 +65,13 @@
 <div class="card">
     <div class="card-body">
         <p class="mb-3">@L["SecuritySessionsDescription"]</p>
-        <button type="button" class="btn btn-outline-danger" @onclick="HandleLogoutAllAsync" disabled="@_isLoggingOutAll">
+        <Button Variant="ButtonVariant.Danger" OnClick="HandleLogoutAllAsync" Disabled="_isLoggingOutAll">
             @if (_isLoggingOutAll)
             {
                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
             }
             @L["ButtonLogoutAllSessions"]
-        </button>
+        </Button>
     </div>
 </div>
 

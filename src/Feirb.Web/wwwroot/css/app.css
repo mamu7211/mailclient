@@ -1,30 +1,30 @@
-/* Feirb Design Tokens – Electric Iris (see docs/DESIGN.md) */
+/* Feirb Design Tokens – Emerald Grove (see docs/DESIGN.md) */
 :root {
-    --bs-primary: #b6004f;
-    --bs-primary-rgb: 182, 0, 79;
-    --feirb-primary-container: #ff7195;
-    --bs-secondary: #006852;
-    --bs-secondary-rgb: 0, 104, 82;
-    --feirb-secondary-container: #00fcca;
-    --feirb-tertiary: #6b5b00;
-    --feirb-tertiary-container: #fedf49;
+    --bs-primary: #10B981;
+    --bs-primary-rgb: 16, 185, 129;
+    --feirb-primary-container: #D1FAE5;
+    --bs-secondary: #064E3B;
+    --bs-secondary-rgb: 6, 78, 59;
+    --feirb-secondary-container: #A7F3D0;
+    --feirb-tertiary: #047857;
+    --feirb-tertiary-container: #6EE7B7;
     --bs-warning: #FFE04A;
     --bs-warning-rgb: 255, 224, 74;
-    --bs-dark: #2d2d43;
-    --bs-body-bg: #f8f5ff;
-    --bs-body-color: #2d2d43;
-    --feirb-on-surface: #2d2d43;
-    --feirb-on-surface-variant: #5a5972;
-    --feirb-surface: #F4F5FB;
-    --feirb-surface-container: #e8e5ff;
-    --feirb-outline: #75748e;
-    --feirb-navbar-select-background: rgba(255, 113, 149, 0.15);
-    --feirb-outline-variant: #acaac6;
+    --bs-dark: #064E3B;
+    --bs-body-bg: #F0FDF4;
+    --bs-body-color: #064E3B;
+    --feirb-on-surface: #064E3B;
+    --feirb-on-surface-variant: #34766A;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #D1FAE5;
+    --feirb-outline: #5F9E8F;
+    --feirb-navbar-select-background: rgba(16, 185, 129, 0.15);
+    --feirb-outline-variant: #A7F3D0;
     --feirb-error: #b31b25;
     --bs-border-radius: 1rem;
     --bs-border-radius-lg: 1.5rem;
-    --bs-link-color: #b6004f;
-    --bs-link-hover-color: #8a003c;
+    --bs-link-color: #10B981;
+    --bs-link-hover-color: #059669;
     --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     --feirb-radius-input: 0.75rem;
 }
@@ -56,13 +56,20 @@ a:hover, .btn-link:hover {
 .btn-primary {
     color: #fff;
     background-color: var(--bs-primary);
-    border-color: var(--bs-primary);
+    border: none;
     box-shadow: var(--feirb-shadow);
 }
 
 .btn-primary:hover {
-    background-color: #8a003c;
-    border-color: #8a003c;
+    background-color: #34D399;
+    border: none;
+}
+
+.btn-primary:active,
+.btn-primary:focus-visible {
+    background-color: #6EE7B7 !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .btn-outline-primary {
@@ -76,15 +83,24 @@ a:hover, .btn-link:hover {
 }
 
 .btn-secondary {
-    color: #fff;
-    background-color: var(--feirb-on-surface);
-    border-color: var(--feirb-on-surface);
+    color: var(--feirb-on-surface);
+    background-color: var(--feirb-surface-container);
+    border: none;
+    box-shadow: var(--feirb-shadow);
 }
 
 .btn-secondary:hover {
-    background-color: var(--feirb-surface-container);
-    border-color: var(--feirb-on-surface);
+    background-color: #A7F3D0;
+    border: none;
     color: var(--feirb-on-surface);
+}
+
+.btn-secondary:active,
+.btn-secondary:focus-visible {
+    background-color: #86EFAC !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--feirb-on-surface) !important;
 }
 
 .btn-outline-secondary {
@@ -97,6 +113,25 @@ a:hover, .btn-link:hover {
     background-color: var(--feirb-surface-container);
     border-color: var(--feirb-on-surface);
     color: var(--feirb-on-surface);
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: var(--feirb-error);
+    border: none;
+    box-shadow: var(--feirb-shadow);
+}
+
+.btn-danger:hover {
+    background-color: #d42a35;
+    border: none;
+}
+
+.btn-danger:active,
+.btn-danger:focus-visible {
+    background-color: #e04850 !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* Cards */
@@ -164,16 +199,16 @@ a:hover, .btn-link:hover {
 }
 
 .feirb-circular-btn-primary:hover:not(:disabled) {
-    background-color: #8a003c;
+    background-color: #34D399;
 }
 
 .feirb-circular-btn-secondary {
-    background-color: var(--feirb-on-surface);
-    color: #fff;
+    background-color: var(--feirb-surface-container);
+    color: var(--feirb-on-surface);
 }
 
 .feirb-circular-btn-secondary:hover:not(:disabled) {
-    background-color: var(--feirb-surface-container);
+    background-color: #A7F3D0;
     color: var(--feirb-on-surface);
 }
 
@@ -183,7 +218,7 @@ a:hover, .btn-link:hover {
 }
 
 .feirb-circular-btn-danger:hover:not(:disabled) {
-    opacity: 0.85;
+    background-color: #d42a35;
 }
 
 .feirb-circular-btn-warning {

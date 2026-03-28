@@ -1,9 +1,11 @@
+using Feirb.Web.Components.UI;
+
 namespace Feirb.Web.Services;
 
-public sealed class ToolbarAction(string label, string cssClass, Func<Task> onClickAsync, string? icon = null)
+public sealed class ToolbarAction(string label, ButtonVariant variant, Func<Task> onClickAsync, string? icon = null)
 {
     public string Label { get; } = label;
-    public string CssClass { get; } = cssClass;
+    public ButtonVariant Variant { get; } = variant;
     public Func<Task> OnClickAsync { get; } = onClickAsync;
     public string? Icon { get; } = icon;
 }

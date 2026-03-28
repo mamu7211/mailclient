@@ -51,13 +51,13 @@
                 }
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg w-100" disabled="@_isSubmitting">
+            <Button Variant="ButtonVariant.Primary" Size="ButtonSize.Large" Type="submit" Disabled="_isSubmitting" Class="w-100">
                 @if (_isSubmitting)
                 {
                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
                 }
                 @L["ButtonCreateAccount"]
-            </button>
+            </Button>
         </EditForm>
 
         <p class="mt-4 text-center text-muted mb-0">

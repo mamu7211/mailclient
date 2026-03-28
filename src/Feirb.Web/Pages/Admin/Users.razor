@@ -12,9 +12,9 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="mb-0">@L["AdminUsersHeading"]</h1>
-    <button class="btn btn-primary" @onclick="ShowCreateModal">
-        <i class="bi bi-plus-lg me-1" style="font-size: 1.2rem; vertical-align: middle;"></i>@L["ButtonCreateUser"]
-    </button>
+    <Button Variant="ButtonVariant.Primary" Icon="plus-lg" OnClick="ShowCreateModal">
+        @L["ButtonCreateUser"]
+    </Button>
 </div>
 
 @if (!string.IsNullOrEmpty(_successMessage))
@@ -77,11 +77,10 @@ else
                         </td>
                         <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
                         <td>
-                            <div class="btn-group btn-group-sm">
-                                <button class="btn btn-outline-primary" @onclick="() => ShowEditModal(user)">@L["ButtonEdit"]</button>
-                                <button class="btn btn-outline-warning" @onclick="() => ShowResetPasswordModal(user)">@L["ButtonResetPassword"]</button>
-                                <button class="btn btn-outline-danger" @onclick="() => ShowDeleteModal(user)"
-                                        disabled="@(user.Id == _currentUserId)">@L["ButtonDelete"]</button>
+                            <div class="d-flex gap-1">
+                                <Button Variant="ButtonVariant.Primary" Size="ButtonSize.Small" OnClick="() => ShowEditModal(user)">@L["ButtonEdit"]</Button>
+                                <Button Variant="ButtonVariant.Warning" Size="ButtonSize.Small" OnClick="() => ShowResetPasswordModal(user)">@L["ButtonResetPassword"]</Button>
+                                <Button Variant="ButtonVariant.Danger" Size="ButtonSize.Small" OnClick="() => ShowDeleteModal(user)" Disabled="(user.Id == _currentUserId)">@L["ButtonDelete"]</Button>
                             </div>
                         </td>
                     </tr>
@@ -133,14 +132,14 @@ else
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">@L["ButtonCancel"]</button>
-                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                        <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonCancel"]</Button>
+                        <Button Variant="ButtonVariant.Primary" Type="submit" Disabled="_isSubmitting">
                             @if (_isSubmitting)
                             {
                                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                             }
                             @L["ButtonCreateUser"]
-                        </button>
+                        </Button>
                     </div>
                 </EditForm>
             </div>
@@ -172,14 +171,14 @@ else
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">@L["ButtonCancel"]</button>
-                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                        <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonCancel"]</Button>
+                        <Button Variant="ButtonVariant.Primary" Type="submit" Disabled="_isSubmitting">
                             @if (_isSubmitting)
                             {
                                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                             }
                             @L["ButtonSave"]
-                        </button>
+                        </Button>
                     </div>
                 </EditForm>
             </div>
@@ -201,14 +200,14 @@ else
                     <p>@string.Format(L["ConfirmDeleteMessage"], _selectedUser.Username)</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModals">@L["ButtonCancel"]</button>
-                    <button type="button" class="btn btn-danger" @onclick="HandleDeleteAsync" disabled="@_isSubmitting">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonCancel"]</Button>
+                    <Button Variant="ButtonVariant.Danger" OnClick="HandleDeleteAsync" Disabled="_isSubmitting">
                         @if (_isSubmitting)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         }
                         @L["ButtonConfirm"]
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -235,9 +234,8 @@ else
                         <p>@string.Format(L["ResetLinkMessage"], _selectedUser.Username)</p>
                         <div class="input-group mb-3">
                             <input type="text" class="form-control font-monospace small" value="@_resetLink" readonly />
-                            <button class="btn btn-outline-secondary" type="button" @onclick="CopyResetLinkAsync" title="@L["ButtonCopyLink"]">
-                                <i class="bi @(_copied ? "bi-check-lg" : "bi-clipboard")" style="font-size: 1.2rem;"></i>
-                            </button>
+                            <Button Variant="ButtonVariant.Secondary" OnClick="CopyResetLinkAsync" Title="@L["ButtonCopyLink"]" Icon="@(_copied ? "check-lg" : "clipboard")">
+                            </Button>
                         </div>
                         <p class="text-muted small">@L["ResetLinkNote"]</p>
                     }
@@ -245,18 +243,18 @@ else
                 <div class="modal-footer">
                     @if (_resetLink is null)
                     {
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">@L["ButtonCancel"]</button>
-                        <button type="button" class="btn btn-warning" @onclick="HandleResetPasswordAsync" disabled="@_isSubmitting">
+                        <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonCancel"]</Button>
+                        <Button Variant="ButtonVariant.Warning" OnClick="HandleResetPasswordAsync" Disabled="_isSubmitting">
                             @if (_isSubmitting)
                             {
                                 <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                             }
                             @L["ButtonConfirm"]
-                        </button>
+                        </Button>
                     }
                     else
                     {
-                        <button type="button" class="btn btn-secondary" @onclick="CloseModals">@L["ButtonClose"]</button>
+                        <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonClose"]</Button>
                     }
                 </div>
             </div>

@@ -93,13 +93,13 @@ else if (_model is not null)
                         <InputCheckbox id="imapUseTls" class="form-check-input" @bind-Value="_model.ImapUseTls" />
                         <label for="imapUseTls" class="form-check-label">@L["LabelImapUseTls"]</label>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestImapAsync" disabled="@_isTestingImap">
+                    <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="TestImapAsync" Disabled="_isTestingImap">
                         @if (_isTestingImap)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         }
                         @L["ButtonTestConnection"]
-                    </button>
+                    </Button>
                 </div>
                 @if (_imapTestResult is not null)
                 {
@@ -149,13 +149,13 @@ else if (_model is not null)
                             <label for="smtpRequiresAuth" class="form-check-label">@L["LabelSmtpRequiresAuthMailbox"]</label>
                         </div>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="TestSmtpAsync" disabled="@_isTestingSmtp">
+                    <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="TestSmtpAsync" Disabled="_isTestingSmtp">
                         @if (_isTestingSmtp)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         }
                         @L["ButtonTestConnection"]
-                    </button>
+                    </Button>
                 </div>
                 @if (_smtpTestResult is not null)
                 {
@@ -182,14 +182,14 @@ else if (_model is not null)
                     <p>@string.Format(L["ConfirmDeleteMailboxMessage"], _model?.Name)</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => _showDeleteModal = false">@L["ButtonCancel"]</button>
-                    <button type="button" class="btn btn-danger" @onclick="HandleDeleteAsync" disabled="@_isDeleting">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="() => _showDeleteModal = false">@L["ButtonCancel"]</Button>
+                    <Button Variant="ButtonVariant.Danger" OnClick="HandleDeleteAsync" Disabled="_isDeleting">
                         @if (_isDeleting)
                         {
                             <span class="spinner-border spinner-border-sm me-1" role="status"></span>
                         }
                         @L["ButtonConfirm"]
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
@@ -216,8 +216,8 @@ else if (_model is not null)
     {
         ToolbarState.SetActions(
         [
-            new ToolbarAction(L["ButtonSave"], "btn-primary", HandleSaveAsync, "check-lg"),
-            new ToolbarAction(L["ButtonDelete"], "btn-outline-danger", () => { _showDeleteModal = true; StateHasChanged(); return Task.CompletedTask; }, "trash")
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg"),
+            new ToolbarAction(L["ButtonDelete"], ButtonVariant.Danger, () => { _showDeleteModal = true; StateHasChanged(); return Task.CompletedTask; }, "trash")
         ]);
 
         try

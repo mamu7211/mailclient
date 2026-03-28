@@ -87,13 +87,13 @@
         if (_editMode)
         {
             ToolbarState.SetActions([
-                new ToolbarAction(L["DashboardEditDone"], "btn-primary", ExitEditModeAsync, "check-lg"),
+                new ToolbarAction(L["DashboardEditDone"], ButtonVariant.Primary, ExitEditModeAsync, "check-lg"),
             ]);
         }
         else
         {
             ToolbarState.SetActions([
-                new ToolbarAction(L["DashboardEditButton"], "btn-outline-secondary", EnterEditModeAsync, "pencil"),
+                new ToolbarAction(L["DashboardEditButton"], ButtonVariant.Secondary, EnterEditModeAsync, "pencil"),
             ]);
         }
     }
