@@ -130,6 +130,12 @@ var apiGroup = app.MapGroup("/api").RequireAuthorization();
 var authGroup = app.MapGroup(ApiRoutes.Auth).AllowAnonymous();
 authGroup.MapAuthEndpoints();
 
+// Dev config endpoint (anonymous, returns feature flags for frontend)
+app.MapGet("/api/dev/config", (IConfiguration config) => Results.Ok(new
+{
+    AutoLogin = string.Equals(config["AUTO_LOGIN"], "true", StringComparison.OrdinalIgnoreCase)
+})).AllowAnonymous();
+
 // Setup endpoints are anonymous (guarded by admin-exists check)
 var setupGroup = app.MapGroup(ApiRoutes.Setup).AllowAnonymous();
 setupGroup.MapSetupEndpoints();

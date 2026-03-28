@@ -6,12 +6,14 @@ namespace Feirb.Web.Components.UI;
 /// <param name="Href">Navigation target. Ignored when <paramref name="OnClick"/> is set.</param>
 /// <param name="OnClick">Action callback. When set, the item renders as a button instead of a link.</param>
 /// <param name="Visible">Controls whether the item is rendered. Defaults to always visible.</param>
+/// <param name="Match">NavLink match mode. Defaults to <c>null</c> (auto: exact for "/" or empty, prefix otherwise).</param>
 public record SidebarMenuItem(
     string Icon,
     string Label,
     string? Href = null,
     Func<Task>? OnClick = null,
-    Func<bool>? Visible = null);
+    Func<bool>? Visible = null,
+    Microsoft.AspNetCore.Components.Routing.NavLinkMatch? Match = null);
 
 /// <summary>A group of menu items with an optional section header.</summary>
 /// <param name="Items">Menu items in this section.</param>

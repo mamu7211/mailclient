@@ -18,7 +18,7 @@
 @code {
     private static readonly IReadOnlyList<SidebarMenuSection> _sections =
     [
-        new([new("brush", "Design Fundamentals", Href: "components-showcase")]),
+        new([new("brush", "Design Fundamentals", Href: "components-showcase", Match: NavLinkMatch.All)]),
         new(
         [
             new("image", "Icon", Href: "components-showcase/icon"),

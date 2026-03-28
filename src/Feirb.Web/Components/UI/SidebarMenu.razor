@@ -28,9 +28,10 @@
                             }
                             else
                             {
-                                var match = string.IsNullOrEmpty(item.Href) || item.Href == "/"
-                                    ? NavLinkMatch.All
-                                    : NavLinkMatch.Prefix;
+                                var match = item.Match
+                                    ?? (string.IsNullOrEmpty(item.Href) || item.Href == "/"
+                                        ? NavLinkMatch.All
+                                        : NavLinkMatch.Prefix);
 
                                 <NavLink class="sidebar-menu-entry" href="@item.Href" Match="@match">
                                     <Icon Name="@item.Icon" />

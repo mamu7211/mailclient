@@ -27,12 +27,10 @@
         </select>
         <label class="form-label mb-0">Name:</label>
         <select class="form-select form-select-sm w-auto" @bind="_iconName">
-            <option value="gear">gear</option>
-            <option value="envelope">envelope</option>
-            <option value="pencil">pencil</option>
-            <option value="trash">trash</option>
-            <option value="star-fill">star-fill</option>
-            <option value="heart-fill">heart-fill</option>
+            @foreach (var name in FeirbIcons.All)
+            {
+                <option value="@name">@name</option>
+            }
         </select>
     </div>
     <div class="showcase-preview-area">
@@ -40,15 +38,50 @@
     </div>
 </Card>
 
-<Card Class="p-4">
+<Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Code</Heading>
     <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Icon Search</Heading>
+    <p class="text-muted mb-3">@FeirbIcons.All.Count icons available in Feirb. Click to select.</p>
+    <div class="mb-3">
+        <input type="text"
+               class="form-control"
+               placeholder="Search icons..."
+               @bind="_searchQuery"
+               @bind:event="oninput" />
+    </div>
+    <div class="showcase-icon-grid">
+        @foreach (var name in FilteredIcons)
+        {
+            <button class="showcase-icon-cell @(name == _iconName ? "active" : "")"
+                    title="@name"
+                    @onclick="() => SelectIcon(name)">
+                <Icon Name="@name" />
+                <span class="showcase-icon-label">@name</span>
+            </button>
+        }
+        @if (!FilteredIcons.Any())
+        {
+            <p class="text-muted mb-0">No icons match "@_searchQuery".</p>
+        }
+    </div>
 </Card>
 
 @code {
     private IconSize _iconSize = IconSize.Default;
     private string _iconName = "gear";
+    private string _searchQuery = "";
     private ElementReference _codeElement;
+
+    private IEnumerable<string> FilteredIcons =>
+        string.IsNullOrWhiteSpace(_searchQuery)
+            ? FeirbIcons.All
+            : FeirbIcons.All.Where(n => n.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase));
+
+    private void SelectIcon(string name) => _iconName = name;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

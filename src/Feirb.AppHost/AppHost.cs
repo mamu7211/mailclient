@@ -35,10 +35,15 @@ var greenmail = builder.AddContainer("feirb-greenmail", "docker.io/greenmail/sta
         "-Dgreenmail.api.port=8080 " +
         "-Dgreenmail.api.hostname=0.0.0.0");
 
-builder.AddProject<Projects.Feirb_Api>("api")
+var api = builder.AddProject<Projects.Feirb_Api>("api")
     .WithReference(postgres)
     .WithReference(ollama)
     .WaitFor(postgres)
     .WaitFor(greenmail);
+
+if (string.Equals(Environment.GetEnvironmentVariable("AUTO_LOGIN"), "true", StringComparison.OrdinalIgnoreCase))
+{
+    api.WithEnvironment("AUTO_LOGIN", "true");
+}
 
 builder.Build().Run();
