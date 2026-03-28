@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.25rem;
-    background: white;
+    background: var(--feirb-surface);
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
     cursor: pointer;

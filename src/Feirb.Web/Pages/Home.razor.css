@@ -1,6 +1,6 @@
 ::deep .grid-stack-item-content {
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
     border-radius: 2rem;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     overflow: hidden;

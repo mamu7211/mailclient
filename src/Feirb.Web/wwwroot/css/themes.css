@@ -1,0 +1,540 @@
+/* Feirb Theme Definitions — ordered by rainbow spectrum */
+
+/* ── Red Light ── */
+[data-theme="red-light"] {
+    --bs-primary: #EF4444;
+    --bs-primary-rgb: 239, 68, 68;
+    --feirb-primary-container: #FEE2E2;
+    --bs-secondary: #FEE2E2;
+    --bs-secondary-rgb: 254, 226, 226;
+    --feirb-secondary-container: #FECACA;
+    --feirb-tertiary: #B91C1C;
+    --feirb-tertiary-container: #FCA5A5;
+    --bs-body-bg: #FFF5F5;
+    --bs-body-color: #5F1212;
+    --feirb-on-surface: #5F1212;
+    --feirb-on-surface-variant: #9B3434;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #FEE2E2;
+    --feirb-outline: #D07070;
+    --feirb-navbar-select-background: rgba(239, 68, 68, 0.12);
+    --feirb-outline-variant: #FECACA;
+    --bs-link-color: #EF4444;
+    --bs-link-hover-color: #B91C1C;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #F87171;
+    --feirb-primary-active: #FCA5A5;
+    --feirb-secondary-hover: #FECACA;
+    --feirb-secondary-active: #FCA5A5;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25);
+    --bs-body-color-rgb: 95, 18, 18;
+    --bs-secondary-color: rgba(95, 18, 18, 0.75);
+    color: #5F1212;
+    background-color: #FFF5F5;
+    color-scheme: light;
+}
+
+/* ── Red Dark ── */
+[data-theme="red-dark"] {
+    --bs-primary: #EF4444;
+    --bs-primary-rgb: 239, 68, 68;
+    --feirb-primary-container: #5F1212;
+    --bs-secondary: #3A1414;
+    --bs-secondary-rgb: 58, 20, 20;
+    --feirb-secondary-container: #2A0A0A;
+    --feirb-tertiary: #FCA5A5;
+    --feirb-tertiary-container: #B91C1C;
+    --bs-body-bg: #1A0C0C;
+    --bs-body-color: #FEE2E2;
+    --feirb-on-surface: #FEE2E2;
+    --feirb-on-surface-variant: #FCA5A5;
+    --feirb-surface: #2B1515;
+    --feirb-surface-container: #3F2020;
+    --feirb-outline: #D07070;
+    --feirb-navbar-select-background: rgba(239, 68, 68, 0.2);
+    --feirb-outline-variant: #4F2A2A;
+    --bs-link-color: #F87171;
+    --bs-link-hover-color: #FCA5A5;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #F87171;
+    --feirb-primary-active: #FCA5A5;
+    --feirb-secondary-hover: #4F2A2A;
+    --feirb-secondary-active: #6B3A3A;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.3);
+    --bs-body-color-rgb: 254, 226, 226;
+    --bs-secondary-color: rgba(254, 226, 226, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #FEE2E2;
+    background-color: #1A0C0C;
+    color-scheme: dark;
+}
+
+/* ── Orange Light ── */
+[data-theme="orange-light"] {
+    --bs-primary: #F97316;
+    --bs-primary-rgb: 249, 115, 22;
+    --feirb-primary-container: #FFEDD5;
+    --bs-secondary: #FFEDD5;
+    --bs-secondary-rgb: 255, 237, 213;
+    --feirb-secondary-container: #FED7AA;
+    --feirb-tertiary: #C2410C;
+    --feirb-tertiary-container: #FDBA74;
+    --bs-body-bg: #FFF8F0;
+    --bs-body-color: #5C2D0E;
+    --feirb-on-surface: #5C2D0E;
+    --feirb-on-surface-variant: #9A5A30;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #FFEDD5;
+    --feirb-outline: #CC8A5A;
+    --feirb-navbar-select-background: rgba(249, 115, 22, 0.12);
+    --feirb-outline-variant: #FED7AA;
+    --bs-link-color: #F97316;
+    --bs-link-hover-color: #C2410C;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #FB923C;
+    --feirb-primary-active: #FDBA74;
+    --feirb-secondary-hover: #FED7AA;
+    --feirb-secondary-active: #FDBA74;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.25);
+    --bs-body-color-rgb: 92, 45, 14;
+    --bs-secondary-color: rgba(92, 45, 14, 0.75);
+    color: #5C2D0E;
+    background-color: #FFF8F0;
+    color-scheme: light;
+}
+
+/* ── Orange Dark ── */
+[data-theme="orange-dark"] {
+    --bs-primary: #F97316;
+    --bs-primary-rgb: 249, 115, 22;
+    --feirb-primary-container: #5C2D0E;
+    --bs-secondary: #3A2010;
+    --bs-secondary-rgb: 58, 32, 16;
+    --feirb-secondary-container: #2A1508;
+    --feirb-tertiary: #FDBA74;
+    --feirb-tertiary-container: #C2410C;
+    --bs-body-bg: #1A100A;
+    --bs-body-color: #FFEDD5;
+    --feirb-on-surface: #FFEDD5;
+    --feirb-on-surface-variant: #FDBA74;
+    --feirb-surface: #2B1A10;
+    --feirb-surface-container: #3F2818;
+    --feirb-outline: #CC8A5A;
+    --feirb-navbar-select-background: rgba(249, 115, 22, 0.2);
+    --feirb-outline-variant: #4F3520;
+    --bs-link-color: #FB923C;
+    --bs-link-hover-color: #FDBA74;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #FB923C;
+    --feirb-primary-active: #FDBA74;
+    --feirb-secondary-hover: #4F3520;
+    --feirb-secondary-active: #6B4A30;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.3);
+    --bs-body-color-rgb: 255, 237, 213;
+    --bs-secondary-color: rgba(255, 237, 213, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #FFEDD5;
+    background-color: #1A100A;
+    color-scheme: dark;
+}
+
+/* ── Green Light — Emerald Grove (default, matches :root) ── */
+[data-theme="green-light"] {
+    --bs-primary: #10B981;
+    --bs-primary-rgb: 16, 185, 129;
+    --feirb-primary-container: #D1FAE5;
+    --bs-secondary: #D1FAE5;
+    --bs-secondary-rgb: 209, 250, 229;
+    --feirb-secondary-container: #A7F3D0;
+    --feirb-tertiary: #047857;
+    --feirb-tertiary-container: #6EE7B7;
+    --bs-body-bg: #F0FDF4;
+    --bs-body-color: #064E3B;
+    --feirb-on-surface: #064E3B;
+    --feirb-on-surface-variant: #34766A;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #D1FAE5;
+    --feirb-outline: #5F9E8F;
+    --feirb-navbar-select-background: rgba(16, 185, 129, 0.15);
+    --feirb-outline-variant: #A7F3D0;
+    --bs-link-color: #10B981;
+    --bs-link-hover-color: #059669;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #34D399;
+    --feirb-primary-active: #6EE7B7;
+    --feirb-secondary-hover: #A7F3D0;
+    --feirb-secondary-active: #86EFAC;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+    --bs-body-color-rgb: 6, 78, 59;
+    --bs-secondary-color: rgba(6, 78, 59, 0.75);
+    color: #064E3B;
+    background-color: #F0FDF4;
+    color-scheme: light;
+}
+
+/* ── Green Dark — Emerald Night ── */
+[data-theme="green-dark"] {
+    --bs-primary: #10B981;
+    --bs-primary-rgb: 16, 185, 129;
+    --feirb-primary-container: #064E3B;
+    --bs-secondary: #1A3A2A;
+    --bs-secondary-rgb: 26, 58, 42;
+    --feirb-secondary-container: #0D2818;
+    --feirb-tertiary: #6EE7B7;
+    --feirb-tertiary-container: #047857;
+    --bs-body-bg: #0F1A14;
+    --bs-body-color: #D1FAE5;
+    --feirb-on-surface: #D1FAE5;
+    --feirb-on-surface-variant: #86EFAC;
+    --feirb-surface: #1A2B22;
+    --feirb-surface-container: #243D30;
+    --feirb-outline: #5F9E8F;
+    --feirb-navbar-select-background: rgba(16, 185, 129, 0.2);
+    --feirb-outline-variant: #2D4F3E;
+    --bs-link-color: #34D399;
+    --bs-link-hover-color: #6EE7B7;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #34D399;
+    --feirb-primary-active: #6EE7B7;
+    --feirb-secondary-hover: #2D4F3E;
+    --feirb-secondary-active: #3A6B52;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.3);
+    --bs-body-color-rgb: 209, 250, 229;
+    --bs-secondary-color: rgba(209, 250, 229, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #D1FAE5;
+    background-color: #0F1A14;
+    color-scheme: dark;
+}
+
+/* ── Teal Light ── */
+[data-theme="teal-light"] {
+    --bs-primary: #14B8A6;
+    --bs-primary-rgb: 20, 184, 166;
+    --feirb-primary-container: #CCFBF1;
+    --bs-secondary: #CCFBF1;
+    --bs-secondary-rgb: 204, 251, 241;
+    --feirb-secondary-container: #99F6E4;
+    --feirb-tertiary: #0D9488;
+    --feirb-tertiary-container: #5EEAD4;
+    --bs-body-bg: #F0FDFA;
+    --bs-body-color: #134E4A;
+    --feirb-on-surface: #134E4A;
+    --feirb-on-surface-variant: #2D7A72;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #CCFBF1;
+    --feirb-outline: #5EA59D;
+    --feirb-navbar-select-background: rgba(20, 184, 166, 0.12);
+    --feirb-outline-variant: #99F6E4;
+    --bs-link-color: #14B8A6;
+    --bs-link-hover-color: #0D9488;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #2DD4BF;
+    --feirb-primary-active: #5EEAD4;
+    --feirb-secondary-hover: #99F6E4;
+    --feirb-secondary-active: #5EEAD4;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(20, 184, 166, 0.25);
+    --bs-body-color-rgb: 19, 78, 74;
+    --bs-secondary-color: rgba(19, 78, 74, 0.75);
+    color: #134E4A;
+    background-color: #F0FDFA;
+    color-scheme: light;
+}
+
+/* ── Teal Dark ── */
+[data-theme="teal-dark"] {
+    --bs-primary: #14B8A6;
+    --bs-primary-rgb: 20, 184, 166;
+    --feirb-primary-container: #134E4A;
+    --bs-secondary: #1A3A36;
+    --bs-secondary-rgb: 26, 58, 54;
+    --feirb-secondary-container: #0D2825;
+    --feirb-tertiary: #5EEAD4;
+    --feirb-tertiary-container: #0D9488;
+    --bs-body-bg: #0C1A18;
+    --bs-body-color: #CCFBF1;
+    --feirb-on-surface: #CCFBF1;
+    --feirb-on-surface-variant: #5EEAD4;
+    --feirb-surface: #1A2B28;
+    --feirb-surface-container: #243D3A;
+    --feirb-outline: #5EA59D;
+    --feirb-navbar-select-background: rgba(20, 184, 166, 0.2);
+    --feirb-outline-variant: #2D4F4A;
+    --bs-link-color: #2DD4BF;
+    --bs-link-hover-color: #5EEAD4;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #2DD4BF;
+    --feirb-primary-active: #5EEAD4;
+    --feirb-secondary-hover: #2D4F4A;
+    --feirb-secondary-active: #3A6B64;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(20, 184, 166, 0.3);
+    --bs-body-color-rgb: 204, 251, 241;
+    --bs-secondary-color: rgba(204, 251, 241, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #CCFBF1;
+    background-color: #0C1A18;
+    color-scheme: dark;
+}
+
+/* ── Blue Light — Ocean Breeze ── */
+[data-theme="blue-light"] {
+    --bs-primary: #3B82F6;
+    --bs-primary-rgb: 59, 130, 246;
+    --feirb-primary-container: #DBEAFE;
+    --bs-secondary: #DBEAFE;
+    --bs-secondary-rgb: 219, 234, 254;
+    --feirb-secondary-container: #BFDBFE;
+    --feirb-tertiary: #1D4ED8;
+    --feirb-tertiary-container: #93C5FD;
+    --bs-body-bg: #F0F7FF;
+    --bs-body-color: #1E3A5F;
+    --feirb-on-surface: #1E3A5F;
+    --feirb-on-surface-variant: #4A6F8F;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #DBEAFE;
+    --feirb-outline: #7BA3C9;
+    --feirb-navbar-select-background: rgba(59, 130, 246, 0.12);
+    --feirb-outline-variant: #BFDBFE;
+    --bs-link-color: #3B82F6;
+    --bs-link-hover-color: #1D4ED8;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #60A5FA;
+    --feirb-primary-active: #93C5FD;
+    --feirb-secondary-hover: #BFDBFE;
+    --feirb-secondary-active: #93C5FD;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    --bs-body-color-rgb: 30, 58, 95;
+    --bs-secondary-color: rgba(30, 58, 95, 0.75);
+    color: #1E3A5F;
+    background-color: #F0F7FF;
+    color-scheme: light;
+}
+
+/* ── Blue Dark — Ocean Depth ── */
+[data-theme="blue-dark"] {
+    --bs-primary: #3B82F6;
+    --bs-primary-rgb: 59, 130, 246;
+    --feirb-primary-container: #1E3A5F;
+    --bs-secondary: #1A2D44;
+    --bs-secondary-rgb: 26, 45, 68;
+    --feirb-secondary-container: #0D1A2A;
+    --feirb-tertiary: #93C5FD;
+    --feirb-tertiary-container: #1D4ED8;
+    --bs-body-bg: #0C1420;
+    --bs-body-color: #DBEAFE;
+    --feirb-on-surface: #DBEAFE;
+    --feirb-on-surface-variant: #93C5FD;
+    --feirb-surface: #1A2838;
+    --feirb-surface-container: #243B52;
+    --feirb-outline: #7BA3C9;
+    --feirb-navbar-select-background: rgba(59, 130, 246, 0.2);
+    --feirb-outline-variant: #2D4A66;
+    --bs-link-color: #60A5FA;
+    --bs-link-hover-color: #93C5FD;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #60A5FA;
+    --feirb-primary-active: #93C5FD;
+    --feirb-secondary-hover: #2D4A66;
+    --feirb-secondary-active: #3A6080;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.3);
+    --bs-body-color-rgb: 219, 234, 254;
+    --bs-secondary-color: rgba(219, 234, 254, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #DBEAFE;
+    background-color: #0C1420;
+    color-scheme: dark;
+}
+
+/* ── Purple Light ── */
+[data-theme="purple-light"] {
+    --bs-primary: #8B5CF6;
+    --bs-primary-rgb: 139, 92, 246;
+    --feirb-primary-container: #EDE9FE;
+    --bs-secondary: #EDE9FE;
+    --bs-secondary-rgb: 237, 233, 254;
+    --feirb-secondary-container: #DDD6FE;
+    --feirb-tertiary: #6D28D9;
+    --feirb-tertiary-container: #C4B5FD;
+    --bs-body-bg: #F5F3FF;
+    --bs-body-color: #3B1F7A;
+    --feirb-on-surface: #3B1F7A;
+    --feirb-on-surface-variant: #6B4FA0;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #EDE9FE;
+    --feirb-outline: #9B85C7;
+    --feirb-navbar-select-background: rgba(139, 92, 246, 0.12);
+    --feirb-outline-variant: #DDD6FE;
+    --bs-link-color: #8B5CF6;
+    --bs-link-hover-color: #6D28D9;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #A78BFA;
+    --feirb-primary-active: #C4B5FD;
+    --feirb-secondary-hover: #DDD6FE;
+    --feirb-secondary-active: #C4B5FD;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+    --bs-body-color-rgb: 59, 31, 122;
+    --bs-secondary-color: rgba(59, 31, 122, 0.75);
+    color: #3B1F7A;
+    background-color: #F5F3FF;
+    color-scheme: light;
+}
+
+/* ── Purple Dark ── */
+[data-theme="purple-dark"] {
+    --bs-primary: #8B5CF6;
+    --bs-primary-rgb: 139, 92, 246;
+    --feirb-primary-container: #3B1F7A;
+    --bs-secondary: #2A1650;
+    --bs-secondary-rgb: 42, 22, 80;
+    --feirb-secondary-container: #1A0E38;
+    --feirb-tertiary: #C4B5FD;
+    --feirb-tertiary-container: #6D28D9;
+    --bs-body-bg: #120C20;
+    --bs-body-color: #EDE9FE;
+    --feirb-on-surface: #EDE9FE;
+    --feirb-on-surface-variant: #C4B5FD;
+    --feirb-surface: #1E1530;
+    --feirb-surface-container: #2E2244;
+    --feirb-outline: #9B85C7;
+    --feirb-navbar-select-background: rgba(139, 92, 246, 0.2);
+    --feirb-outline-variant: #3D2D5A;
+    --bs-link-color: #A78BFA;
+    --bs-link-hover-color: #C4B5FD;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #A78BFA;
+    --feirb-primary-active: #C4B5FD;
+    --feirb-secondary-hover: #3D2D5A;
+    --feirb-secondary-active: #554070;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.3);
+    --bs-body-color-rgb: 237, 233, 254;
+    --bs-secondary-color: rgba(237, 233, 254, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #EDE9FE;
+    background-color: #120C20;
+    color-scheme: dark;
+}
+
+/* ── Pink Light — Rose Garden ── */
+[data-theme="pink-light"] {
+    --bs-primary: #FF2D78;
+    --bs-primary-rgb: 255, 45, 120;
+    --feirb-primary-container: #FFE0EB;
+    --bs-secondary: #FFE0EB;
+    --bs-secondary-rgb: 255, 224, 235;
+    --feirb-secondary-container: #FFBED4;
+    --feirb-tertiary: #C4175A;
+    --feirb-tertiary-container: #FF7BA7;
+    --bs-body-bg: #FFF5F8;
+    --bs-body-color: #4A0D2B;
+    --feirb-on-surface: #4A0D2B;
+    --feirb-on-surface-variant: #8C3A5E;
+    --feirb-surface: #FFFFFF;
+    --feirb-surface-container: #FFE0EB;
+    --feirb-outline: #C77A96;
+    --feirb-navbar-select-background: rgba(255, 45, 120, 0.12);
+    --feirb-outline-variant: #FFBED4;
+    --bs-link-color: #FF2D78;
+    --bs-link-hover-color: #C4175A;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    --feirb-primary-hover: #FF5C96;
+    --feirb-primary-active: #FF7BA7;
+    --feirb-secondary-hover: #FFBED4;
+    --feirb-secondary-active: #FF9EBF;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(255, 45, 120, 0.25);
+    --bs-body-color-rgb: 74, 13, 43;
+    --bs-secondary-color: rgba(74, 13, 43, 0.75);
+    color: #4A0D2B;
+    background-color: #FFF5F8;
+    color-scheme: light;
+}
+
+/* ── Pink Dark — Rose Night ── */
+[data-theme="pink-dark"] {
+    --bs-primary: #FF2D78;
+    --bs-primary-rgb: 255, 45, 120;
+    --feirb-primary-container: #4A0D2B;
+    --bs-secondary: #3A1425;
+    --bs-secondary-rgb: 58, 20, 37;
+    --feirb-secondary-container: #2A0A1A;
+    --feirb-tertiary: #FF7BA7;
+    --feirb-tertiary-container: #C4175A;
+    --bs-body-bg: #1A0A12;
+    --bs-body-color: #FFE0EB;
+    --feirb-on-surface: #FFE0EB;
+    --feirb-on-surface-variant: #FF9EBF;
+    --feirb-surface: #2B1520;
+    --feirb-surface-container: #3F2030;
+    --feirb-outline: #C77A96;
+    --feirb-navbar-select-background: rgba(255, 45, 120, 0.2);
+    --feirb-outline-variant: #4F2A3A;
+    --bs-link-color: #FF5C96;
+    --bs-link-hover-color: #FF7BA7;
+    --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    --feirb-primary-hover: #FF5C96;
+    --feirb-primary-active: #FF7BA7;
+    --feirb-secondary-hover: #4F2A3A;
+    --feirb-secondary-active: #6B3A50;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(255, 255, 255, 0.08);
+    --feirb-border-color-input: rgba(255, 255, 255, 0.15);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(255, 45, 120, 0.3);
+    --bs-body-color-rgb: 255, 224, 235;
+    --bs-secondary-color: rgba(255, 224, 235, 0.75);
+    --bs-border-color: rgba(255, 255, 255, 0.15);
+    color: #FFE0EB;
+    background-color: #1A0A12;
+    color-scheme: dark;
+}

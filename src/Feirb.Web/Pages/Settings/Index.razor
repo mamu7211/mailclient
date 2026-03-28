@@ -1,8 +1,12 @@
 @page "/settings"
 @attribute [Authorize]
+@using Feirb.Shared.Settings
+@using Feirb.Web.Components.UI
 @inject IStringLocalizer<SharedResources> L
 @inject IJSRuntime Js
+@inject HttpClient Http
 @inject NavigationManager Navigation
+@inject NotificationService Notifications
 
 <PageTitle>@L["PageTitleSettings"]</PageTitle>
 
@@ -55,10 +59,48 @@
             }
         </div>
     </ContentSection>
+
+    <ContentSection Icon="palette" Title="@L["SettingsThemeTitle"]" Subtitle="@L["SettingsThemeSubtitle"]">
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">@L["ThemeLightLabel"]</label>
+                <ToggleButtonGroup Items="_lightThemes" SelectedId="@_selectedTheme"
+                                   SelectedIdChanged="OnThemeSelectedAsync" />
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <label class="form-label fw-semibold mb-0" style="min-width: 4rem;">@L["ThemeDarkLabel"]</label>
+                <ToggleButtonGroup Items="_darkThemes" SelectedId="@_selectedTheme"
+                                   SelectedIdChanged="OnThemeSelectedAsync" />
+            </div>
+        </div>
+    </ContentSection>
 </div>
 
 @code {
     private string _currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
+    private string _selectedTheme = "green-light";
+
+    private readonly IReadOnlyList<ToggleButtonItem> _lightThemes =
+    [
+        new("red-light", "Red"),
+        new("orange-light", "Orange"),
+        new("green-light", "Green"),
+        new("teal-light", "Teal"),
+        new("blue-light", "Blue"),
+        new("purple-light", "Purple"),
+        new("pink-light", "Pink"),
+    ];
+
+    private readonly IReadOnlyList<ToggleButtonItem> _darkThemes =
+    [
+        new("red-dark", "Red"),
+        new("orange-dark", "Orange"),
+        new("green-dark", "Green"),
+        new("teal-dark", "Teal"),
+        new("blue-dark", "Blue"),
+        new("purple-dark", "Purple"),
+        new("pink-dark", "Pink"),
+    ];
 
     private static readonly (string Code, string Label)[] Languages =
     [
@@ -67,6 +109,65 @@
         ("fr-FR", "Fran\u00e7ais"),
         ("it-IT", "Italiano"),
     ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var prefs = await Http.GetFromJsonAsync<PreferencesResponse>("/api/settings/preferences");
+            if (prefs is not null)
+                _selectedTheme = prefs.Theme;
+        }
+        catch
+        {
+            var localTheme = await Js.InvokeAsync<string>("blazorTheme.get");
+            if (!string.IsNullOrEmpty(localTheme))
+                _selectedTheme = localTheme;
+        }
+    }
+
+    private async Task OnThemeSelectedAsync(string themeId)
+    {
+        if (themeId == _selectedTheme)
+            return;
+
+        _selectedTheme = themeId;
+        await Js.InvokeVoidAsync("blazorTheme.set", themeId);
+
+        try
+        {
+            var request = new UpdatePreferencesRequest(themeId);
+            var response = await Http.PutAsJsonAsync("/api/settings/preferences", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var themeName = GetThemeDisplayName(themeId);
+                Notifications.Add(string.Format(L["SuccessThemeChanged"], themeName), NotificationSeverity.Success);
+            }
+        }
+        catch
+        {
+            // CSS already applied via localStorage — API save failed silently
+        }
+    }
+
+    private string GetThemeDisplayName(string themeId) => themeId switch
+    {
+        "red-light" => L["ThemeRedLight"],
+        "red-dark" => L["ThemeRedDark"],
+        "orange-light" => L["ThemeOrangeLight"],
+        "orange-dark" => L["ThemeOrangeDark"],
+        "green-light" => L["ThemeGreenLight"],
+        "green-dark" => L["ThemeGreenDark"],
+        "teal-light" => L["ThemeTealLight"],
+        "teal-dark" => L["ThemeTealDark"],
+        "blue-light" => L["ThemeBlueLight"],
+        "blue-dark" => L["ThemeBlueDark"],
+        "purple-light" => L["ThemePurpleLight"],
+        "purple-dark" => L["ThemePurpleDark"],
+        "pink-light" => L["ThemePinkLight"],
+        "pink-dark" => L["ThemePinkDark"],
+        _ => themeId
+    };
 
     private async Task SetCultureAsync(string cultureName)
     {

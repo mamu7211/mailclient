@@ -151,6 +151,7 @@ var settingsGroup = apiGroup.MapGroup("/settings");
 settingsGroup.MapMailboxEndpoints();
 settingsGroup.MapLabelEndpoints();
 settingsGroup.MapProfileEndpoints();
+settingsGroup.MapPreferencesEndpoints();
 
 // Mail test endpoints (per-user, JWT required)
 var mailGroup = apiGroup.MapGroup("/mail");

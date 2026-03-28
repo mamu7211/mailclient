@@ -1086,4 +1086,61 @@
   <data name="UnsavedChangesMessage" xml:space="preserve">
     <value>Sie haben ungespeicherte Änderungen. Was möchten Sie tun?</value>
   </data>
+  <data name="SettingsThemeTitle" xml:space="preserve">
+    <value>Thema</value>
+  </data>
+  <data name="SettingsThemeSubtitle" xml:space="preserve">
+    <value>Wählen Sie Ihr visuelles Thema</value>
+  </data>
+  <data name="ThemeLightLabel" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+  <data name="ThemeDarkLabel" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="ThemeRedLight" xml:space="preserve">
+    <value>Rot</value>
+  </data>
+  <data name="ThemeRedDark" xml:space="preserve">
+    <value>Rot</value>
+  </data>
+  <data name="ThemeOrangeLight" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="ThemeOrangeDark" xml:space="preserve">
+    <value>Orange</value>
+  </data>
+  <data name="ThemeGreenLight" xml:space="preserve">
+    <value>Grün</value>
+  </data>
+  <data name="ThemeGreenDark" xml:space="preserve">
+    <value>Grün</value>
+  </data>
+  <data name="ThemeTealLight" xml:space="preserve">
+    <value>Türkis</value>
+  </data>
+  <data name="ThemeTealDark" xml:space="preserve">
+    <value>Türkis</value>
+  </data>
+  <data name="ThemeBlueLight" xml:space="preserve">
+    <value>Blau</value>
+  </data>
+  <data name="ThemeBlueDark" xml:space="preserve">
+    <value>Blau</value>
+  </data>
+  <data name="ThemePurpleLight" xml:space="preserve">
+    <value>Lila</value>
+  </data>
+  <data name="ThemePurpleDark" xml:space="preserve">
+    <value>Lila</value>
+  </data>
+  <data name="ThemePinkLight" xml:space="preserve">
+    <value>Pink</value>
+  </data>
+  <data name="ThemePinkDark" xml:space="preserve">
+    <value>Pink</value>
+  </data>
+  <data name="SuccessThemeChanged" xml:space="preserve">
+    <value>Thema geändert zu {0}.</value>
+  </data>
 </root>

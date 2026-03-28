@@ -126,4 +126,7 @@
   <data name="LabelDeleted" xml:space="preserve">
     <value>Label supprimé avec succès.</value>
   </data>
+  <data name="InvalidTheme" xml:space="preserve">
+    <value>Thème invalide.</value>
+  </data>
 </root>

@@ -1,4 +1,7 @@
 @inherits LayoutComponentBase
+@using Feirb.Shared.Settings
+@inject HttpClient Http
+@inject IJSRuntime Js
 
 <Feirb.Web.Components.ToastContainer />
 <Feirb.Web.Components.UnsavedChangesGuard />
@@ -17,3 +20,27 @@
         </article>
     </main>
 </div>
+
+@code {
+    private bool _themeSynced;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_themeSynced)
+        {
+            _themeSynced = true;
+            try
+            {
+                var prefs = await Http.GetFromJsonAsync<PreferencesResponse>("/api/settings/preferences");
+                if (prefs is not null)
+                {
+                    await Js.InvokeVoidAsync("blazorTheme.set", prefs.Theme);
+                }
+            }
+            catch
+            {
+                // Not authenticated or API unavailable — keep localStorage theme
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-/* Feirb Design Tokens – Emerald Grove (see docs/DESIGN.md) */
+/* Feirb Design Tokens – defaults (see docs/DESIGN.md) */
 :root {
     --bs-primary: #10B981;
     --bs-primary-rgb: 16, 185, 129;
@@ -27,6 +27,15 @@
     --bs-link-hover-color: #059669;
     --feirb-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     --feirb-radius-input: 0.75rem;
+    --feirb-primary-hover: #34D399;
+    --feirb-primary-active: #6EE7B7;
+    --feirb-secondary-hover: #A7F3D0;
+    --feirb-secondary-active: #86EFAC;
+    --feirb-danger-hover: #d42a35;
+    --feirb-danger-active: #e04850;
+    --feirb-border-color: rgba(0, 0, 0, 0.05);
+    --feirb-border-color-input: rgba(0, 0, 0, 0.1);
+    --feirb-focus-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
 }
 
 html, body {
@@ -61,13 +70,13 @@ a:hover, .btn-link:hover {
 }
 
 .btn-primary:hover {
-    background-color: #34D399;
+    background-color: var(--feirb-primary-hover);
     border: none;
 }
 
 .btn-primary:active,
 .btn-primary:focus-visible {
-    background-color: #6EE7B7 !important;
+    background-color: var(--feirb-primary-active) !important;
     border: none !important;
     box-shadow: none !important;
 }
@@ -90,14 +99,14 @@ a:hover, .btn-link:hover {
 }
 
 .btn-secondary:hover {
-    background-color: #A7F3D0;
+    background-color: var(--feirb-secondary-hover);
     border: none;
     color: var(--feirb-on-surface);
 }
 
 .btn-secondary:active,
 .btn-secondary:focus-visible {
-    background-color: #86EFAC !important;
+    background-color: var(--feirb-secondary-active) !important;
     border: none !important;
     box-shadow: none !important;
     color: var(--feirb-on-surface) !important;
@@ -123,21 +132,21 @@ a:hover, .btn-link:hover {
 }
 
 .btn-danger:hover {
-    background-color: #d42a35;
+    background-color: var(--feirb-danger-hover);
     border: none;
 }
 
 .btn-danger:active,
 .btn-danger:focus-visible {
-    background-color: #e04850 !important;
+    background-color: var(--feirb-danger-active) !important;
     border: none !important;
     box-shadow: none !important;
 }
 
 /* Cards */
 .card {
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
     border-radius: var(--bs-border-radius);
     box-shadow: var(--feirb-shadow);
 }
@@ -199,7 +208,7 @@ a:hover, .btn-link:hover {
 }
 
 .feirb-circular-btn-primary:hover:not(:disabled) {
-    background-color: #34D399;
+    background-color: var(--feirb-primary-hover);
 }
 
 .feirb-circular-btn-secondary {
@@ -208,7 +217,7 @@ a:hover, .btn-link:hover {
 }
 
 .feirb-circular-btn-secondary:hover:not(:disabled) {
-    background-color: #A7F3D0;
+    background-color: var(--feirb-secondary-hover);
     color: var(--feirb-on-surface);
 }
 
@@ -218,7 +227,7 @@ a:hover, .btn-link:hover {
 }
 
 .feirb-circular-btn-danger:hover:not(:disabled) {
-    background-color: #d42a35;
+    background-color: var(--feirb-danger-hover);
 }
 
 .feirb-circular-btn-warning {
@@ -232,8 +241,8 @@ a:hover, .btn-link:hover {
 
 /* Card component */
 .feirb-card {
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
     border-radius: var(--bs-border-radius);
     box-shadow: var(--feirb-shadow);
     padding: 1rem;
@@ -244,7 +253,7 @@ a:hover, .btn-link:hover {
     display: inline-grid;
     gap: 1px;
     border-radius: var(--bs-border-radius);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--feirb-border-color-input);
     background-color: var(--feirb-surface-container);
     overflow: hidden;
 }
@@ -278,17 +287,17 @@ a:hover, .btn-link:hover {
 /* Inputs */
 .form-control {
     border-radius: var(--feirb-radius-input);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    border: 1px solid var(--feirb-border-color-input);
+    background-color: var(--feirb-surface);
 }
 
 .form-control:focus {
     border-color: var(--bs-primary);
-    box-shadow: 0 0 0 0.2rem rgba(182, 0, 79, 0.15);
+    box-shadow: var(--feirb-focus-shadow);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(182, 0, 79, 0.15);
+    box-shadow: var(--feirb-focus-shadow);
 }
 
 .form-check-input:checked {

@@ -9,6 +9,9 @@ window.chartjsInterop = {
             this._charts[canvasId].destroy();
         }
 
+        var rgb = getComputedStyle(document.documentElement)
+            .getPropertyValue('--bs-primary-rgb').trim() || '13, 110, 253';
+
         this._charts[canvasId] = new Chart(canvas, {
             type: 'bar',
             data: {
@@ -16,8 +19,8 @@ window.chartjsInterop = {
                 datasets: [{
                     label: label,
                     data: data,
-                    backgroundColor: 'rgba(13, 110, 253, 0.7)',
-                    borderColor: 'rgba(13, 110, 253, 1)',
+                    backgroundColor: 'rgba(' + rgb + ', 0.7)',
+                    borderColor: 'rgba(' + rgb + ', 1)',
                     borderWidth: 1,
                     borderRadius: 4,
                 }]

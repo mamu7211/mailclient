@@ -31,6 +31,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.PasswordHash).HasMaxLength(256);
             entity.Property(e => e.SecurityStamp).HasMaxLength(64);
             entity.Property(e => e.TimeZone).HasMaxLength(64);
+            entity.Property(e => e.Theme).HasMaxLength(32).HasDefaultValue("green-light");
         });
 
         modelBuilder.Entity<SmtpSettings>(entity =>

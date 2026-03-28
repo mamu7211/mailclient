@@ -11,6 +11,7 @@ public class User
     public DateTime? RefreshTokenExpiresAt { get; set; }
     public bool IsAdmin { get; set; }
     public string? TimeZone { get; set; }
+    public string? Theme { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }

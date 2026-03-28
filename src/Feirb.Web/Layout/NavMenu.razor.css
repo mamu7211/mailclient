@@ -7,8 +7,8 @@
     display: flex;
     flex-direction: column;
     padding: 1.5rem 1rem;
-    background-color: #fff;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: var(--feirb-surface);
+    border-right: 1px solid var(--feirb-border-color);
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.03);
     z-index: 40;
     font-size: 0.875rem;
@@ -55,7 +55,7 @@
 
 .profile-email {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: var(--feirb-on-surface-variant);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
