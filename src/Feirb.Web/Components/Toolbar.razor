@@ -6,7 +6,7 @@
     <div class="toolbar-actions">
         @foreach (var action in ToolbarState.Actions)
         {
-            <Button Variant="action.Variant" Size="ButtonSize.Small" Icon="@action.Icon" OnClick="action.OnClickAsync">
+            <Button @key="action" Variant="action.Variant" Size="ButtonSize.Small" Icon="@action.Icon" OnClick="action.OnClickAsync">
                 @action.Label
             </Button>
         }

@@ -4,6 +4,7 @@
 @using Feirb.Shared.Admin
 @using Feirb.Shared.Settings
 @inject HttpClient Http
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
 @inject ToolbarStateService ToolbarState
 @inject NotificationService Notifications
@@ -120,12 +121,16 @@ else if (_model is not null)
     private bool _isTestingSmtp;
     private TestConnectionResponse? _smtpTestResult;
 
+    private ToolbarAction[] _toolbarActions = [];
+
     protected override async Task OnInitializedAsync()
     {
-        ToolbarState.SetActions(
+        _toolbarActions =
         [
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/admin/system-settings"); return Task.CompletedTask; }, "x-lg"),
             new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg")
-        ]);
+        ];
+        ToolbarState.AddActions(_toolbarActions);
 
         try
         {
@@ -154,7 +159,7 @@ else if (_model is not null)
         }
     }
 
-    public void Dispose() => ToolbarState.Clear();
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
 
     private async Task HandleSaveAsync()
     {

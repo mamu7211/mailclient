@@ -21,7 +21,7 @@
     </div>
 }
 
-<EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
+<TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
     <DataAnnotationsValidator />
 
     <ContentSection Icon="info-circle" Title="@L["MailboxSectionGeneral"]" Subtitle="@L["SectionMailboxGeneralSubtitle"]" Class="mb-4">
@@ -136,7 +136,7 @@
             </div>
         }
     </ContentSection>
-</EditForm>
+</TrackedEditForm>
 
 @code {
     private MailboxFormModel _model = new();
@@ -148,19 +148,23 @@
     private TestConnectionResponse? _imapTestResult;
     private TestConnectionResponse? _smtpTestResult;
 
+    private ToolbarAction[] _toolbarActions = [];
+
     protected override void OnInitialized()
     {
-        ToolbarState.SetActions(
+        _toolbarActions =
         [
-            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg")
-        ]);
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/settings/mailboxes"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, async () => { await HandleSaveAsync(); }, "check-lg")
+        ];
+        ToolbarState.AddActions(_toolbarActions);
     }
 
-    public void Dispose() => ToolbarState.Clear();
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
 
-    private async Task HandleSaveAsync()
+    private async Task<bool> HandleSaveAsync()
     {
-        if (_isSaving) return;
+        if (_isSaving) return false;
         _isSaving = true;
         _errorMessage = null;
 
@@ -179,12 +183,11 @@
             {
                 var created = await response.Content.ReadFromJsonAsync<MailboxDetailResponse>();
                 Navigation.NavigateTo($"/settings/mailboxes/{created!.Id}");
+                return true;
             }
-            else
-            {
-                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-                _errorMessage = error?.Message ?? L["ErrorMailboxFailed"];
-            }
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+            _errorMessage = error?.Message ?? L["ErrorMailboxFailed"];
         }
         catch
         {
@@ -194,6 +197,8 @@
         {
             _isSaving = false;
         }
+
+        return false;
     }
 
     private async Task TestImapAsync()

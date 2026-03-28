@@ -1,0 +1,55 @@
+@using Feirb.Web.Extensions
+@using Feirb.Web.Services
+@inject UnsavedChangesService UnsavedChanges
+@implements IDisposable
+
+<EditForm EditContext="_editContext"
+          OnValidSubmit="HandleValidSubmitAsync"
+          @attributes="AdditionalAttributes">
+    @ChildContent
+</EditForm>
+
+@code {
+    private EditContext _editContext = null!;
+    private IDisposable? _unsavedChangesTracker;
+
+    [Parameter, EditorRequired]
+    public object Model { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter, EditorRequired]
+    public Func<Task<bool>> OnSave { get; set; } = null!;
+
+    [Parameter]
+    public Func<Task>? OnDiscard { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (_editContext?.Model != Model)
+        {
+            _unsavedChangesTracker?.Dispose();
+            _editContext = new EditContext(Model);
+            _unsavedChangesTracker = _editContext.EnableUnsavedChangesTracking(
+                UnsavedChanges, OnSave, OnDiscard);
+        }
+    }
+
+    private async Task HandleValidSubmitAsync()
+    {
+        var success = await OnSave();
+        if (success)
+        {
+            UnsavedChanges.Clear();
+        }
+    }
+
+    public void Dispose()
+    {
+        _unsavedChangesTracker?.Dispose();
+    }
+}

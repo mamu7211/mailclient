@@ -40,7 +40,7 @@
 }
 else if (_model is not null)
 {
-    <EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
+    <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
         <DataAnnotationsValidator />
 
         <ContentSection Icon="info-circle" Title="@L["MailboxSectionGeneral"]" Subtitle="@L["SectionMailboxGeneralSubtitle"]" Class="mb-4">
@@ -157,7 +157,7 @@ else if (_model is not null)
                 </div>
             }
         </ContentSection>
-    </EditForm>
+    </TrackedEditForm>
 }
 
 @* Delete Confirmation Modal *@
@@ -204,13 +204,17 @@ else if (_model is not null)
     private TestConnectionResponse? _imapTestResult;
     private TestConnectionResponse? _smtpTestResult;
 
+    private ToolbarAction[] _toolbarActions = [];
+
     protected override async Task OnInitializedAsync()
     {
-        ToolbarState.SetActions(
+        _toolbarActions =
         [
-            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg"),
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/settings/mailboxes"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, async () => { await HandleSaveAsync(); }, "check-lg"),
             new ToolbarAction(L["ButtonDelete"], ButtonVariant.Danger, () => { _showDeleteModal = true; StateHasChanged(); return Task.CompletedTask; }, "trash")
-        ]);
+        ];
+        ToolbarState.AddActions(_toolbarActions);
 
         try
         {
@@ -244,11 +248,11 @@ else if (_model is not null)
         }
     }
 
-    public void Dispose() => ToolbarState.Clear();
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
 
-    private async Task HandleSaveAsync()
+    private async Task<bool> HandleSaveAsync()
     {
-        if (_isSaving || _model is null) return;
+        if (_isSaving || _model is null) return false;
         _isSaving = true;
         _errorMessage = null;
         _successMessage = null;
@@ -270,12 +274,11 @@ else if (_model is not null)
                 _model.SmtpPassword = null;
                 _successMessage = L["SuccessMailboxUpdated"];
                 Notifications.Add(L["SuccessMailboxUpdated"], NotificationSeverity.Success);
+                return true;
             }
-            else
-            {
-                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
-                _errorMessage = error?.Message ?? L["ErrorMailboxFailed"];
-            }
+
+            var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+            _errorMessage = error?.Message ?? L["ErrorMailboxFailed"];
         }
         catch
         {
@@ -285,6 +288,8 @@ else if (_model is not null)
         {
             _isSaving = false;
         }
+
+        return false;
     }
 
     private async Task HandleDeleteAsync()

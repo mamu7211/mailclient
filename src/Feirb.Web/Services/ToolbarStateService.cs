@@ -18,15 +18,32 @@ public sealed class ToolbarStateService
 
     public event Action? OnChange;
 
-    public void SetActions(IEnumerable<ToolbarAction> actions)
+    public void AddActions(IEnumerable<ToolbarAction> actions)
     {
-        _actions.Clear();
         _actions.AddRange(actions);
         OnChange?.Invoke();
     }
 
+    public void RemoveActions(IEnumerable<ToolbarAction> actions)
+    {
+        ArgumentNullException.ThrowIfNull(actions);
+        var changed = false;
+        foreach (var action in actions)
+        {
+            changed |= _actions.Remove(action);
+        }
+
+        if (changed)
+        {
+            OnChange?.Invoke();
+        }
+    }
+
     public void Clear()
     {
+        if (_actions.Count == 0)
+            return;
+
         _actions.Clear();
         OnChange?.Invoke();
     }

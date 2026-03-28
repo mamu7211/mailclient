@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @using Feirb.Shared.Settings
 @inject HttpClient Http
+@inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
 @inject ToolbarStateService ToolbarState
 @inject NotificationService Notifications
@@ -39,7 +40,7 @@
 }
 else if (_model is not null)
 {
-    <EditForm EditContext="_editContext" OnValidSubmit="HandleSaveAsync">
+    <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
         <DataAnnotationsValidator />
 
         <div class="d-flex justify-content-center mb-4">
@@ -60,23 +61,25 @@ else if (_model is not null)
                 <ValidationMessage For="() => _model.Email" />
             </div>
         </ContentSection>
-    </EditForm>
+    </TrackedEditForm>
 }
 
 @code {
-    private EditContext? _editContext;
     private ProfileFormModel? _model;
     private bool _isLoading = true;
     private bool _isSaving;
+    private ToolbarAction[] _toolbarActions = [];
     private string? _successMessage;
     private string? _errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        ToolbarState.SetActions(
+        _toolbarActions =
         [
-            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg")
-        ]);
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/settings"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, async () => { await HandleSaveAsync(); }, "check-lg")
+        ];
+        ToolbarState.AddActions(_toolbarActions);
 
         try
         {
@@ -88,7 +91,6 @@ else if (_model is not null)
                     Username = profile.Username,
                     Email = profile.Email,
                 };
-                _editContext = new EditContext(_model);
             }
         }
         catch
@@ -101,12 +103,11 @@ else if (_model is not null)
         }
     }
 
-    public void Dispose() => ToolbarState.Clear();
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
 
-    private async Task HandleSaveAsync()
+    private async Task<bool> HandleSaveAsync()
     {
-        if (_isSaving || _model is null || _editContext is null) return;
-        if (!_editContext.Validate()) return;
+        if (_isSaving || _model is null) return false;
         _isSaving = true;
         _errorMessage = null;
         _successMessage = null;
@@ -120,12 +121,11 @@ else if (_model is not null)
             {
                 _successMessage = L["SuccessProfileUpdated"];
                 Notifications.Add(L["SuccessProfileUpdated"], NotificationSeverity.Success);
+                return true;
             }
-            else
-            {
-                var error = await response.Content.ReadFromJsonAsync<MessageResponse>();
-                _errorMessage = error?.Message ?? L["ErrorProfileFailed"];
-            }
+
+            var error = await response.Content.ReadFromJsonAsync<MessageResponse>();
+            _errorMessage = error?.Message ?? L["ErrorProfileFailed"];
         }
         catch
         {
@@ -135,6 +135,8 @@ else if (_model is not null)
         {
             _isSaving = false;
         }
+
+        return false;
     }
 
     private sealed class ProfileFormModel

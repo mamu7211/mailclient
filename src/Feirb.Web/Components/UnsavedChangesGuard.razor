@@ -1,0 +1,115 @@
+@using Feirb.Web.Services
+@inject UnsavedChangesService UnsavedChanges
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+@implements IDisposable
+
+<NavigationLock ConfirmExternalNavigation="UnsavedChanges.HasUnsavedChanges"
+               OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+
+@if (_showModal)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog"
+         aria-modal="true" aria-labelledby="unsavedChangesTitle" aria-describedby="unsavedChangesMessage">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="unsavedChangesTitle" class="modal-title">@L["UnsavedChangesTitle"]</h5>
+                    <button type="button" class="btn-close" aria-label="@L["ButtonClose"]" @onclick="HandleCancelAsync"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="unsavedChangesMessage" class="mb-0">@L["UnsavedChangesMessage"]</p>
+                </div>
+                <div class="modal-footer">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="HandleCancelAsync">
+                        @L["ButtonCancel"]
+                    </Button>
+                    <Button Variant="ButtonVariant.Danger" OnClick="HandleDiscardAsync">
+                        @L["ButtonDiscard"]
+                    </Button>
+                    @if (UnsavedChanges.SaveAsync is not null)
+                    {
+                        <Button Variant="ButtonVariant.Primary" OnClick="HandleSaveAsync">
+                            @L["ButtonSave"]
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _showModal;
+    private string? _pendingUri;
+
+    protected override void OnInitialized()
+    {
+        UnsavedChanges.OnChange += StateHasChanged;
+    }
+
+    private void OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        if (!UnsavedChanges.HasUnsavedChanges)
+            return;
+
+        context.PreventNavigation();
+        _pendingUri = context.TargetLocation;
+        _showModal = true;
+        StateHasChanged();
+    }
+
+    private async Task HandleSaveAsync()
+    {
+        if (UnsavedChanges.SaveAsync is not null)
+        {
+            var success = await UnsavedChanges.SaveAsync();
+            if (!success)
+            {
+                _showModal = false;
+                _pendingUri = null;
+                StateHasChanged();
+                return;
+            }
+        }
+
+        NavigateToPending();
+    }
+
+    private async Task HandleDiscardAsync()
+    {
+        if (UnsavedChanges.DiscardAsync is not null)
+        {
+            await UnsavedChanges.DiscardAsync();
+        }
+
+        NavigateToPending();
+    }
+
+    private Task HandleCancelAsync()
+    {
+        _showModal = false;
+        _pendingUri = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void NavigateToPending()
+    {
+        var uri = _pendingUri;
+        _showModal = false;
+        _pendingUri = null;
+        UnsavedChanges.Clear();
+
+        if (uri is not null)
+        {
+            Navigation.NavigateTo(uri);
+        }
+    }
+
+    public void Dispose()
+    {
+        UnsavedChanges.OnChange -= StateHasChanged;
+    }
+}

@@ -4,3 +4,7 @@
     gap: 0.5rem;
     padding-top: 0.5rem;
 }
+
+.toolbar-actions ::deep .btn {
+    transition: none;
+}

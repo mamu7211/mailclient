@@ -1077,4 +1077,13 @@
   <data name="PageHelpOutgoingSmtp" xml:space="preserve">
     <value>Der System-SMTP-Server wird für den Versand von Systembenachrichtigungen und E-Mails verwendet, die nicht an ein bestimmtes Benutzerpostfach gebunden sind. Konfigurieren Sie die Serververbindung und die Standard-Absenderidentität.</value>
   </data>
+  <data name="ButtonDiscard" xml:space="preserve">
+    <value>Verwerfen</value>
+  </data>
+  <data name="UnsavedChangesTitle" xml:space="preserve">
+    <value>Ungespeicherte Änderungen</value>
+  </data>
+  <data name="UnsavedChangesMessage" xml:space="preserve">
+    <value>Sie haben ungespeicherte Änderungen. Was möchten Sie tun?</value>
+  </data>
 </root>

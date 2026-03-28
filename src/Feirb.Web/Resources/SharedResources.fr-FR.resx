@@ -1077,4 +1077,13 @@
   <data name="PageHelpOutgoingSmtp" xml:space="preserve">
     <value>Le serveur SMTP système est utilisé pour envoyer les notifications système et les e-mails non liés à une boîte mail utilisateur spécifique. Configurez la connexion au serveur et l'identité d'expéditeur par défaut.</value>
   </data>
+  <data name="ButtonDiscard" xml:space="preserve">
+    <value>Abandonner</value>
+  </data>
+  <data name="UnsavedChangesTitle" xml:space="preserve">
+    <value>Modifications non enregistrées</value>
+  </data>
+  <data name="UnsavedChangesMessage" xml:space="preserve">
+    <value>Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?</value>
+  </data>
 </root>

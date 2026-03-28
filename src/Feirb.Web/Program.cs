@@ -19,6 +19,7 @@ builder.Services.AddAuthorizationCore(options =>
 
 builder.Services.AddSingleton<NotificationService>();
 builder.Services.AddScoped<ToolbarStateService>();
+builder.Services.AddScoped<UnsavedChangesService>();
 builder.Services.AddScoped<BreadcrumbOverrideService>();
 builder.Services.AddScoped<JwtAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>

@@ -1077,4 +1077,13 @@
   <data name="PageHelpOutgoingSmtp" xml:space="preserve">
     <value>The system SMTP server is used for sending system notifications and emails that are not tied to a specific user mailbox. Configure the server connection and the default sender identity.</value>
   </data>
+  <data name="ButtonDiscard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="UnsavedChangesTitle" xml:space="preserve">
+    <value>Unsaved Changes</value>
+  </data>
+  <data name="UnsavedChangesMessage" xml:space="preserve">
+    <value>You have unsaved changes. What would you like to do?</value>
+  </data>
 </root>
