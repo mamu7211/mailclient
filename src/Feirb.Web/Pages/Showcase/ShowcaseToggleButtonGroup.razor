@@ -12,6 +12,7 @@
             <tr><td><code>Items</code></td><td><code>IReadOnlyList&lt;ToggleButtonItem&gt;</code></td><td>&#8212;</td><td>Available options</td></tr>
             <tr><td><code>SelectedId</code></td><td><code>string</code></td><td>&#8212;</td><td>Currently selected item ID</td></tr>
             <tr><td><code>SelectedIdChanged</code></td><td><code>EventCallback&lt;string&gt;</code></td><td>&#8212;</td><td>Fires when selection changes</td></tr>
+            <tr><td><code>MaxPerRow</code></td><td><code>int</code></td><td><code>8</code></td><td>Maximum items per row before wrapping</td></tr>
             <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
         </tbody>
     </table>
@@ -19,20 +20,34 @@
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Preview</Heading>
-    <div class="d-flex align-items-center gap-2 mb-3">
-        <label class="form-label mb-0">Items:</label>
-        <CircularButton AriaLabel="Remove item" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
-                        Disabled="@(_itemCount <= 1)" OnClick="RemoveItem">
-            <Icon Name="dash" Size="IconSize.Small" />
-        </CircularButton>
-        <span class="fw-semibold">@_itemCount</span>
-        <CircularButton AriaLabel="Add item" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
-                        Disabled="@(_itemCount >= 20)" OnClick="AddItem">
-            <Icon Name="plus" Size="IconSize.Small" />
-        </CircularButton>
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Items:</label>
+            <CircularButton AriaLabel="Remove item" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                            Disabled="@(_itemCount <= 1)" OnClick="RemoveItem">
+                <Icon Name="dash" Size="IconSize.Small" />
+            </CircularButton>
+            <span class="fw-semibold">@_itemCount</span>
+            <CircularButton AriaLabel="Add item" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                            Disabled="@(_itemCount >= 20)" OnClick="AddItem">
+                <Icon Name="plus" Size="IconSize.Small" />
+            </CircularButton>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Max per row:</label>
+            <CircularButton AriaLabel="Decrease max per row" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                            Disabled="@(_maxPerRow <= 2)" OnClick="() => _maxPerRow--">
+                <Icon Name="dash" Size="IconSize.Small" />
+            </CircularButton>
+            <span class="fw-semibold">@_maxPerRow</span>
+            <CircularButton AriaLabel="Increase max per row" Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                            Disabled="@(_maxPerRow >= 20)" OnClick="() => _maxPerRow++">
+                <Icon Name="plus" Size="IconSize.Small" />
+            </CircularButton>
+        </div>
     </div>
     <div class="showcase-preview-area">
-        <ToggleButtonGroup Items="VisibleItems" @bind-SelectedId="_selectedId" />
+        <ToggleButtonGroup Items="VisibleItems" MaxPerRow="_maxPerRow" @bind-SelectedId="_selectedId" />
         <p class="text-muted mt-2 mb-0">Selected: <strong>@_selectedId</strong></p>
     </div>
 </Card>
@@ -44,6 +59,7 @@
 
 @code {
     private int _itemCount = 3;
+    private int _maxPerRow = 8;
     private string _selectedId = "option-1";
     private ElementReference _codeElement;
 
@@ -76,7 +92,8 @@
         get
         {
             var items = string.Join(",\n        ", VisibleItems.Select(i => $"new(\"{i.Id}\", \"{i.Label}\")"));
-            return "<ToggleButtonGroup Items=\"_items\"\n" +
+            var maxAttr = _maxPerRow != 8 ? $"\n    MaxPerRow=\"{_maxPerRow}\"" : "";
+            return "<ToggleButtonGroup Items=\"_items\"" + maxAttr + "\n" +
                    "    @bind-SelectedId=\"_selectedId\" />\n" +
                    "\n" +
                    "@code {\n" +

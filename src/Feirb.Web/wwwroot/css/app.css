@@ -241,29 +241,23 @@ a:hover, .btn-link:hover {
 
 /* Toggle Button Group */
 .feirb-toggle-group {
-    display: inline-flex;
-    flex-wrap: wrap;
+    display: inline-grid;
+    gap: 1px;
     border-radius: var(--bs-border-radius);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: var(--feirb-surface);
+    background-color: var(--feirb-surface-container);
     overflow: hidden;
 }
 
 .feirb-toggle-group-item {
     padding: 0.5rem 1rem;
     border: none;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
     background-color: var(--feirb-surface);
     color: var(--feirb-on-surface);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.15s ease, color 0.15s ease;
-    position: relative;
-}
-
-.feirb-toggle-group-item:first-child {
-    border-left: none;
 }
 
 .feirb-toggle-group-item:hover:not(.active) {

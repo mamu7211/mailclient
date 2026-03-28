@@ -246,6 +246,7 @@ Mutually exclusive toggle buttons with radio group semantics. Exactly one item i
 | `Items` | `IReadOnlyList<ToggleButtonItem>` (required) | — | Available options |
 | `SelectedId` | `string` (required) | — | Currently selected item ID |
 | `SelectedIdChanged` | `EventCallback<string>` | — | Fires when selection changes |
+| `MaxPerRow` | `int` | `8` | Maximum items per row before wrapping |
 | `Class` | `string?` | `null` | Extra CSS classes |
 
 ### ToggleButtonItem Record
