@@ -7,8 +7,6 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject NotificationService Notifications
-@inject UnsavedChangesService UnsavedChanges
-@implements IDisposable
 
 <PageTitle>@L["PageTitleSettings"]</PageTitle>
 
@@ -74,24 +72,12 @@
                 <ToggleButtonGroup Items="_darkThemes" SelectedId="@_selectedTheme"
                                    SelectedIdChanged="OnThemeSelectedAsync" />
             </div>
-            @if (_selectedTheme != _savedTheme)
-            {
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-primary btn-sm" @onclick="SaveThemeAsync">
-                        <i class="bi bi-check-lg me-1"></i>@L["ButtonSave"]
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="RevertThemeAsync">
-                        <i class="bi bi-x-lg me-1"></i>@L["ButtonCancel"]
-                    </button>
-                </div>
-            }
         </div>
     </ContentSection>
 </div>
 
 @code {
     private string _currentCulture = System.Globalization.CultureInfo.CurrentUICulture.Name;
-    private string _savedTheme = "green-light";
     private string _selectedTheme = "green-light";
 
     private readonly IReadOnlyList<ToggleButtonItem> _lightThemes =
@@ -122,68 +108,38 @@
         {
             var prefs = await Http.GetFromJsonAsync<PreferencesResponse>("/api/settings/preferences");
             if (prefs is not null)
-            {
-                _savedTheme = prefs.Theme;
                 _selectedTheme = prefs.Theme;
-            }
         }
         catch
         {
-            // Fall back to localStorage theme
             var localTheme = await Js.InvokeAsync<string>("blazorTheme.get");
             if (!string.IsNullOrEmpty(localTheme))
-            {
-                _savedTheme = localTheme;
                 _selectedTheme = localTheme;
-            }
         }
     }
 
     private async Task OnThemeSelectedAsync(string themeId)
     {
+        if (themeId == _selectedTheme)
+            return;
+
         _selectedTheme = themeId;
         await Js.InvokeVoidAsync("blazorTheme.set", themeId);
 
-        if (_selectedTheme != _savedTheme)
-        {
-            UnsavedChanges.SetUnsavedChanges(true, SaveThemeAsync, RevertThemeAsync);
-        }
-        else
-        {
-            UnsavedChanges.Clear();
-        }
-    }
-
-    private async Task<bool> SaveThemeAsync()
-    {
         try
         {
-            var request = new UpdatePreferencesRequest(_selectedTheme);
+            var request = new UpdatePreferencesRequest(themeId);
             var response = await Http.PutAsJsonAsync("/api/settings/preferences", request);
             if (response.IsSuccessStatusCode)
             {
-                _savedTheme = _selectedTheme;
-                UnsavedChanges.Clear();
-                var themeName = GetThemeDisplayName(_selectedTheme);
+                var themeName = GetThemeDisplayName(themeId);
                 Notifications.Add(string.Format(L["SuccessThemeChanged"], themeName), NotificationSeverity.Info);
-                StateHasChanged();
-                return true;
             }
         }
         catch
         {
-            // Silently fail — user can retry
+            // CSS already applied via localStorage — API save failed silently
         }
-
-        return false;
-    }
-
-    private async Task RevertThemeAsync()
-    {
-        _selectedTheme = _savedTheme;
-        await Js.InvokeVoidAsync("blazorTheme.set", _savedTheme);
-        UnsavedChanges.Clear();
-        StateHasChanged();
     }
 
     private string GetThemeDisplayName(string themeId) => themeId switch
@@ -204,15 +160,5 @@
 
         await Js.InvokeVoidAsync("blazorCulture.set", cultureName);
         Navigation.NavigateTo(Navigation.Uri, forceLoad: true);
-    }
-
-    public void Dispose()
-    {
-        if (_selectedTheme != _savedTheme)
-        {
-            // Revert theme if navigating away without saving
-            _ = Js.InvokeVoidAsync("blazorTheme.set", _savedTheme);
-            UnsavedChanges.Clear();
-        }
     }
 }
