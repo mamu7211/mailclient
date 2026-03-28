@@ -464,7 +464,7 @@ code {
     width: 0.6em;
     height: 0.6em;
     border-radius: 50%;
-    background: white;
+    background: var(--bs-body-bg);
     margin-left: -1em;
     margin-right: 0.4em;
     flex-shrink: 0;
