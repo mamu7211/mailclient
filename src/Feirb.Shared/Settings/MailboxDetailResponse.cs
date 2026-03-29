@@ -5,6 +5,7 @@ public record MailboxDetailResponse(
     string Name,
     string EmailAddress,
     string? DisplayName,
+    string? BadgeColor,
     string ImapHost,
     int ImapPort,
     string ImapUsername,

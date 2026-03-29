@@ -1146,4 +1146,52 @@
   <data name="SuccessThemeChanged" xml:space="preserve">
     <value>Tema cambiato in {0}.</value>
   </data>
+  <data name="WidgetMailboxDoughnutName" xml:space="preserve">
+    <value>Panoramica caselle</value>
+  </data>
+  <data name="WidgetMailboxDoughnutDescription" xml:space="preserve">
+    <value>Grafico ad anello con il numero di e-mail per casella</value>
+  </data>
+  <data name="WidgetMailboxDoughnutEmpty" xml:space="preserve">
+    <value>Nessuna casella configurata</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAddMailbox" xml:space="preserve">
+    <value>Aggiungi casella</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAriaLabel" xml:space="preserve">
+    <value>Numero di e-mail per casella</value>
+  </data>
+  <data name="WidgetMailboxDoughnutMailbox" xml:space="preserve">
+    <value>Casella</value>
+  </data>
+  <data name="WidgetMailboxDoughnutCount" xml:space="preserve">
+    <value>Numero</value>
+  </data>
+  <data name="WidgetConfigLoadError" xml:space="preserve">
+    <value>Impossibile caricare le impostazioni del widget</value>
+  </data>
+  <data name="WidgetConfigSaveError" xml:space="preserve">
+    <value>Impossibile salvare le impostazioni del widget</value>
+  </data>
+  <data name="WidgetDataLoadError" xml:space="preserve">
+    <value>Impossibile caricare i dati</value>
+  </data>
+  <data name="WidgetRetry" xml:space="preserve">
+    <value>Riprova</value>
+  </data>
+  <data name="ColorPickerButton" xml:space="preserve">
+    <value>Scegli colore</value>
+  </data>
+  <data name="ColorPickerTitle" xml:space="preserve">
+    <value>Scegli colore</value>
+  </data>
+  <data name="ColorPickerHexLabel" xml:space="preserve">
+    <value>Valore esadecimale</value>
+  </data>
+  <data name="LabelBadgeColor" xml:space="preserve">
+    <value>Colore badge</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Caricamento...</value>
+  </data>
 </root>

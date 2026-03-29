@@ -1146,4 +1146,52 @@
   <data name="SuccessThemeChanged" xml:space="preserve">
     <value>Theme changed to {0}.</value>
   </data>
+  <data name="WidgetMailboxDoughnutName" xml:space="preserve">
+    <value>Mailbox overview</value>
+  </data>
+  <data name="WidgetMailboxDoughnutDescription" xml:space="preserve">
+    <value>Doughnut chart showing email count per mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutEmpty" xml:space="preserve">
+    <value>No mailboxes configured</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAddMailbox" xml:space="preserve">
+    <value>Add mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAriaLabel" xml:space="preserve">
+    <value>Email count per mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutMailbox" xml:space="preserve">
+    <value>Mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutCount" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="WidgetConfigLoadError" xml:space="preserve">
+    <value>Failed to load widget settings</value>
+  </data>
+  <data name="WidgetConfigSaveError" xml:space="preserve">
+    <value>Failed to save widget settings</value>
+  </data>
+  <data name="WidgetDataLoadError" xml:space="preserve">
+    <value>Failed to load data</value>
+  </data>
+  <data name="WidgetRetry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="ColorPickerButton" xml:space="preserve">
+    <value>Choose color</value>
+  </data>
+  <data name="ColorPickerTitle" xml:space="preserve">
+    <value>Choose color</value>
+  </data>
+  <data name="ColorPickerHexLabel" xml:space="preserve">
+    <value>Hex color value</value>
+  </data>
+  <data name="LabelBadgeColor" xml:space="preserve">
+    <value>Badge color</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>

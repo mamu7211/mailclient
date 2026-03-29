@@ -1,0 +1,49 @@
+@inject IStringLocalizer<SharedResources> L
+
+@switch (State)
+{
+    case WidgetState.Loading:
+        <div class="d-flex flex-grow-1 align-items-center justify-content-center">
+            <div class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">@L["Loading"]</span>
+            </div>
+        </div>
+        break;
+
+    case WidgetState.Error:
+        <div class="d-flex flex-grow-1 flex-column align-items-center justify-content-center text-center gap-2">
+            <Icon Name="exclamation-triangle" Size="IconSize.Large" Class="text-danger" />
+            <span class="small text-muted">@(ErrorMessage ?? L["WidgetDataLoadError"])</span>
+            <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" Icon="arrow-clockwise" OnClick="OnRetry">
+                @L["WidgetRetry"]
+            </Button>
+        </div>
+        break;
+
+    case WidgetState.Empty:
+        <div class="d-flex flex-grow-1 flex-column align-items-center justify-content-center text-center gap-2">
+            <Icon Name="inbox" Size="IconSize.Large" Class="text-muted" />
+            <span class="small text-muted">@EmptyMessage</span>
+            @if (EmptyActionHref is not null)
+            {
+                <a href="@EmptyActionHref" class="btn btn-sm btn-outline-primary">
+                    @EmptyActionText
+                </a>
+            }
+        </div>
+        break;
+
+    case WidgetState.Ready:
+        @ChildContent
+        break;
+}
+
+@code {
+    [Parameter, EditorRequired] public WidgetState State { get; set; }
+    [Parameter] public string? ErrorMessage { get; set; }
+    [Parameter] public string? EmptyMessage { get; set; }
+    [Parameter] public string? EmptyActionHref { get; set; }
+    [Parameter] public string? EmptyActionText { get; set; }
+    [Parameter] public EventCallback OnRetry { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,138 @@
+@inject IStringLocalizer<SharedResources> L
+
+<div class="feirb-color-picker-trigger d-inline-flex align-items-center gap-2">
+    <span class="feirb-color-swatch" style="background-color: @(Value ?? "#6c757d");"></span>
+    <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" Icon="brush" OnClick="Open">
+        @L["ColorPickerButton"]
+    </Button>
+</div>
+
+@if (_visible)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-label="@L["ColorPickerTitle"]">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@L["ColorPickerTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="Cancel"></button>
+                </div>
+                <div class="modal-body d-flex flex-column align-items-center gap-3">
+                    <svg viewBox="0 0 200 200" width="180" height="180" class="feirb-color-ring">
+                        @for (var i = 0; i < _presetColors.Length; i++)
+                        {
+                            var color = _presetColors[i];
+                            var angle = i * 30.0 - 90.0;
+                            var startAngle = angle - 15.0;
+                            var endAngle = angle + 15.0;
+                            var isSelected = string.Equals(_pendingValue, color.Hex, StringComparison.OrdinalIgnoreCase);
+                            <path d="@GetArcPath(100, 100, 65, 95, startAngle, endAngle)"
+                                  fill="@color.Hex"
+                                  stroke="@(isSelected ? "var(--feirb-on-surface)" : "var(--bs-body-bg)")"
+                                  stroke-width="@(isSelected ? 3 : 1.5)"
+                                  class="feirb-color-ring-segment"
+                                  role="button"
+                                  tabindex="0"
+                                  aria-label="@color.Name"
+                                  @onclick="() => SelectPreset(color.Hex)"
+                                  @onkeydown="(e) => HandleSegmentKey(e, color.Hex)" />
+                        }
+                    </svg>
+
+                    <div class="d-flex align-items-center gap-2 w-100">
+                        <span class="feirb-color-swatch feirb-color-swatch-lg" style="background-color: @(_pendingValue ?? "#6c757d");"></span>
+                        <input type="text"
+                               class="form-control form-control-sm font-monospace"
+                               value="@_pendingValue"
+                               @oninput="OnHexInput"
+                               placeholder="#000000"
+                               maxlength="7"
+                               aria-label="@L["ColorPickerHexLabel"]" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="Cancel">
+                        @L["ButtonCancel"]
+                    </Button>
+                    <Button Variant="ButtonVariant.Primary" OnClick="Confirm">
+                        @L["ButtonConfirm"]
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _visible;
+    private string? _pendingValue;
+
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    private static readonly PresetColor[] _presetColors =
+    [
+        new("#FF0000", "Red"),
+        new("#E34700", "Vermilion"),
+        new("#FF8000", "Orange"),
+        new("#FFBF00", "Amber"),
+        new("#FFD700", "Yellow"),
+        new("#7FFF00", "Chartreuse"),
+        new("#00A550", "Green"),
+        new("#008B8B", "Teal"),
+        new("#0047AB", "Blue"),
+        new("#7F00FF", "Violet"),
+        new("#800080", "Purple"),
+        new("#FF00FF", "Magenta"),
+    ];
+
+    private void Open()
+    {
+        _pendingValue = Value;
+        _visible = true;
+    }
+
+    private void Cancel() => _visible = false;
+
+    private async Task Confirm()
+    {
+        _visible = false;
+        Value = _pendingValue;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private void SelectPreset(string hex) => _pendingValue = hex;
+
+    private void OnHexInput(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+        if (!string.IsNullOrEmpty(input))
+            _pendingValue = input;
+    }
+
+    private void HandleSegmentKey(KeyboardEventArgs e, string hex)
+    {
+        if (e.Key is "Enter" or " ")
+            SelectPreset(hex);
+    }
+
+    private static string GetArcPath(double cx, double cy, double innerR, double outerR, double startDeg, double endDeg)
+    {
+        var startRad = startDeg * Math.PI / 180;
+        var endRad = endDeg * Math.PI / 180;
+
+        var outerX1 = cx + outerR * Math.Cos(startRad);
+        var outerY1 = cy + outerR * Math.Sin(startRad);
+        var outerX2 = cx + outerR * Math.Cos(endRad);
+        var outerY2 = cy + outerR * Math.Sin(endRad);
+
+        var innerX1 = cx + innerR * Math.Cos(endRad);
+        var innerY1 = cy + innerR * Math.Sin(endRad);
+        var innerX2 = cx + innerR * Math.Cos(startRad);
+        var innerY2 = cy + innerR * Math.Sin(startRad);
+
+        return $"M {outerX1:F2} {outerY1:F2} A {outerR} {outerR} 0 0 1 {outerX2:F2} {outerY2:F2} L {innerX1:F2} {innerY1:F2} A {innerR} {innerR} 0 0 0 {innerX2:F2} {innerY2:F2} Z";
+    }
+
+    private sealed record PresetColor(string Hex, string Name);
+}
