@@ -1,41 +1,33 @@
-/* Inbox table — fixed column layout with horizontal scroll on small viewports */
+/* Inbox table — fixed column layout */
 ::deep .inbox-table {
-        table-layout: fixed;
-        width: 100%;
-        min-width: 42rem;
-}
-
-/* Horizontal scroll wrapper — prevents table from breaking the ContentSection */
-::deep .content-section-body {
-        overflow-x: auto;
-        padding: 0;
+    table-layout: fixed;
+    width: 100%;
+    min-width: 42rem;
 }
 
 /* Column widths */
 ::deep .inbox-col-mailbox {
-        width: 8rem;
-        padding-left: 1.25rem;
+    width: 8rem;
 }
 
 ::deep .inbox-col-from {
-        width: 14rem;
+    width: 14rem;
 }
 
 ::deep .inbox-col-subject {
-        width: auto;
-        min-width: 8rem;
+    width: auto;
+    min-width: 8rem;
 }
 
 ::deep .inbox-col-category {
-        width: 8rem;
+    width: 8rem;
 }
 
 ::deep .inbox-col-date {
-        width: 10rem;
-        padding-right: 1.25rem;
+    width: 10rem;
 }
 
 /* Subject cell — ellipsis truncation */
 ::deep .inbox-subject-cell {
-        overflow: hidden;
+    overflow: hidden;
 }
