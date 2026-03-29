@@ -1,0 +1,32 @@
+@namespace Feirb.Web.Components.UI
+
+@* Table row with ARIA row semantics and optional click handler. *@
+<div role="row"
+     class="feirb-table-row @(OnClick.HasDelegate ? "feirb-table-row-clickable" : "") @Class"
+     @onclick="OnClick"
+     @onkeydown="OnKeyDown"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Row content (TableCell elements).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    /// <summary>Click event on the row.</summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>Keyboard event on the row.</summary>
+    [Parameter]
+    public EventCallback<KeyboardEventArgs> OnKeyDown { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>Any extra HTML attributes.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

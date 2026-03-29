@@ -1,0 +1,78 @@
+/* Pagination — theme-aware */
+.feirb-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+}
+
+.feirb-pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bs-body-color);
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
+    border-radius: var(--feirb-radius-input, 0.75rem);
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+.feirb-pagination-btn:hover:not(:disabled) {
+    border-color: var(--bs-primary);
+    background-color: var(--feirb-surface-container);
+}
+
+.feirb-pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.feirb-pagination-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--bs-body-bg);
+    border-top: 1px solid var(--feirb-border-color);
+    margin: 0 -2rem -2rem;
+    padding: 0.75rem 2rem;
+}
+
+.feirb-pagination-separator {
+    width: 1px;
+    height: 1.5rem;
+    background-color: var(--feirb-border-color);
+    margin: 0 0.25rem;
+}
+
+.feirb-pagination-select {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bs-body-color);
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
+    border-radius: var(--feirb-radius-input, 0.75rem);
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.feirb-pagination-select:hover {
+    border-color: var(--bs-primary);
+}
+
+.feirb-pagination-select:focus {
+    border-color: var(--bs-primary);
+    outline: none;
+}
+
+.feirb-pagination-info {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--feirb-on-surface-variant);
+    padding: 0.375rem 0.75rem;
+}

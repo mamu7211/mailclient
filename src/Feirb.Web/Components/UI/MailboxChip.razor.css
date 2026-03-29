@@ -1,0 +1,23 @@
+/* MailboxChip — colored dot + mailbox name */
+.feirb-mailbox-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.feirb-mailbox-chip-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.feirb-mailbox-chip-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--bs-body-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

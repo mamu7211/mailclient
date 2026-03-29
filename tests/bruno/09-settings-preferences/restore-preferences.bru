@@ -1,0 +1,31 @@
+meta {
+  name: Restore Preferences
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/settings/preferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "theme": "green-light"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should restore default theme", function() {
+    expect(res.body.theme).to.equal("green-light");
+  });
+}

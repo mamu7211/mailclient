@@ -1,9 +1,14 @@
 @page "/mail/inbox"
 @attribute [Authorize]
 @using Feirb.Shared.Mail
+@using Feirb.Web.Components
+@using Feirb.Web.Components.UI
+@using Feirb.Web.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
+@inject ViewportService Viewport
+@implements IDisposable
 
 <PageTitle>@L["PageTitleInbox"]</PageTitle>
 
@@ -28,76 +33,115 @@ else if (_messages is null || _messages.Items.Count == 0)
 {
     <p class="text-muted">@L["NoMessagesFound"]</p>
 }
-else
+else if (UseCardLayout)
 {
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>@L["ColumnMailbox"]</th>
-                    <th>@L["ColumnFrom"]</th>
-                    <th>@L["ColumnSubject"]</th>
-                    <th>@L["ColumnDate"]</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var msg in _messages.Items)
-                {
-                    <tr role="button" tabindex="0"
-                        @onclick="() => NavigateToMessage(msg.Id)"
-                        @onkeydown="e => OnRowKeyDownAsync(e, msg.Id)"
-                        style="cursor: pointer;">
-                        <td>
-                            <span class="badge" style="background-color: @(msg.MailboxBadgeColor ?? "#6c757d");">
-                                @msg.MailboxName
-                            </span>
-                        </td>
-                        <td>@msg.From</td>
-                        <td>
-                            @msg.Subject
-                            @if (msg.HasAttachments)
-                            {
-                                <i class="bi bi-paperclip ms-1" style="font-size: 1rem; vertical-align: middle;"></i>
-                            }
-                        </td>
-                        <td class="text-nowrap">@msg.Date.LocalDateTime.ToString("g")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="d-flex flex-column gap-2">
+        @foreach (var msg in _messages.Items)
+        {
+            <MailCard Mode="MailCardMode.Small"
+                      SenderName="@msg.FromName"
+                      SenderEmail="@msg.FromEmail"
+                      Subject="@msg.Subject"
+                      Summary="@msg.Summary"
+                      ReceivedAt="msg.Date.LocalDateTime"
+                      IsRead="msg.IsRead"
+                      Href="@($"/mail/inbox/{msg.Id}")" />
+        }
     </div>
 
-    @if (TotalPages > 1)
-    {
-        <nav aria-label="pagination">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(_currentPage <= 1 ? "disabled" : "")">
-                    <button class="page-link" @onclick="PreviousPageAsync" disabled="@(_currentPage <= 1)">@L["PaginationPrevious"]</button>
-                </li>
-                <li class="page-item disabled">
-                    <span class="page-link">@string.Format(L["PaginationPageOf"], _currentPage, TotalPages)</span>
-                </li>
-                <li class="page-item @(_currentPage >= TotalPages ? "disabled" : "")">
-                    <button class="page-link" @onclick="NextPageAsync" disabled="@(_currentPage >= TotalPages)">@L["PaginationNext"]</button>
-                </li>
-            </ul>
-        </nav>
-    }
+    <Pagination CurrentPage="_currentPage"
+                TotalPages="TotalPages"
+                CurrentPageChanged="OnPageChangedAsync"
+                PageSize="_pageSize"
+                PageSizeChanged="OnPageSizeChangedAsync"
+                PreviousLabel="@L["PaginationPrevious"]"
+                NextLabel="@L["PaginationNext"]"
+                PerPageLabel="@L["PaginationPerPage"]"
+                Sticky />
+}
+else
+{
+    <ContentSection Title="@L["NavInbox"]" Icon="envelope">
+        <Table Hover>
+            <TableHeader>
+                <TableColumn Width="8rem">@L["ColumnMailbox"]</TableColumn>
+                <TableColumn Width="2fr">@L["ColumnFrom"]</TableColumn>
+                <TableColumn Width="3fr">@L["ColumnSubject"]</TableColumn>
+                <TableColumn Width="1fr">@L["ColumnCategory"]</TableColumn>
+                <TableColumn Width="10rem">@L["ColumnDate"]</TableColumn>
+            </TableHeader>
+            <TableBody>
+                @foreach (var msg in _messages.Items)
+                {
+                    <TableRow OnClick="() => NavigateToMessage(msg.Id)"
+                              OnKeyDown="e => OnRowKeyDownAsync(e, msg.Id)"
+                              role="button" tabindex="0">
+                        <TableCell>
+                            <MailboxChip Name="@msg.MailboxName" Color="@msg.MailboxBadgeColor" />
+                        </TableCell>
+                        <TableCell>
+                            <PersonChip Name="@msg.FromName" Email="@msg.FromEmail" Size="PersonChipSize.Small" />
+                        </TableCell>
+                        <TableCell Class="inbox-subject-cell">
+                            <MailSubjectChip Subject="@msg.Subject"
+                                             Summary="@msg.Summary"
+                                             IsRead="msg.IsRead"
+                                             HasAttachments="msg.HasAttachments" />
+                        </TableCell>
+                        <TableCell>
+                            <LabelPill Name="@L["LabelNone"]" Color="#6c757d" Size="LabelPillSize.Small" />
+                        </TableCell>
+                        <TableCell>
+                            <DateTimeChip Value="msg.Date"
+                                          DateFormat="@L["DateFormatShort"]"
+                                          TimeFormat="@L["TimeFormatShort"]" />
+                        </TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+    </ContentSection>
+
+    <Pagination CurrentPage="_currentPage"
+                TotalPages="TotalPages"
+                CurrentPageChanged="OnPageChangedAsync"
+                PageSize="_pageSize"
+                PageSizeChanged="OnPageSizeChangedAsync"
+                PreviousLabel="@L["PaginationPrevious"]"
+                NextLabel="@L["PaginationNext"]"
+                PerPageLabel="@L["PaginationPerPage"]"
+                Sticky />
 }
 
 @code {
+    private const int CardLayoutBreakpoint = 1000;
+
     private PaginatedResponse<MessageListItemResponse>? _messages;
     private bool _isLoading = true;
     private string? _errorMessage;
     private int _currentPage = 1;
-    private const int PageSize = 25;
+    private int _pageSize = 5;
+
+    private bool UseCardLayout => Viewport.Width > 0 && Viewport.Width < CardLayoutBreakpoint;
 
     private int TotalPages => _messages is null || _messages.TotalCount == 0
         ? 1
-        : (int)Math.Ceiling((double)_messages.TotalCount / PageSize);
+        : (int)Math.Ceiling((double)_messages.TotalCount / _pageSize);
 
     protected override async Task OnInitializedAsync() =>
         await LoadMessagesAsync();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Viewport.InitializeAsync();
+            Viewport.OnResize += OnViewportResize;
+            StateHasChanged();
+        }
+    }
+
+    private void OnViewportResize() => InvokeAsync(StateHasChanged);
 
     private async Task LoadMessagesAsync()
     {
@@ -106,7 +150,7 @@ else
         try
         {
             _messages = await Http.GetFromJsonAsync<PaginatedResponse<MessageListItemResponse>>(
-                $"/api/mail/messages?page={_currentPage}&pageSize={PageSize}");
+                $"/api/mail/messages?page={_currentPage}&pageSize={_pageSize}");
         }
         catch
         {
@@ -118,22 +162,17 @@ else
         }
     }
 
-    private async Task PreviousPageAsync()
+    private async Task OnPageChangedAsync(int page)
     {
-        if (_currentPage > 1)
-        {
-            _currentPage--;
-            await LoadMessagesAsync();
-        }
+        _currentPage = page;
+        await LoadMessagesAsync();
     }
 
-    private async Task NextPageAsync()
+    private async Task OnPageSizeChangedAsync(int size)
     {
-        if (_currentPage < TotalPages)
-        {
-            _currentPage++;
-            await LoadMessagesAsync();
-        }
+        _pageSize = size;
+        _currentPage = 1;
+        await LoadMessagesAsync();
     }
 
     private void OnRowKeyDownAsync(KeyboardEventArgs e, Guid id)
@@ -144,4 +183,6 @@ else
 
     private void NavigateToMessage(Guid id) =>
         Navigation.NavigateTo($"/mail/inbox/{id}");
+
+    public void Dispose() => Viewport.OnResize -= OnViewportResize;
 }

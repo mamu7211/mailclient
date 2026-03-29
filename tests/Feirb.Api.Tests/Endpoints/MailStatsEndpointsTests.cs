@@ -43,8 +43,9 @@ public class MailStatsEndpointsTests : IDisposable
         var result = await response.Content.ReadFromJsonAsync<MailStatsResponse>();
         result.Should().NotBeNull();
         result!.TotalCount.Should().Be(0);
-        result.MailsPerDay.Should().HaveCount(7);
-        result.MailsPerDay.Should().OnlyContain(d => d.Count == 0);
+        result.TimeSeries.Should().HaveCount(7);
+        result.Granularity.Should().Be(StatsGranularity.Daily);
+        result.MailsPerMailbox.Should().BeEmpty();
     }
 
     [Fact]
@@ -82,7 +83,7 @@ public class MailStatsEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/stats");
 
         var result = await response.Content.ReadFromJsonAsync<MailStatsResponse>();
-        result!.MailsPerDay.Should().HaveCount(7);
+        result!.TimeSeries.Should().HaveCount(7);
     }
 
     [Fact]
@@ -111,7 +112,7 @@ public class MailStatsEndpointsTests : IDisposable
 
     private async Task<Guid> CreateMailboxAsync(string name, string email)
     {
-        var request = new CreateMailboxRequest(name, email, null,
+        var request = new CreateMailboxRequest(name, email, null, null,
             "imap.test.com", 993, "user@test.com", "imappass", true,
             "smtp.test.com", 587, "user@test.com", "smtppass", true, true);
         var response = await _client.PostAsJsonAsync("/api/settings/mailboxes", request);

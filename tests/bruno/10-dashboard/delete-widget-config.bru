@@ -1,0 +1,21 @@
+meta {
+  name: Delete Widget Config
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/dashboard/widgets/bruno-test-widget/config
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 204", function() {
+    expect(res.status).to.equal(204);
+  });
+}

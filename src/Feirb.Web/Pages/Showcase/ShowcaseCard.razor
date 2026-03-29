@@ -6,13 +6,18 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Minimal card container with consistent shadow, border-radius, and padding. Use for grouping related content.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>ChildContent</code></td><td><code>RenderFragment</code></td><td>required</td><td>Card content</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment</code></TableCell><TableCell>required</TableCell><TableCell>Card content</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

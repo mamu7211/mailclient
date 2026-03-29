@@ -1,0 +1,28 @@
+@namespace Feirb.Web.Components.UI
+
+@* Compact date/time display with calendar icon, date prominent, time small. *@
+<div class="feirb-datetime-chip @Class">
+    <Icon Name="calendar-event" Size="IconSize.Small" Class="feirb-datetime-chip-icon" />
+    <div class="feirb-datetime-chip-info">
+        <span class="feirb-datetime-chip-date">@Value.LocalDateTime.ToString(DateFormat)</span>
+        <span class="feirb-datetime-chip-time">@Value.LocalDateTime.ToString(TimeFormat)</span>
+    </div>
+</div>
+
+@code {
+    /// <summary>The date/time value to display.</summary>
+    [Parameter, EditorRequired]
+    public DateTimeOffset Value { get; set; }
+
+    /// <summary>Date format string.</summary>
+    [Parameter]
+    public string DateFormat { get; set; } = "MMM d, yyyy";
+
+    /// <summary>Time format string.</summary>
+    [Parameter]
+    public string TimeFormat { get; set; } = "HH:mm";
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

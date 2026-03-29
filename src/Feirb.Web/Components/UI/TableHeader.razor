@@ -1,0 +1,14 @@
+@namespace Feirb.Web.Components.UI
+
+@* Table header section with ARIA rowgroup and row semantics. *@
+<div role="rowgroup" class="feirb-table-header">
+    <div role="row" class="feirb-table-row">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    /// <summary>Header content (TableColumn elements).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

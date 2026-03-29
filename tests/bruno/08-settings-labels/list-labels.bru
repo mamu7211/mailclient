@@ -1,0 +1,25 @@
+meta {
+  name: List Labels
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/settings/labels
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return array", function() {
+    expect(res.body).to.be.an("array");
+  });
+}

@@ -1,0 +1,61 @@
+/* Table — grid-based, theme-aware */
+.feirb-table {
+    display: grid;
+    width: 100%;
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+}
+
+/* Rows inherit the grid from the table */
+.feirb-table ::deep .feirb-table-row {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+}
+
+/* Header and body span all columns */
+.feirb-table ::deep .feirb-table-header,
+.feirb-table ::deep .feirb-table-body {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+}
+
+/* Cells */
+.feirb-table ::deep .feirb-table-cell {
+    padding: 0.75rem;
+    min-width: 0;
+}
+
+/* Column headers */
+.feirb-table ::deep .feirb-table-column {
+    font-weight: 600;
+    color: var(--bs-body-color);
+    border-bottom: 2px solid var(--feirb-border-color);
+    text-align: left;
+}
+
+/* Body cells — bottom border */
+.feirb-table ::deep .feirb-table-body .feirb-table-cell {
+    border-bottom: 1px solid var(--feirb-border-color);
+}
+
+/* Small size */
+.feirb-table-sm ::deep .feirb-table-cell {
+    padding: 0.375rem 0.5rem;
+}
+
+/* Hover */
+.feirb-table-hover ::deep .feirb-table-body .feirb-table-row:hover {
+    background-color: var(--feirb-surface-container);
+}
+
+/* Striped */
+.feirb-table-striped ::deep .feirb-table-body .feirb-table-row:nth-child(odd) {
+    background-color: var(--feirb-surface-container);
+}
+
+/* Clickable row */
+.feirb-table ::deep .feirb-table-row-clickable {
+    cursor: pointer;
+}

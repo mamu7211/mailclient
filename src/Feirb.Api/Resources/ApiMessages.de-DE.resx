@@ -102,6 +102,9 @@
   <data name="MessageNotFound" xml:space="preserve">
     <value>Nachricht nicht gefunden.</value>
   </data>
+  <data name="SummaryPlaceholder" xml:space="preserve">
+    <value>Hier wird in Zukunft eine von der KI erstellte Zusammenfassung erscheinen.</value>
+  </data>
   <data name="ResetEmailSubject" xml:space="preserve">
     <value>Setze dein Feirb-Passwort zurück</value>
   </data>

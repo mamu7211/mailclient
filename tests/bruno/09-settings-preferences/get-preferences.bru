@@ -1,0 +1,26 @@
+meta {
+  name: Get Preferences
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/settings/preferences
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return theme", function() {
+    expect(res.body).to.have.property("theme");
+    expect(res.body.theme).to.be.a("string");
+  });
+}

@@ -1,0 +1,4 @@
+/* Subject cell — ellipsis truncation */
+::deep .inbox-subject-cell {
+    overflow: hidden;
+}

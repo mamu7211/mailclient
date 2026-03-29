@@ -765,8 +765,23 @@
   <data name="ColumnSubject" xml:space="preserve">
     <value>Subject</value>
   </data>
+  <data name="ColumnCategory" xml:space="preserve">
+    <value>Category</value>
+  </data>
   <data name="ColumnDate" xml:space="preserve">
     <value>Date</value>
+  </data>
+  <data name="DateFormatShort" xml:space="preserve">
+    <value>MMM d, yyyy</value>
+  </data>
+  <data name="TimeFormatShort" xml:space="preserve">
+    <value>h:mm tt</value>
+  </data>
+  <data name="LabelNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="LabelUncategorized" xml:space="preserve">
+    <value>Uncategorized</value>
   </data>
   <data name="LoadingMessages" xml:space="preserve">
     <value>Loading messages...</value>
@@ -809,6 +824,9 @@
   </data>
   <data name="PaginationNext" xml:space="preserve">
     <value>Next</value>
+  </data>
+  <data name="PaginationPerPage" xml:space="preserve">
+    <value>per page</value>
   </data>
   <data name="PaginationPageOf" xml:space="preserve">
     <value>Page {0} of {1}</value>
@@ -1208,5 +1226,53 @@
   </data>
   <data name="JobsUpdateFailed" xml:space="preserve">
     <value>Failed to update job.</value>
+  </data>
+  <data name="WidgetMailboxDoughnutName" xml:space="preserve">
+    <value>Mailbox overview</value>
+  </data>
+  <data name="WidgetMailboxDoughnutDescription" xml:space="preserve">
+    <value>Doughnut chart showing email count per mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutEmpty" xml:space="preserve">
+    <value>No mailboxes configured</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAddMailbox" xml:space="preserve">
+    <value>Add mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutAriaLabel" xml:space="preserve">
+    <value>Email count per mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutMailbox" xml:space="preserve">
+    <value>Mailbox</value>
+  </data>
+  <data name="WidgetMailboxDoughnutCount" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="WidgetConfigLoadError" xml:space="preserve">
+    <value>Failed to load widget settings</value>
+  </data>
+  <data name="WidgetConfigSaveError" xml:space="preserve">
+    <value>Failed to save widget settings</value>
+  </data>
+  <data name="WidgetDataLoadError" xml:space="preserve">
+    <value>Failed to load data</value>
+  </data>
+  <data name="WidgetRetry" xml:space="preserve">
+    <value>Retry</value>
+  </data>
+  <data name="ColorPickerButton" xml:space="preserve">
+    <value>Choose color</value>
+  </data>
+  <data name="ColorPickerTitle" xml:space="preserve">
+    <value>Choose color</value>
+  </data>
+  <data name="ColorPickerHexLabel" xml:space="preserve">
+    <value>Hex color value</value>
+  </data>
+  <data name="LabelBadgeColor" xml:space="preserve">
+    <value>Badge color</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
   </data>
 </root>

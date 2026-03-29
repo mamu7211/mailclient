@@ -1,5 +1,6 @@
 @using Feirb.Web.Components.UI
 @inherits LayoutComponentBase
+@inject IJSRuntime Js
 
 <div class="showcase-container">
     <aside class="showcase-sidebar" role="complementary">
@@ -13,9 +14,72 @@
     <main class="showcase-main">
         @Body
     </main>
+
+    @if (_themePanelOpen)
+    {
+        <div class="showcase-theme-backdrop" @onclick="CloseThemePanel"></div>
+    }
+
+    <div class="showcase-theme-drawer @(_themePanelOpen ? "open" : "")">
+        <button type="button" class="showcase-theme-tab" @onclick="ToggleThemePanel">
+            <span>Theme</span>
+        </button>
+        <div class="showcase-theme-panel">
+            <div class="showcase-theme-panel-row">
+                <Icon Name="sun" Size="IconSize.Small" />
+                <ToggleButtonGroup Items="_lightThemes" SelectedId="@_currentTheme"
+                                   SelectedIdChanged="OnThemeChangedAsync" />
+            </div>
+            <div class="showcase-theme-panel-row">
+                <Icon Name="moon-stars" Size="IconSize.Small" />
+                <ToggleButtonGroup Items="_darkThemes" SelectedId="@_currentTheme"
+                                   SelectedIdChanged="OnThemeChangedAsync" />
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
+    private string _currentTheme = "green-light";
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _lightThemes =
+    [
+        new("red-light", "Red"),
+        new("orange-light", "Orange"),
+        new("green-light", "Green"),
+        new("teal-light", "Teal"),
+        new("blue-light", "Blue"),
+        new("purple-light", "Purple"),
+        new("pink-light", "Pink"),
+    ];
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _darkThemes =
+    [
+        new("red-dark", "Red"),
+        new("orange-dark", "Orange"),
+        new("green-dark", "Green"),
+        new("teal-dark", "Teal"),
+        new("blue-dark", "Blue"),
+        new("purple-dark", "Purple"),
+        new("pink-dark", "Pink"),
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _currentTheme = await Js.InvokeAsync<string>("blazorTheme.get");
+    }
+
+    private bool _themePanelOpen;
+
+    private void ToggleThemePanel() => _themePanelOpen = !_themePanelOpen;
+
+    private void CloseThemePanel() => _themePanelOpen = false;
+
+    private async Task OnThemeChangedAsync(string themeId)
+    {
+        _currentTheme = themeId;
+        await Js.InvokeVoidAsync("blazorTheme.set", themeId);
+    }
     private static readonly IReadOnlyList<SidebarMenuSection> _sections =
     [
         new([new("brush", "Design Fundamentals", Href: "components-showcase", Match: NavLinkMatch.All)]),
@@ -32,7 +96,8 @@
             new("box-arrow-right", "NavigationItem", Href: "components-showcase/navigation-item"),
             new("layout-text-sidebar", "ContentSection", Href: "components-showcase/content-section"),
             new("info-square", "InfoHeader", Href: "components-showcase/info-header"),
-            new("layout-sidebar", "SidebarMenu", Href: "components-showcase/sidebar-menu")
+            new("layout-sidebar", "SidebarMenu", Href: "components-showcase/sidebar-menu"),
+            new("arrow-left-right", "Pagination", Href: "components-showcase/pagination")
         ], Label: "Navigation"),
         new(
         [
@@ -40,7 +105,13 @@
         ], Label: "Inputs"),
         new(
         [
-            new("tag", "LabelPill", Href: "components-showcase/label-pill")
+            new("person", "PersonChip", Href: "components-showcase/person-chip"),
+            new("calendar-event", "DateTimeChip", Href: "components-showcase/datetime-chip"),
+            new("envelope-paper", "MailSubjectChip", Href: "components-showcase/mail-subject-chip"),
+            new("inbox", "MailboxChip", Href: "components-showcase/mailbox-chip"),
+            new("tag", "LabelPill", Href: "components-showcase/label-pill"),
+            new("envelope", "MailCard", Href: "components-showcase/mail-card"),
+            new("table", "Table", Href: "components-showcase/table")
         ], Label: "Data Display"),
         new(
         [

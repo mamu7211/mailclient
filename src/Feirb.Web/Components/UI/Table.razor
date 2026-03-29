@@ -1,0 +1,56 @@
+@namespace Feirb.Web.Components.UI
+
+@* Grid-based table with ARIA semantics and theme-aware styling. *@
+<CascadingValue Value="this" IsFixed>
+    <div role="table"
+         class="feirb-table @SizeCss @(Hover ? "feirb-table-hover" : "") @(Striped ? "feirb-table-striped" : "") @Class"
+         style="@GridStyle"
+         @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    private readonly List<string> _columnWidths = [];
+
+    /// <summary>Table content (TableHeader, TableBody).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    /// <summary>Table size.</summary>
+    [Parameter]
+    public TableSize Size { get; set; } = TableSize.Default;
+
+    /// <summary>Enable hover highlight on rows.</summary>
+    [Parameter]
+    public bool Hover { get; set; }
+
+    /// <summary>Enable striped rows.</summary>
+    [Parameter]
+    public bool Striped { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>Any extra HTML attributes.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    internal void RegisterColumn(string width)
+    {
+        _columnWidths.Add(width);
+        StateHasChanged();
+    }
+
+    private string GridStyle =>
+        _columnWidths.Count > 0
+            ? $"grid-template-columns: {string.Join(" ", _columnWidths)};"
+            : "";
+
+    private string SizeCss => Size switch
+    {
+        TableSize.Small => "feirb-table-sm",
+        _ => ""
+    };
+}

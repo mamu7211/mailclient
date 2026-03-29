@@ -1,0 +1,72 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="MailboxChip" Icon="inbox" Subtitle="Compact mailbox indicator with colored dot and name" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Displays a mailbox with a colored dot indicator and the mailbox name. Used in the Inbox table to identify which mailbox a message belongs to.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Mailbox display name</TableCell></TableRow>
+            <TableRow><TableCell><code>Color</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Dot color (hex). Falls back to gray</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control form-control-sm" @bind="_name" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Color</label>
+            <input type="color" class="form-control form-control-color form-control-sm" @bind="_color" />
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <MailboxChip Name="@_name" Color="@_color" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Examples</Heading>
+    <p class="text-muted mb-3">Multiple mailboxes with different colors.</p>
+    <div class="d-flex flex-column gap-2">
+        <MailboxChip Name="Personal" Color="#1D76DB" />
+        <MailboxChip Name="Work" Color="#b6004f" />
+        <MailboxChip Name="Newsletter" Color="#0E8A16" />
+        <MailboxChip Name="No color set" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string _name = "Personal";
+    private string _color = "#1D76DB";
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<" + $"MailboxChip Name=\"{_name}\" Color=\"{_color}\" />";
+}

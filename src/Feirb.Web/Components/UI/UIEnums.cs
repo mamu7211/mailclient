@@ -47,3 +47,26 @@ public enum LabelPillSize
     Medium,
     Large
 }
+
+/// <summary>Size for table rendering.</summary>
+public enum TableSize
+{
+    Default,
+    Small
+}
+
+/// <summary>Size for person chip rendering.</summary>
+public enum PersonChipSize
+{
+    Default,
+    Small,
+    Mini
+}
+
+/// <summary>Display mode for mail card layout.</summary>
+public enum MailCardMode
+{
+    Medium,
+    Small,
+    Row
+}

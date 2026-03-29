@@ -1,0 +1,26 @@
+meta {
+  name: Get Dashboard Layout
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/dashboard/layout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return layout json", function() {
+    expect(res.body).to.have.property("layoutJson");
+    expect(res.body.layoutJson).to.be.a("string");
+  });
+}

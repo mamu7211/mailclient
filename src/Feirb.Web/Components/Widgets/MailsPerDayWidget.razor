@@ -1,3 +1,4 @@
+@inherits WidgetBase
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject IStringLocalizer<SharedResources> L
@@ -12,18 +13,11 @@
         <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="text-muted small">@L["WidgetMailsPerDayName"]</span>
         </div>
-        @if (_loading)
-        {
-            <div class="d-flex flex-grow-1 align-items-center justify-content-center">
-                <div class="spinner-border spinner-border-sm" role="status"></div>
-            </div>
-        }
-        else
-        {
+        <WidgetStateView State="State" ErrorMessage="ErrorMessage" OnRetry="RetryAsync">
             <div class="flex-grow-1" style="position: relative; min-height: 0;">
                 <canvas id="@_canvasId"></canvas>
             </div>
-        }
+        </WidgetStateView>
     </Content>
     <ConfigDialog>
         <div class="mb-3">
@@ -42,13 +36,8 @@
 
 @code {
     private readonly string _canvasId = $"chart-{Guid.NewGuid():N}";
-    private bool _loading = true;
     private int _selectedDays = 7;
     private int _pendingDays = 7;
-
-    [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
-    [Parameter] public bool EditMode { get; set; }
-    [Parameter] public EventCallback OnRemove { get; set; }
 
     private async Task OnConfigLoadedAsync(string? config)
     {
@@ -58,7 +47,7 @@
             _pendingDays = days;
         }
 
-        await LoadChartAsync();
+        await ExecuteLoadAsync();
     }
 
     private void OnPendingDaysChanged(ChangeEventArgs e)
@@ -69,26 +58,35 @@
 
     private string? GetPendingConfig() => _pendingDays.ToString();
 
-    private async Task LoadChartAsync()
+    protected override async Task LoadDataAsync()
     {
-        try
-        {
-            var stats = await Http.GetFromJsonAsync<MailStatsResponse>($"/api/mail/stats?days={_selectedDays}");
-            if (stats is not null)
-            {
-                _loading = false;
-                StateHasChanged();
-                await Task.Yield();
+        var stats = await Http.GetFromJsonAsync<MailStatsResponse>($"/api/mail/stats?days={_selectedDays}");
+        if (stats is null) return;
 
-                var labels = stats.MailsPerDay.Select(d => d.Date.ToString("MM/dd")).ToArray();
-                var data = stats.MailsPerDay.Select(d => d.Count).ToArray();
-                await JS.InvokeVoidAsync("chartjsInterop.renderBarChart",
-                    _canvasId, labels, data, L["WidgetMailsPerDayName"].Value);
-            }
-        }
-        catch
+        State = WidgetState.Ready;
+        StateHasChanged();
+        await Task.Yield();
+
+        var labels = stats.TimeSeries.Select(d => d.Label).ToArray();
+
+        if (stats.MailsPerMailbox.Count <= 1)
         {
-            _loading = false;
+            var data = stats.TimeSeries.Select(d => d.MailboxCounts.Sum(m => m.Count)).ToArray();
+            await JS.InvokeVoidAsync("chartjsInterop.renderBarChart",
+                _canvasId, labels, data, L["WidgetMailsPerDayName"].Value);
+        }
+        else
+        {
+            var datasets = stats.MailsPerMailbox.Select(mb => new
+            {
+                label = mb.MailboxName,
+                color = mb.BadgeColor ?? "#6c757d",
+                data = stats.TimeSeries.Select(ts =>
+                    ts.MailboxCounts.FirstOrDefault(m => m.MailboxId == mb.MailboxId)?.Count ?? 0).ToArray()
+            }).ToArray();
+
+            await JS.InvokeVoidAsync("chartjsInterop.renderStackedBarChart",
+                _canvasId, labels, datasets);
         }
     }
 

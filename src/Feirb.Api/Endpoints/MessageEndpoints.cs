@@ -19,6 +19,7 @@ public static class MessageEndpoints
     private static async Task<IResult> ListMessagesAsync(
         HttpContext httpContext,
         FeirbDbContext db,
+        IStringLocalizer<ApiMessages> localizer,
         int page = 1,
         int pageSize = 25)
     {
@@ -36,17 +37,26 @@ public static class MessageEndpoints
             .OrderByDescending(m => m.Date)
             .Skip(skip)
             .Take(pageSize)
-            .Select(m => new MessageListItemResponse(
-                m.Id,
-                m.Mailbox.Name,
-                m.Mailbox.BadgeColor,
-                m.From,
-                m.Subject,
-                m.Date,
-                m.Attachments.Any()))
+            .Select(m => new { m.Id, MailboxName = m.Mailbox.Name, m.Mailbox.BadgeColor, m.From, m.Subject, m.Date, HasAttachments = m.Attachments.Any() })
             .ToListAsync();
 
-        return Results.Ok(new PaginatedResponse<MessageListItemResponse>(items, page, pageSize, totalCount));
+        var summaryPlaceholder = localizer["SummaryPlaceholder"].Value;
+        var mapped = items.Select(m =>
+        {
+            var (name, email) = ParseFromAddress(m.From);
+            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments);
+        }).ToList();
+
+        return Results.Ok(new PaginatedResponse<MessageListItemResponse>(mapped, page, pageSize, totalCount));
+    }
+
+    private static (string Name, string Email) ParseFromAddress(string from)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(from, @"^""?(.+?)""?\s*<(.+?)>\s*$");
+        if (match.Success)
+            return (match.Groups[1].Value.Trim(), match.Groups[2].Value.Trim());
+
+        return from.Contains('@') ? (from, from) : (from, string.Empty);
     }
 
     private static async Task<IResult> GetMessageAsync(

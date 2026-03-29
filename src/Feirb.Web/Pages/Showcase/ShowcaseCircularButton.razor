@@ -6,16 +6,21 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Icon-only circular button. Requires <code>AriaLabel</code> for WCAG AA accessibility compliance.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>AriaLabel</code></td><td><code>string</code></td><td>required</td><td>Accessible name (WCAG AA)</td></tr>
-            <tr><td><code>Variant</code></td><td><code>ButtonVariant</code></td><td><code>Primary</code></td><td>Visual variant</td></tr>
-            <tr><td><code>Size</code></td><td><code>ButtonSize</code></td><td><code>Medium</code></td><td>Small (2rem), Medium (2.5rem), Large (3rem)</td></tr>
-            <tr><td><code>Disabled</code></td><td><code>bool</code></td><td><code>false</code></td><td>Disabled state</td></tr>
-            <tr><td><code>ChildContent</code></td><td><code>RenderFragment?</code></td><td>&#8212;</td><td>Typically an <code>&lt;Icon&gt;</code></td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>AriaLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Accessible name (WCAG AA)</TableCell></TableRow>
+            <TableRow><TableCell><code>Variant</code></TableCell><TableCell><code>ButtonVariant</code></TableCell><TableCell><code>Primary</code></TableCell><TableCell>Visual variant</TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>ButtonSize</code></TableCell><TableCell><code>Medium</code></TableCell><TableCell>Small (2rem), Medium (2.5rem), Large (3rem)</TableCell></TableRow>
+            <TableRow><TableCell><code>Disabled</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Disabled state</TableCell></TableRow>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment?</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Typically an <code>&lt;Icon&gt;</code></TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

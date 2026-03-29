@@ -1,0 +1,25 @@
+meta {
+  name: Get Widget Config
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/dashboard/widgets/bruno-test-widget/config
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return config value", function() {
+    expect(res.body.configValue).to.contain("blue");
+  });
+}

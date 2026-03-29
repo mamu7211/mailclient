@@ -1,0 +1,121 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="Pagination" Icon="arrow-left-right" Subtitle="Theme-aware page navigation with previous/next controls and page size selector" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Pagination control with previous/next buttons, page indicator, and optional page size selector. Only renders when there are multiple pages or when the page size selector is enabled.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>CurrentPage</code></TableCell><TableCell><code>int</code></TableCell><TableCell>required</TableCell><TableCell>Active page (1-based)</TableCell></TableRow>
+            <TableRow><TableCell><code>TotalPages</code></TableCell><TableCell><code>int</code></TableCell><TableCell>required</TableCell><TableCell>Total number of pages</TableCell></TableRow>
+            <TableRow><TableCell><code>CurrentPageChanged</code></TableCell><TableCell><code>EventCallback&lt;int&gt;</code></TableCell><TableCell>required</TableCell><TableCell>Fires with new page number</TableCell></TableRow>
+            <TableRow><TableCell><code>PageSize</code></TableCell><TableCell><code>int</code></TableCell><TableCell><code>5</code></TableCell><TableCell>Current items per page</TableCell></TableRow>
+            <TableRow><TableCell><code>PageSizeChanged</code></TableCell><TableCell><code>EventCallback&lt;int&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Fires with new page size (enables selector)</TableCell></TableRow>
+            <TableRow><TableCell><code>PageSizeOptions</code></TableCell><TableCell><code>int[]</code></TableCell><TableCell><code>[5, 10, 25, 50, 100]</code></TableCell><TableCell>Available page size choices</TableCell></TableRow>
+            <TableRow><TableCell><code>PreviousLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"Previous"</code></TableCell><TableCell>Label for previous button</TableCell></TableRow>
+            <TableRow><TableCell><code>NextLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"Next"</code></TableCell><TableCell>Label for next button</TableCell></TableRow>
+            <TableRow><TableCell><code>PerPageLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"per page"</code></TableCell><TableCell>Label after the page size selector</TableCell></TableRow>
+            <TableRow><TableCell><code>Sticky</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Stick to bottom of viewport</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <label class="form-label mb-0">Total Pages:</label>
+        <input type="number" class="form-control form-control-sm w-auto" min="1" max="99" @bind="_totalPages" />
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="paginationShowPageSize" @bind="_showPageSize" />
+            <label class="form-check-label" for="paginationShowPageSize">Page Size Selector</label>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        @if (_showPageSize)
+        {
+            <Pagination CurrentPage="_currentPage"
+                        TotalPages="_totalPages"
+                        CurrentPageChanged="OnPageChanged"
+                        PageSize="_pageSize"
+                        PageSizeChanged="OnPageSizeChanged" />
+        }
+        else
+        {
+            <Pagination CurrentPage="_currentPage"
+                        TotalPages="_totalPages"
+                        CurrentPageChanged="OnPageChanged" />
+        }
+    </div>
+
+    <p class="mt-2 mb-0 text-muted">
+        Page <strong>@_currentPage</strong> of <strong>@_totalPages</strong>
+        @if (_showPageSize)
+        {
+            <span> — <strong>@_pageSize</strong> per page</span>
+        }
+    </p>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Single Page</Heading>
+    <p class="text-muted mb-3">When TotalPages is 1 and no PageSizeChanged handler is bound, the component renders nothing.</p>
+    <div class="showcase-preview-area">
+        <Pagination CurrentPage="1" TotalPages="1" CurrentPageChanged="_ => {}" />
+        <p class="text-muted mb-0">(empty — nothing rendered)</p>
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private int _currentPage = 3;
+    private int _totalPages = 10;
+    private int _pageSize = 5;
+    private bool _showPageSize = true;
+    private ElementReference _codeElement;
+
+    private void OnPageChanged(int page) => _currentPage = page;
+
+    private void OnPageSizeChanged(int size)
+    {
+        _pageSize = size;
+        _currentPage = 1;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode
+    {
+        get
+        {
+            var code = "<" + "Pagination CurrentPage=\"_currentPage\"\n"
+                     + "            TotalPages=\"_totalPages\"\n"
+                     + "            CurrentPageChanged=\"OnPageChangedAsync\"";
+            if (_showPageSize)
+            {
+                code += "\n            PageSize=\"_pageSize\"\n"
+                      + "            PageSizeChanged=\"OnPageSizeChangedAsync\"";
+            }
+            code += " />";
+            return code;
+        }
+    }
+}

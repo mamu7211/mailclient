@@ -1,0 +1,92 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="PersonChip" Icon="person" Subtitle="Compact person display with avatar, name, and email" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Compact person display with avatar placeholder, name, and optional email. Used in MailCard and table rows.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Display name</TableCell></TableRow>
+            <TableRow><TableCell><code>Email</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Email address (hidden in Mini size)</TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>PersonChipSize</code></TableCell><TableCell><code>Default</code></TableCell><TableCell>Default, Small, Mini</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control form-control-sm" @bind="_name" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Email</label>
+            <input type="text" class="form-control form-control-sm" @bind="_email" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Size</label>
+            <select class="form-select form-select-sm" @bind="_size">
+                <option value="@PersonChipSize.Default">Default</option>
+                <option value="@PersonChipSize.Small">Small</option>
+                <option value="@PersonChipSize.Mini">Mini</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <PersonChip Name="@_name" Email="@_email" Size="_size" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">All Sizes</Heading>
+    <p class="text-muted mb-3">Comparison of all three sizes with the same data.</p>
+    <div class="d-flex flex-column gap-3">
+        @foreach (var size in Enum.GetValues<PersonChipSize>())
+        {
+            <div>
+                <span class="badge bg-secondary mb-2">@size</span>
+                <PersonChip Name="@_name" Email="@_email" Size="size" />
+            </div>
+        }
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string _name = "Alice Johnson";
+    private string _email = "alice.johnson@example.com";
+    private PersonChipSize _size = PersonChipSize.Default;
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode
+    {
+        get
+        {
+            var sizeStr = _size != PersonChipSize.Default ? $"\n          Size=\"PersonChipSize.{_size}\"" : "";
+            var emailStr = !string.IsNullOrEmpty(_email) ? $"\n          Email=\"{_email}\"" : "";
+            return "<" + $"PersonChip Name=\"{_name}\"{emailStr}{sizeStr} />";
+        }
+    }
+}

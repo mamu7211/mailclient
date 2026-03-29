@@ -1,0 +1,21 @@
+@namespace Feirb.Web.Components.UI
+
+@* Compact mailbox display with colored indicator and name. *@
+<div class="feirb-mailbox-chip @Class">
+    <span class="feirb-mailbox-chip-dot" style="background-color: @(Color ?? "#6c757d");"></span>
+    <span class="feirb-mailbox-chip-name">@Name</span>
+</div>
+
+@code {
+    /// <summary>Mailbox display name.</summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+
+    /// <summary>Badge color (hex). Falls back to gray.</summary>
+    [Parameter]
+    public string? Color { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

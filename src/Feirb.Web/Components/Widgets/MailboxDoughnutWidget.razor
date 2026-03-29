@@ -1,0 +1,91 @@
+@inherits WidgetBase
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResources> L
+@implements IAsyncDisposable
+
+<WidgetCard InstanceId="@InstanceId" EditMode="EditMode" OnRemove="OnRemove">
+    <Content>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted small">@L["WidgetMailboxDoughnutName"]</span>
+        </div>
+        <WidgetStateView State="State"
+                         ErrorMessage="ErrorMessage"
+                         EmptyMessage="@L["WidgetMailboxDoughnutEmpty"]"
+                         EmptyActionHref="/settings/mailboxes/create"
+                         EmptyActionText="@L["WidgetMailboxDoughnutAddMailbox"]"
+                         OnRetry="RetryAsync">
+            <div class="flex-grow-1" style="position: relative; min-height: 0;">
+                <canvas id="@_canvasId"
+                        aria-label="@L["WidgetMailboxDoughnutAriaLabel"]"
+                        role="img"></canvas>
+            </div>
+            @if (_stats is not null)
+            {
+                <table class="visually-hidden">
+                    <caption>@L["WidgetMailboxDoughnutAriaLabel"]</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">@L["WidgetMailboxDoughnutMailbox"]</th>
+                            <th scope="col">@L["WidgetMailboxDoughnutCount"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in _stats.MailsPerMailbox)
+                        {
+                            <tr>
+                                <td>@item.MailboxName</td>
+                                <td>@item.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </WidgetStateView>
+    </Content>
+</WidgetCard>
+
+@code {
+    private readonly string _canvasId = $"doughnut-{Guid.NewGuid():N}";
+    private MailStatsResponse? _stats;
+
+    protected override async Task OnInitializedAsync() =>
+        await ExecuteLoadAsync();
+
+    protected override async Task LoadDataAsync()
+    {
+        var stats = await Http.GetFromJsonAsync<MailStatsResponse>("/api/mail/stats");
+        if (stats is null) return;
+
+        _stats = stats;
+
+        if (stats.MailsPerMailbox.Count == 0)
+        {
+            State = WidgetState.Empty;
+            return;
+        }
+
+        State = WidgetState.Ready;
+        StateHasChanged();
+        await Task.Yield();
+
+        var labels = stats.MailsPerMailbox.Select(m => m.MailboxName).ToArray();
+        var data = stats.MailsPerMailbox.Select(m => m.Count).ToArray();
+        var colors = stats.MailsPerMailbox.Select(m => m.BadgeColor ?? "#6c757d").ToArray();
+
+        await JS.InvokeVoidAsync("chartjsInterop.renderDoughnutChart",
+            _canvasId, labels, data, colors, stats.TotalCount.ToString());
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("chartjsInterop.destroyChart", _canvasId);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignored during disposal
+        }
+    }
+}

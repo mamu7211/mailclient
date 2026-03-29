@@ -1,0 +1,109 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="MailSubjectChip" Icon="envelope" Subtitle="Compact mail subject display with read state, summary, and attachment indicator" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Displays a mail subject with an envelope icon indicating read/unread state, the subject line with ellipsis truncation, an optional attachment indicator, and an optional AI-generated summary underneath.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Subject</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Mail subject line</TableCell></TableRow>
+            <TableRow><TableCell><code>Summary</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>AI-generated summary (hidden if null)</TableCell></TableRow>
+            <TableRow><TableCell><code>IsRead</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Read state (envelope-open vs envelope-fill)</TableCell></TableRow>
+            <TableRow><TableCell><code>HasAttachments</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Shows paperclip icon when true</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div class="flex-grow-1">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-control form-control-sm" @bind="_subject" @bind:event="oninput" />
+        </div>
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="chipIsRead" @bind="_isRead" />
+            <label class="form-check-label" for="chipIsRead">Is Read</label>
+        </div>
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="chipHasAttachments" @bind="_hasAttachments" />
+            <label class="form-check-label" for="chipHasAttachments">Has Attachments</label>
+        </div>
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="chipShowSummary" @bind="_showSummary" />
+            <label class="form-check-label" for="chipShowSummary">Show Summary</label>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area" style="max-width: 30rem;">
+        <MailSubjectChip Subject="@_subject"
+                         Summary="@(_showSummary ? _summary : null)"
+                         IsRead="_isRead"
+                         HasAttachments="_hasAttachments" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">States</Heading>
+    <p class="text-muted mb-3">Comparison of read/unread and with/without attachments.</p>
+    <div class="d-flex flex-column gap-3" style="max-width: 30rem;">
+        <div>
+            <span class="badge bg-secondary mb-2">Unread + Attachments + Summary</span>
+            <MailSubjectChip Subject="Q1 Report: Revenue exceeded expectations"
+                             Summary="Revenue came in at 12% above forecast, driven by EMEA and APAC."
+                             HasAttachments />
+        </div>
+        <div>
+            <span class="badge bg-secondary mb-2">Read + No Attachments + Summary</span>
+            <MailSubjectChip Subject="Team lunch next Thursday"
+                             Summary="Let's meet at the Italian place at noon."
+                             IsRead />
+        </div>
+        <div>
+            <span class="badge bg-secondary mb-2">Unread + No Summary</span>
+            <MailSubjectChip Subject="Meeting notes from this morning's standup" />
+        </div>
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string _subject = "Q1 Report: Revenue exceeded expectations across all regions";
+    private string _summary = "Revenue came in at 12% above forecast, driven primarily by strong performance in EMEA and APAC regions.";
+    private bool _isRead;
+    private bool _hasAttachments = true;
+    private bool _showSummary = true;
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode
+    {
+        get
+        {
+            var attrs = "";
+            if (_showSummary) attrs += $"\n             Summary=\"{_summary}\"";
+            if (_isRead) attrs += "\n             IsRead";
+            if (_hasAttachments) attrs += "\n             HasAttachments";
+            return "<" + $"MailSubjectChip Subject=\"{_subject}\"{attrs} />";
+        }
+    }
+}

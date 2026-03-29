@@ -102,6 +102,9 @@
   <data name="MessageNotFound" xml:space="preserve">
     <value>Message introuvable.</value>
   </data>
+  <data name="SummaryPlaceholder" xml:space="preserve">
+    <value>Un résumé généré par l'IA apparaîtra ici dans une future mise à jour.</value>
+  </data>
   <data name="ResetEmailSubject" xml:space="preserve">
     <value>Réinitialisez votre mot de passe Feirb</value>
   </data>

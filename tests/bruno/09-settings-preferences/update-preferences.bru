@@ -1,0 +1,31 @@
+meta {
+  name: Update Preferences
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/settings/preferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "theme": "blue-dark"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated theme", function() {
+    expect(res.body.theme).to.equal("blue-dark");
+  });
+}

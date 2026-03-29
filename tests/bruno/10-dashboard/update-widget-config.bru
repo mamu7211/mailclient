@@ -1,0 +1,31 @@
+meta {
+  name: Update Widget Config
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/dashboard/widgets/bruno-test-widget/config
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "configValue": "{\"color\":\"red\",\"refreshInterval\":60}"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated config", function() {
+    expect(res.body.configValue).to.contain("red");
+  });
+}

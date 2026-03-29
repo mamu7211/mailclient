@@ -1,0 +1,12 @@
+@namespace Feirb.Web.Components.UI
+
+@* Table body section with ARIA rowgroup semantics. *@
+<div role="rowgroup" class="feirb-table-body">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Body content (TableRow elements).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

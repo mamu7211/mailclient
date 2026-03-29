@@ -116,31 +116,39 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Typography</Heading>
     <p>Primary font is <strong class="showcase-color-name">Inter</strong> with fallbacks to Helvetica Neue, Helvetica, and Arial.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Element</th><th>Size</th><th>Weight</th></tr></thead>
-        <tbody>
-            <tr><td>Heading Large (h1)</td><td>1.75rem</td><td>700</td></tr>
-            <tr><td>Heading Medium (h2)</td><td>1.25rem</td><td>700</td></tr>
-            <tr><td>Heading Small (h3)</td><td>1rem</td><td>700</td></tr>
-            <tr><td>Body text</td><td>1rem (browser default)</td><td>400</td></tr>
-            <tr><td>Subtitle / secondary</td><td>0.875rem</td><td>400</td></tr>
-            <tr><td>Nav section labels</td><td>0.625rem uppercase</td><td>600</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Element</TableColumn>
+            <TableColumn>Size</TableColumn>
+            <TableColumn>Weight</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell>Heading Large (h1)</TableCell><TableCell>1.75rem</TableCell><TableCell>700</TableCell></TableRow>
+            <TableRow><TableCell>Heading Medium (h2)</TableCell><TableCell>1.25rem</TableCell><TableCell>700</TableCell></TableRow>
+            <TableRow><TableCell>Heading Small (h3)</TableCell><TableCell>1rem</TableCell><TableCell>700</TableCell></TableRow>
+            <TableRow><TableCell>Body text</TableCell><TableCell>1rem (browser default)</TableCell><TableCell>400</TableCell></TableRow>
+            <TableRow><TableCell>Subtitle / secondary</TableCell><TableCell>0.875rem</TableCell><TableCell>400</TableCell></TableRow>
+            <TableRow><TableCell>Nav section labels</TableCell><TableCell>0.625rem uppercase</TableCell><TableCell>600</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Surfaces and Elevation</Heading>
-    <table class="table table-sm">
-        <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
-        <tbody>
-            <tr><td>Border radius</td><td><code>1rem</code> (16px)</td><td>Cards, modals</td></tr>
-            <tr><td>Border radius (lg)</td><td><code>1.5rem</code> (24px)</td><td>Large containers</td></tr>
-            <tr><td>Input radius</td><td><code>0.75rem</code> (12px)</td><td>Form controls</td></tr>
-            <tr><td>Button radius</td><td><code>9999px</code></td><td>Pill-shaped buttons</td></tr>
-            <tr><td>Shadow</td><td><code>var(--feirb-shadow)</code></td><td>Cards, primary buttons</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Token</TableColumn>
+            <TableColumn>Value</TableColumn>
+            <TableColumn>Usage</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell>Border radius</TableCell><TableCell><code>1rem</code> (16px)</TableCell><TableCell>Cards, modals</TableCell></TableRow>
+            <TableRow><TableCell>Border radius (lg)</TableCell><TableCell><code>1.5rem</code> (24px)</TableCell><TableCell>Large containers</TableCell></TableRow>
+            <TableRow><TableCell>Input radius</TableCell><TableCell><code>0.75rem</code> (12px)</TableCell><TableCell>Form controls</TableCell></TableRow>
+            <TableRow><TableCell>Button radius</TableCell><TableCell><code>9999px</code></TableCell><TableCell>Pill-shaped buttons</TableCell></TableRow>
+            <TableRow><TableCell>Shadow</TableCell><TableCell><code>var(--feirb-shadow)</code></TableCell><TableCell>Cards, primary buttons</TableCell></TableRow>
+        </TableBody>
+    </Table>
     <p class="mt-3 mb-0"><strong class="showcase-color-name">Layering:</strong> Base background → Raised cards (surface, shadow) → Interactive elements (accent colors)</p>
 </Card>
 

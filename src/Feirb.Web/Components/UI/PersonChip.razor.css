@@ -1,0 +1,72 @@
+/* PersonChip — avatar + name + email */
+.feirb-person-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
+}
+
+/* Avatar */
+.feirb-person-chip-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 2px dashed var(--bs-primary);
+    border-radius: 50%;
+}
+
+::deep .feirb-person-chip-avatar-icon {
+    color: var(--bs-primary);
+}
+
+/* Info */
+.feirb-person-chip-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.feirb-person-chip-name {
+    font-weight: 600;
+    color: var(--bs-body-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.feirb-person-chip-email {
+    font-size: 0.8125rem;
+    color: var(--feirb-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+/* === Size: Small === */
+.feirb-person-chip-sm .feirb-person-chip-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.feirb-person-chip-sm .feirb-person-chip-name {
+    font-size: 0.875rem;
+}
+
+.feirb-person-chip-sm .feirb-person-chip-email {
+    font-size: 0.75rem;
+}
+
+/* === Size: Mini === */
+.feirb-person-chip-mini .feirb-person-chip-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.feirb-person-chip-mini .feirb-person-chip-name {
+    font-size: 0.8125rem;
+}

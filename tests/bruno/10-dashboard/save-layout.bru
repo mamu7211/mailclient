@@ -1,0 +1,32 @@
+meta {
+  name: Save Dashboard Layout
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/dashboard/layout
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "layoutJson": "[{\"id\":\"test-widget\",\"x\":0,\"y\":0,\"w\":4,\"h\":2}]"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return saved layout", function() {
+    expect(res.body.layoutJson).to.be.a("string");
+    expect(res.body.layoutJson).to.contain("test-widget");
+  });
+}

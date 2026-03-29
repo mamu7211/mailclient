@@ -1,0 +1,40 @@
+@namespace Feirb.Web.Components.UI
+
+@* Compact person display with avatar placeholder, name, and optional email. *@
+<div class="feirb-person-chip feirb-person-chip-@SizeCss @Class">
+    <div class="feirb-person-chip-avatar">
+        <Icon Name="person" Class="feirb-person-chip-avatar-icon" />
+    </div>
+    <div class="feirb-person-chip-info">
+        <span class="feirb-person-chip-name">@Name</span>
+        @if (Size != PersonChipSize.Mini && !string.IsNullOrEmpty(Email))
+        {
+            <span class="feirb-person-chip-email">@Email</span>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Display name.</summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+
+    /// <summary>Email address (hidden in Mini size).</summary>
+    [Parameter]
+    public string? Email { get; set; }
+
+    /// <summary>Chip size.</summary>
+    [Parameter]
+    public PersonChipSize Size { get; set; } = PersonChipSize.Default;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string SizeCss => Size switch
+    {
+        PersonChipSize.Small => "sm",
+        PersonChipSize.Mini => "mini",
+        _ => "default"
+    };
+}

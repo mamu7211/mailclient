@@ -6,15 +6,20 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Card-style navigation link with icon, title, optional subtitle, and chevron. Used in settings and admin index pages to navigate to sub-pages.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Icon</code></td><td><code>string</code></td><td>required</td><td>Icon name without <code>bi-</code> prefix</td></tr>
-            <tr><td><code>Title</code></td><td><code>string</code></td><td>required</td><td>Navigation item title</td></tr>
-            <tr><td><code>Subtitle</code></td><td><code>string?</code></td><td><code>null</code></td><td>Description text below the title</td></tr>
-            <tr><td><code>Href</code></td><td><code>string</code></td><td>required</td><td>Target URL</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Icon name without <code>bi-</code> prefix</TableCell></TableRow>
+            <TableRow><TableCell><code>Title</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Navigation item title</TableCell></TableRow>
+            <TableRow><TableCell><code>Subtitle</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Description text below the title</TableCell></TableRow>
+            <TableRow><TableCell><code>Href</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Target URL</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

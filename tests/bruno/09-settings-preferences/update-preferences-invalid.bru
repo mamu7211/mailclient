@@ -1,0 +1,27 @@
+meta {
+  name: Update Preferences Invalid Theme
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/settings/preferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "theme": "invalid-theme"
+  }
+}
+
+tests {
+  test("should return 400", function() {
+    expect(res.status).to.equal(400);
+  });
+}

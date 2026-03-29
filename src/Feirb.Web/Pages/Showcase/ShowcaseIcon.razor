@@ -6,14 +6,19 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Renders a Bootstrap Icon with consistent sizing. Wraps <code>&lt;i class="bi bi-..."&gt;</code> with standardized size classes.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Name</code></td><td><code>string</code></td><td>required</td><td>Icon name without <code>bi-</code> prefix</td></tr>
-            <tr><td><code>Size</code></td><td><code>IconSize</code></td><td><code>Default</code></td><td>Small (0.875rem), Default (1.25rem), Large (2rem)</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Icon name without <code>bi-</code> prefix</TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>IconSize</code></TableCell><TableCell><code>Default</code></TableCell><TableCell>Small (0.875rem), Default (1.25rem), Large (2rem)</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

@@ -1,3 +1,3 @@
 namespace Feirb.Shared.Settings;
 
-public record MailboxListResponse(Guid Id, string Name, string EmailAddress);
+public record MailboxListResponse(Guid Id, string Name, string EmailAddress, string? BadgeColor);

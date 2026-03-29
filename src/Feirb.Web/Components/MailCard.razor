@@ -1,0 +1,105 @@
+@using Feirb.Web.Components.UI
+
+@* Card component for displaying mail items across different layout contexts. *@
+<a href="@Href" class="mail-card mail-card-@ModeCss @(IsRead ? "" : "mail-card-unread") @Class"
+   title="@Subject">
+    <div class="mail-card-body">
+        <div class="mail-card-header">
+            <PersonChip Name="@SenderName" Email="@SenderEmail" Size="@PersonChipSizeForMode" />
+            <DateTimeChip Value="new DateTimeOffset(ReceivedAt)" />
+        </div>
+
+        <MailSubjectChip Subject="@Subject"
+                         Summary="@(Mode is MailCardMode.Medium or MailCardMode.Small ? Summary : null)"
+                         IsRead="IsRead"
+                         HasAttachments="false" />
+
+        <div class="mail-card-footer">
+            <div class="mail-card-labels">
+                @{ var maxLabels = MaxLabelsForMode; }
+                @foreach (var label in VisibleLabels)
+                {
+                    <LabelPill Name="@label.Name" Color="@label.Color" Size="@LabelPillSizeForMode" />
+                }
+                @if (Labels.Count > maxLabels)
+                {
+                    <span class="mail-card-label-overflow">+@(Labels.Count - maxLabels)</span>
+                }
+            </div>
+        </div>
+    </div>
+</a>
+
+@code {
+    /// <summary>Display mode controlling layout density.</summary>
+    [Parameter, EditorRequired]
+    public MailCardMode Mode { get; set; }
+
+    /// <summary>Sender display name.</summary>
+    [Parameter, EditorRequired]
+    public string SenderName { get; set; } = default!;
+
+    /// <summary>Sender email address.</summary>
+    [Parameter, EditorRequired]
+    public string SenderEmail { get; set; } = default!;
+
+    /// <summary>Mail subject line (truncated with ellipsis).</summary>
+    [Parameter, EditorRequired]
+    public string Subject { get; set; } = default!;
+
+    /// <summary>Mail summary text (shown in Medium mode).</summary>
+    [Parameter]
+    public string? Summary { get; set; }
+
+    /// <summary>Mail labels to display.</summary>
+    [Parameter]
+    public IReadOnlyList<MailCardLabel> Labels { get; set; } = [];
+
+    /// <summary>When the mail was received.</summary>
+    [Parameter, EditorRequired]
+    public DateTime ReceivedAt { get; set; }
+
+    /// <summary>Whether the mail has been read.</summary>
+    [Parameter]
+    public bool IsRead { get; set; }
+
+    /// <summary>Navigation target URL.</summary>
+    [Parameter, EditorRequired]
+    public string Href { get; set; } = default!;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string ModeCss => Mode switch
+    {
+        MailCardMode.Medium => "medium",
+        MailCardMode.Small => "small",
+        MailCardMode.Row => "row",
+        _ => "medium"
+    };
+
+    private int MaxLabelsForMode => Mode switch
+    {
+        MailCardMode.Medium => 3,
+        MailCardMode.Small => 1,
+        MailCardMode.Row => 4,
+        _ => 3
+    };
+
+    private PersonChipSize PersonChipSizeForMode => Mode switch
+    {
+        MailCardMode.Small => PersonChipSize.Small,
+        MailCardMode.Row => PersonChipSize.Mini,
+        _ => PersonChipSize.Default
+    };
+
+    private LabelPillSize LabelPillSizeForMode => Mode switch
+    {
+        MailCardMode.Small => LabelPillSize.Small,
+        _ => LabelPillSize.Medium
+    };
+
+    private IEnumerable<MailCardLabel> VisibleLabels =>
+        Labels.Take(MaxLabelsForMode);
+}

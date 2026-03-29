@@ -11,14 +11,18 @@
         The <code>NotificationService</code> manages toast notifications. It is registered as a singleton
         and injected into components via <code>@@inject NotificationService NotificationService</code>.
     </p>
-    <table class="table table-sm">
-        <thead><tr><th>Method</th><th>Signature</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Add</code></td><td><code>Add(string message, NotificationSeverity severity)</code></td><td>Shows a toast notification. Returns <code>NotificationItem</code></td></tr>
-            <tr><td><code>Dismiss</code></td><td><code>Dismiss(Guid id)</code></td><td>Manually dismisses a notification by its ID</td></tr>
-            <tr><td><code>Clear</code></td><td><code>Clear()</code></td><td>Removes all active notifications</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Method</TableColumn>
+            <TableColumn>Signature</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Add</code></TableCell><TableCell><code>Add(string message, NotificationSeverity severity)</code></TableCell><TableCell>Shows a toast notification. Returns <code>NotificationItem</code></TableCell></TableRow>
+            <TableRow><TableCell><code>Dismiss</code></TableCell><TableCell><code>Dismiss(Guid id)</code></TableCell><TableCell>Manually dismisses a notification by its ID</TableCell></TableRow>
+            <TableRow><TableCell><code>Clear</code></TableCell><TableCell><code>Clear()</code></TableCell><TableCell>Removes all active notifications</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">
@@ -27,15 +31,20 @@
         The <code>ToastContainer</code> renders active notifications. Place it once in your layout
         (typically at the top of <code>MainLayout.razor</code>, before the page content).
     </p>
-    <table class="table table-sm">
-        <thead><tr><th>Severity</th><th>Icon</th><th>Auto-dismiss</th><th>CSS Class</th></tr></thead>
-        <tbody>
-            <tr><td><code>Info</code></td><td><code>info-circle</code></td><td>10 seconds</td><td><code>toast-info</code></td></tr>
-            <tr><td><code>Success</code></td><td><code>check-circle</code></td><td>10 seconds</td><td><code>toast-success</code></td></tr>
-            <tr><td><code>Warning</code></td><td><code>exclamation-triangle</code></td><td>30 seconds</td><td><code>toast-warning</code></td></tr>
-            <tr><td><code>Error</code></td><td><code>exclamation-circle</code></td><td>Manual only</td><td><code>toast-danger</code></td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Severity</TableColumn>
+            <TableColumn>Icon</TableColumn>
+            <TableColumn>Auto-dismiss</TableColumn>
+            <TableColumn>CSS Class</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Info</code></TableCell><TableCell><code>info-circle</code></TableCell><TableCell>10 seconds</TableCell><TableCell><code>toast-info</code></TableCell></TableRow>
+            <TableRow><TableCell><code>Success</code></TableCell><TableCell><code>check-circle</code></TableCell><TableCell>10 seconds</TableCell><TableCell><code>toast-success</code></TableCell></TableRow>
+            <TableRow><TableCell><code>Warning</code></TableCell><TableCell><code>exclamation-triangle</code></TableCell><TableCell>30 seconds</TableCell><TableCell><code>toast-warning</code></TableCell></TableRow>
+            <TableRow><TableCell><code>Error</code></TableCell><TableCell><code>exclamation-circle</code></TableCell><TableCell>Manual only</TableCell><TableCell><code>toast-danger</code></TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

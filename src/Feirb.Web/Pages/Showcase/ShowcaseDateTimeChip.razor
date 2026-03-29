@@ -1,0 +1,78 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="DateTimeChip" Icon="calendar-event" Subtitle="Compact date/time display with calendar icon" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Compact date and time display with a calendar icon. Date is shown prominently, time is smaller underneath, both left-aligned.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Value</code></TableCell><TableCell><code>DateTimeOffset</code></TableCell><TableCell>required</TableCell><TableCell>The date/time to display</TableCell></TableRow>
+            <TableRow><TableCell><code>DateFormat</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"MMM d, yyyy"</code></TableCell><TableCell>Format string for the date line</TableCell></TableRow>
+            <TableRow><TableCell><code>TimeFormat</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"HH:mm"</code></TableCell><TableCell>Format string for the time line</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">Date/Time</label>
+            <input type="datetime-local" class="form-control form-control-sm"
+                   value="@_dateTime.ToString("yyyy-MM-ddTHH:mm")"
+                   @onchange="e => _dateTime = DateTimeOffset.TryParse(e.Value?.ToString(), out var d) ? d : _dateTime" />
+        </div>
+        <div>
+            <label class="form-label">Date Format</label>
+            <select class="form-select form-select-sm" @bind="_dateFormat">
+                <option value="MMM d, yyyy">MMM d, yyyy (en)</option>
+                <option value="d. MMM yyyy">d. MMM yyyy (de)</option>
+                <option value="d MMM yyyy">d MMM yyyy (fr/it)</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Time Format</label>
+            <select class="form-select form-select-sm" @bind="_timeFormat">
+                <option value="HH:mm">HH:mm (24h)</option>
+                <option value="h:mm tt">h:mm tt (12h)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <DateTimeChip Value="_dateTime" DateFormat="@_dateFormat" TimeFormat="@_timeFormat" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private DateTimeOffset _dateTime = DateTimeOffset.Now;
+    private string _dateFormat = "MMM d, yyyy";
+    private string _timeFormat = "HH:mm";
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<" + $"DateTimeChip Value=\"@_dateTime\"\n"
+        + $"              DateFormat=\"{_dateFormat}\"\n"
+        + $"              TimeFormat=\"{_timeFormat}\" />";
+}

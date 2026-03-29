@@ -1,0 +1,110 @@
+@namespace Feirb.Web.Components.UI
+
+@* Theme-aware pagination control with previous/next, page indicator, and page size selector. *@
+@if (TotalPages > 1 || ShowPageSizeSelector)
+{
+    <nav class="feirb-pagination @(Sticky ? "feirb-pagination-sticky" : "") @Class" aria-label="Pagination">
+        <button type="button"
+                class="feirb-pagination-btn"
+                disabled="@(CurrentPage <= 1)"
+                @onclick="OnPreviousAsync">
+            <Icon Name="chevron-left" Size="IconSize.Small" />
+            @PreviousLabel
+        </button>
+
+        <span class="feirb-pagination-info">
+            @CurrentPage / @TotalPages
+        </span>
+
+        <button type="button"
+                class="feirb-pagination-btn"
+                disabled="@(CurrentPage >= TotalPages)"
+                @onclick="OnNextAsync">
+            @NextLabel
+            <Icon Name="chevron-right" Size="IconSize.Small" />
+        </button>
+
+        @if (ShowPageSizeSelector)
+        {
+            <span class="feirb-pagination-separator"></span>
+            <select class="feirb-pagination-select"
+                    value="@PageSize"
+                    @onchange="OnPageSizeChangedInternalAsync"
+                    aria-label="Items per page">
+                @foreach (var size in PageSizeOptions)
+                {
+                    <option value="@size">@size</option>
+                }
+            </select>
+            <span class="feirb-pagination-info">@PerPageLabel</span>
+        }
+    </nav>
+}
+
+@code {
+    private static readonly int[] DefaultPageSizeOptions = [5, 10, 25, 50, 100];
+
+    /// <summary>Current active page (1-based).</summary>
+    [Parameter, EditorRequired]
+    public int CurrentPage { get; set; }
+
+    /// <summary>Total number of pages.</summary>
+    [Parameter, EditorRequired]
+    public int TotalPages { get; set; }
+
+    /// <summary>Fires when the page changes. Provides the new page number.</summary>
+    [Parameter, EditorRequired]
+    public EventCallback<int> CurrentPageChanged { get; set; }
+
+    /// <summary>Current page size.</summary>
+    [Parameter]
+    public int PageSize { get; set; } = 5;
+
+    /// <summary>Fires when the page size changes.</summary>
+    [Parameter]
+    public EventCallback<int> PageSizeChanged { get; set; }
+
+    /// <summary>Available page size options.</summary>
+    [Parameter]
+    public int[] PageSizeOptions { get; set; } = DefaultPageSizeOptions;
+
+    /// <summary>Label for the previous button.</summary>
+    [Parameter]
+    public string PreviousLabel { get; set; } = "Previous";
+
+    /// <summary>Label for the next button.</summary>
+    [Parameter]
+    public string NextLabel { get; set; } = "Next";
+
+    /// <summary>Label shown after the page size selector.</summary>
+    [Parameter]
+    public string PerPageLabel { get; set; } = "per page";
+
+    /// <summary>Stick to the bottom of the viewport.</summary>
+    [Parameter]
+    public bool Sticky { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private bool ShowPageSizeSelector => PageSizeChanged.HasDelegate;
+
+    private async Task OnPreviousAsync()
+    {
+        if (CurrentPage > 1)
+            await CurrentPageChanged.InvokeAsync(CurrentPage - 1);
+    }
+
+    private async Task OnNextAsync()
+    {
+        if (CurrentPage < TotalPages)
+            await CurrentPageChanged.InvokeAsync(CurrentPage + 1);
+    }
+
+    private async Task OnPageSizeChangedInternalAsync(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var size))
+            await PageSizeChanged.InvokeAsync(size);
+    }
+}
