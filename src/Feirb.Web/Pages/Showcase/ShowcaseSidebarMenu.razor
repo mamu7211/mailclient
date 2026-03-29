@@ -6,40 +6,53 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Data-driven sidebar navigation with optional section headers and a bottom-pinned slot. Uses <code>NavLink</code> internally for link items with automatic active state tracking. Items can alternatively render as buttons via an <code>OnClick</code> callback.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Sections</code></td><td><code>IReadOnlyList&lt;SidebarMenuSection&gt;</code></td><td>required</td><td>Menu sections for the main scrollable area</td></tr>
-            <tr><td><code>BottomItems</code></td><td><code>IReadOnlyList&lt;SidebarMenuItem&gt;?</code></td><td><code>null</code></td><td>Items pinned to the bottom of the sidebar</td></tr>
-            <tr><td><code>AriaLabel</code></td><td><code>string</code></td><td><code>"Sidebar navigation"</code></td><td>Accessible label for the nav element</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Sections</code></TableCell><TableCell><code>IReadOnlyList&lt;SidebarMenuSection&gt;</code></TableCell><TableCell>required</TableCell><TableCell>Menu sections for the main scrollable area</TableCell></TableRow>
+            <TableRow><TableCell><code>BottomItems</code></TableCell><TableCell><code>IReadOnlyList&lt;SidebarMenuItem&gt;?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Items pinned to the bottom of the sidebar</TableCell></TableRow>
+            <TableRow><TableCell><code>AriaLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell><code>"Sidebar navigation"</code></TableCell><TableCell>Accessible label for the nav element</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">SidebarMenuItem</Heading>
-    <table class="table table-sm">
-        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Icon</code></td><td><code>string</code></td><td>Bootstrap Icon name (required)</td></tr>
-            <tr><td><code>Label</code></td><td><code>string</code></td><td>Display text (required)</td></tr>
-            <tr><td><code>Href</code></td><td><code>string?</code></td><td>Navigation target; rendered via NavLink</td></tr>
-            <tr><td><code>OnClick</code></td><td><code>Func&lt;Task&gt;?</code></td><td>Action callback; renders as button when set</td></tr>
-            <tr><td><code>Visible</code></td><td><code>Func&lt;bool&gt;?</code></td><td>Controls visibility; defaults to always visible</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Property</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string</code></TableCell><TableCell>Bootstrap Icon name (required)</TableCell></TableRow>
+            <TableRow><TableCell><code>Label</code></TableCell><TableCell><code>string</code></TableCell><TableCell>Display text (required)</TableCell></TableRow>
+            <TableRow><TableCell><code>Href</code></TableCell><TableCell><code>string?</code></TableCell><TableCell>Navigation target; rendered via NavLink</TableCell></TableRow>
+            <TableRow><TableCell><code>OnClick</code></TableCell><TableCell><code>Func&lt;Task&gt;?</code></TableCell><TableCell>Action callback; renders as button when set</TableCell></TableRow>
+            <TableRow><TableCell><code>Visible</code></TableCell><TableCell><code>Func&lt;bool&gt;?</code></TableCell><TableCell>Controls visibility; defaults to always visible</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">SidebarMenuSection</Heading>
-    <table class="table table-sm">
-        <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Items</code></td><td><code>IReadOnlyList&lt;SidebarMenuItem&gt;</code></td><td>Menu items in this section (required)</td></tr>
-            <tr><td><code>Label</code></td><td><code>string?</code></td><td>Optional section header text</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Property</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Items</code></TableCell><TableCell><code>IReadOnlyList&lt;SidebarMenuItem&gt;</code></TableCell><TableCell>Menu items in this section (required)</TableCell></TableRow>
+            <TableRow><TableCell><code>Label</code></TableCell><TableCell><code>string?</code></TableCell><TableCell>Optional section header text</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

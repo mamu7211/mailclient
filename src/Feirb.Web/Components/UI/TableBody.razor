@@ -1,0 +1,12 @@
+@namespace Feirb.Web.Components.UI
+
+@* Table body section. *@
+<tbody>
+    @ChildContent
+</tbody>
+
+@code {
+    /// <summary>Body content (TableRow elements).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

@@ -6,15 +6,20 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Colored pill badge for displaying user-created labels. Text color (white or black) is automatically determined by WCAG relative luminance of the background color.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Name</code></td><td><code>string</code></td><td>required</td><td>Label display name</td></tr>
-            <tr><td><code>Color</code></td><td><code>string?</code></td><td><code>null</code></td><td>Hex background color. Falls back to <code>#000000</code></td></tr>
-            <tr><td><code>Size</code></td><td><code>LabelPillSize</code></td><td><code>Medium</code></td><td>Small, Medium, Large</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Label display name</TableCell></TableRow>
+            <TableRow><TableCell><code>Color</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Hex background color. Falls back to <code>#000000</code></TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>LabelPillSize</code></TableCell><TableCell><code>Medium</code></TableCell><TableCell>Small, Medium, Large</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

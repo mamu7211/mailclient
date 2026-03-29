@@ -116,10 +116,6 @@
     -webkit-box-orient: vertical;
 }
 
-.mail-card-summary-3 {
-    -webkit-line-clamp: 3;
-}
-
 .mail-card-summary-2 {
     -webkit-line-clamp: 2;
 }

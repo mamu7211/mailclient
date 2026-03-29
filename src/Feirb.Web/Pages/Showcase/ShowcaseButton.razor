@@ -6,18 +6,23 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Standard button with optional icon. Maps to Bootstrap button classes with consistent styling.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Variant</code></td><td><code>ButtonVariant</code></td><td><code>Primary</code></td><td>Primary, Secondary, Danger, Warning</td></tr>
-            <tr><td><code>Size</code></td><td><code>ButtonSize</code></td><td><code>Medium</code></td><td>Small, Medium, Large</td></tr>
-            <tr><td><code>Icon</code></td><td><code>string?</code></td><td><code>null</code></td><td>Icon name (without <code>bi-</code> prefix)</td></tr>
-            <tr><td><code>IconPosition</code></td><td><code>IconPosition</code></td><td><code>Left</code></td><td>Left or Right</td></tr>
-            <tr><td><code>Disabled</code></td><td><code>bool</code></td><td><code>false</code></td><td>Disabled state</td></tr>
-            <tr><td><code>ChildContent</code></td><td><code>RenderFragment?</code></td><td>&#8212;</td><td>Button text/content</td></tr>
-            <tr><td><code>OnClick</code></td><td><code>EventCallback</code></td><td>&#8212;</td><td>Click handler</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Variant</code></TableCell><TableCell><code>ButtonVariant</code></TableCell><TableCell><code>Primary</code></TableCell><TableCell>Primary, Secondary, Danger, Warning</TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>ButtonSize</code></TableCell><TableCell><code>Medium</code></TableCell><TableCell>Small, Medium, Large</TableCell></TableRow>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Icon name (without <code>bi-</code> prefix)</TableCell></TableRow>
+            <TableRow><TableCell><code>IconPosition</code></TableCell><TableCell><code>IconPosition</code></TableCell><TableCell><code>Left</code></TableCell><TableCell>Left or Right</TableCell></TableRow>
+            <TableRow><TableCell><code>Disabled</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Disabled state</TableCell></TableRow>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment?</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Button text/content</TableCell></TableRow>
+            <TableRow><TableCell><code>OnClick</code></TableCell><TableCell><code>EventCallback</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Click handler</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

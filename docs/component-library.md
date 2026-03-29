@@ -283,7 +283,7 @@ Long label names are truncated with ellipsis at `max-width: 12rem`. The `title` 
 Card component for displaying mail items across different layout contexts. Whole card is a clickable `<a>` navigation target. Located in `src/Feirb.Web/Components/`.
 
 ```razor
-<MailCard Mode="MailCardMode.Large"
+<MailCard Mode="MailCardMode.Medium"
           SenderName="Alice Johnson"
           SenderEmail="alice@example.com"
           Subject="Q1 Report"
@@ -296,11 +296,11 @@ Card component for displaying mail items across different layout contexts. Whole
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Mode` | `MailCardMode` (required) | — | `Large`, `Medium`, `Small`, `Row` |
+| `Mode` | `MailCardMode` (required) | — | `Medium`, `Small`, `Row` |
 | `SenderName` | `string` (required) | — | Sender display name |
 | `SenderEmail` | `string` (required) | — | Sender email address |
 | `Subject` | `string` (required) | — | Subject line (truncated with ellipsis) |
-| `Summary` | `string?` | `null` | Summary text (Large: 3 lines, Medium: 2 lines, hidden otherwise) |
+| `Summary` | `string?` | `null` | Summary text (Medium: 2 lines, hidden otherwise) |
 | `Labels` | `IReadOnlyList<MailCardLabel>` | `[]` | Labels to display with overflow "+N" |
 | `ReceivedAt` | `DateTime` (required) | — | When the mail was received |
 | `IsRead` | `bool` | `false` | Read/unread state |
@@ -309,15 +309,15 @@ Card component for displaying mail items across different layout contexts. Whole
 
 ### Mode matrix
 
-| Element | Large | Medium | Small | Row |
-|---------|-------|--------|-------|-----|
-| Avatar | Full (3rem) | Full (3rem) | Reduced (2.5rem) | Mini (2rem) |
-| Name + Email | Yes | Yes | Yes | Yes |
-| Subject (truncated) | Yes | Yes | Yes | Yes |
-| Summary | 3 lines | 2 lines | Hidden | Hidden |
-| Labels | 4 (large) | 3 (medium) | 1 (small) | 4 (medium) |
-| Date/Time | Stacked | Stacked | Date only | Inline |
-| Read icon | Bottom-right | Bottom-right | Bottom-right | Far-left |
+| Element | Medium | Small | Row |
+|---------|--------|-------|-----|
+| Avatar | Full (3rem) | Reduced (2.5rem) | Mini (2rem) |
+| Name + Email | Yes | Yes | Yes |
+| Subject (truncated) | Yes | Yes | Yes |
+| Summary | 2 lines | Hidden | Hidden |
+| Labels | 3 (medium) | 1 (small) | 4 (medium) |
+| Date/Time | Stacked | Date only | Inline |
+| Read icon | Bottom-right | Bottom-right | Far-left |
 
 ### MailCardLabel Record
 
@@ -338,7 +338,7 @@ Defined in `UIEnums.cs`:
 - **`IconPosition`**: `Left`, `Right`
 - **`HeadingLevel`**: `Large`, `Medium`, `Small`
 - **`LabelPillSize`**: `Small`, `Medium`, `Large`
-- **`MailCardMode`**: `Large`, `Medium`, `Small`, `Row`
+- **`MailCardMode`**: `Medium`, `Small`, `Row`
 
 ## Design Tokens
 

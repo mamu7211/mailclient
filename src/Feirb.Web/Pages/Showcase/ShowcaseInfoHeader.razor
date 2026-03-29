@@ -6,17 +6,22 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Page header with title, optional subtitle, and a toggleable help section. Use this as the top-level header on every page to provide consistent structure and contextual guidance.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Title</code></td><td><code>string</code></td><td>required</td><td>Header title text</td></tr>
-            <tr><td><code>Level</code></td><td><code>HeadingLevel</code></td><td><code>Large</code></td><td>Heading size: <code>Large</code> (h1), <code>Medium</code> (h2), <code>Small</code> (h3)</td></tr>
-            <tr><td><code>Icon</code></td><td><code>string?</code></td><td><code>null</code></td><td>Icon name without <code>bi-</code> prefix</td></tr>
-            <tr><td><code>Subtitle</code></td><td><code>string?</code></td><td><code>null</code></td><td>Subtitle text below the title</td></tr>
-            <tr><td><code>HelpContent</code></td><td><code>RenderFragment?</code></td><td><code>null</code></td><td>Collapsible help content (shows toggle button when set)</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Title</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Header title text</TableCell></TableRow>
+            <TableRow><TableCell><code>Level</code></TableCell><TableCell><code>HeadingLevel</code></TableCell><TableCell><code>Large</code></TableCell><TableCell>Heading size: <code>Large</code> (h1), <code>Medium</code> (h2), <code>Small</code> (h3)</TableCell></TableRow>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Icon name without <code>bi-</code> prefix</TableCell></TableRow>
+            <TableRow><TableCell><code>Subtitle</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Subtitle text below the title</TableCell></TableRow>
+            <TableRow><TableCell><code>HelpContent</code></TableCell><TableCell><code>RenderFragment?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Collapsible help content (shows toggle button when set)</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

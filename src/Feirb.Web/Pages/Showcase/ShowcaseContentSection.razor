@@ -6,15 +6,20 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>Card with a header (icon + heading with optional subtitle) and a body for child content. Used for inline settings sections that don't navigate away.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Icon</code></td><td><code>string</code></td><td>required</td><td>Icon name without <code>bi-</code> prefix</td></tr>
-            <tr><td><code>Title</code></td><td><code>string</code></td><td>required</td><td>Section title (rendered via Heading)</td></tr>
-            <tr><td><code>Subtitle</code></td><td><code>string?</code></td><td><code>null</code></td><td>Subtitle (rendered via Heading)</td></tr>
-            <tr><td><code>ChildContent</code></td><td><code>RenderFragment?</code></td><td>&#8212;</td><td>Section body content</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Icon name without <code>bi-</code> prefix</TableCell></TableRow>
+            <TableRow><TableCell><code>Title</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Section title (rendered via Heading)</TableCell></TableRow>
+            <TableRow><TableCell><code>Subtitle</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Subtitle (rendered via Heading)</TableCell></TableRow>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment?</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Section body content</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

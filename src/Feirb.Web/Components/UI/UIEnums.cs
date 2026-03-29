@@ -48,10 +48,16 @@ public enum LabelPillSize
     Large
 }
 
+/// <summary>Size for table rendering.</summary>
+public enum TableSize
+{
+    Default,
+    Small
+}
+
 /// <summary>Display mode for mail card layout.</summary>
 public enum MailCardMode
 {
-    Large,
     Medium,
     Small,
     Row

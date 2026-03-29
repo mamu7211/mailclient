@@ -1,0 +1,14 @@
+@namespace Feirb.Web.Components.UI
+
+@* Table header section. Renders thead with a single row. *@
+<thead>
+    <tr>
+        @ChildContent
+    </tr>
+</thead>
+
+@code {
+    /// <summary>Header content (TableColumn elements).</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+}

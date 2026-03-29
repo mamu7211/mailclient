@@ -6,16 +6,21 @@
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
     <p>A row of mutually exclusive toggle buttons where exactly one is selected at a time. Uses <code>role="radiogroup"</code> and <code>role="radio"</code> for accessibility. Supports arrow key navigation.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Items</code></td><td><code>IReadOnlyList&lt;ToggleButtonItem&gt;</code></td><td>&#8212;</td><td>Available options</td></tr>
-            <tr><td><code>SelectedId</code></td><td><code>string</code></td><td>&#8212;</td><td>Currently selected item ID</td></tr>
-            <tr><td><code>SelectedIdChanged</code></td><td><code>EventCallback&lt;string&gt;</code></td><td>&#8212;</td><td>Fires when selection changes</td></tr>
-            <tr><td><code>MaxPerRow</code></td><td><code>int</code></td><td><code>8</code></td><td>Maximum items per row before wrapping</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Items</code></TableCell><TableCell><code>IReadOnlyList&lt;ToggleButtonItem&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Available options</TableCell></TableRow>
+            <TableRow><TableCell><code>SelectedId</code></TableCell><TableCell><code>string</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Currently selected item ID</TableCell></TableRow>
+            <TableRow><TableCell><code>SelectedIdChanged</code></TableCell><TableCell><code>EventCallback&lt;string&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Fires when selection changes</TableCell></TableRow>
+            <TableRow><TableCell><code>MaxPerRow</code></TableCell><TableCell><code>int</code></TableCell><TableCell><code>8</code></TableCell><TableCell>Maximum items per row before wrapping</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

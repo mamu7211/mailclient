@@ -34,14 +34,15 @@
                     <span>@ReceivedAt.ToString("MMM d")</span>
                     <span class="mail-card-time">@ReceivedAt.ToString("HH:mm")</span>
                 }
+
             </div>
         </div>
 
         <span class="mail-card-subject">@Subject</span>
 
-        @if (Mode is MailCardMode.Large or MailCardMode.Medium && !string.IsNullOrWhiteSpace(Summary))
+        @if (Mode is MailCardMode.Medium && !string.IsNullOrWhiteSpace(Summary))
         {
-            <p class="mail-card-summary @(Mode == MailCardMode.Large ? "mail-card-summary-3" : "mail-card-summary-2")">
+            <p class="mail-card-summary mail-card-summary-2">
                 @Summary
             </p>
         }
@@ -110,25 +111,22 @@
 
     private string ModeCss => Mode switch
     {
-        MailCardMode.Large => "large",
         MailCardMode.Medium => "medium",
         MailCardMode.Small => "small",
         MailCardMode.Row => "row",
-        _ => "large"
+        _ => "medium"
     };
 
     private int MaxLabelsForMode => Mode switch
     {
-        MailCardMode.Large => 4,
         MailCardMode.Medium => 3,
         MailCardMode.Small => 1,
         MailCardMode.Row => 4,
-        _ => 4
+        _ => 3
     };
 
     private LabelPillSize LabelPillSizeForMode => Mode switch
     {
-        MailCardMode.Large => LabelPillSize.Large,
         MailCardMode.Small => LabelPillSize.Small,
         _ => LabelPillSize.Medium
     };

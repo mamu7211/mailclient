@@ -6,22 +6,27 @@
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
-    <p>Card component for displaying mail items. Supports four layout modes: Large, Medium, Small, and Row. Whole card is a clickable navigation target.</p>
-    <table class="table table-sm">
-        <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-        <tbody>
-            <tr><td><code>Mode</code></td><td><code>MailCardMode</code></td><td>required</td><td>Large, Medium, Small, Row</td></tr>
-            <tr><td><code>SenderName</code></td><td><code>string</code></td><td>required</td><td>Sender display name</td></tr>
-            <tr><td><code>SenderEmail</code></td><td><code>string</code></td><td>required</td><td>Sender email address</td></tr>
-            <tr><td><code>Subject</code></td><td><code>string</code></td><td>required</td><td>Mail subject line (truncated)</td></tr>
-            <tr><td><code>Summary</code></td><td><code>string?</code></td><td><code>null</code></td><td>Summary text (Large: 3 lines, Medium: 2 lines)</td></tr>
-            <tr><td><code>Labels</code></td><td><code>IReadOnlyList&lt;MailCardLabel&gt;</code></td><td><code>[]</code></td><td>Labels to display (overflow with +N)</td></tr>
-            <tr><td><code>ReceivedAt</code></td><td><code>DateTime</code></td><td>required</td><td>Received date/time</td></tr>
-            <tr><td><code>IsRead</code></td><td><code>bool</code></td><td><code>false</code></td><td>Read/unread state</td></tr>
-            <tr><td><code>Href</code></td><td><code>string</code></td><td>required</td><td>Navigation target URL</td></tr>
-            <tr><td><code>Class</code></td><td><code>string?</code></td><td><code>null</code></td><td>Extra CSS classes</td></tr>
-        </tbody>
-    </table>
+    <p>Card component for displaying mail items. Supports three layout modes: Medium, Small, and Row. Whole card is a clickable navigation target.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Mode</code></TableCell><TableCell><code>MailCardMode</code></TableCell><TableCell>required</TableCell><TableCell>Medium, Small, Row</TableCell></TableRow>
+            <TableRow><TableCell><code>SenderName</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Sender display name</TableCell></TableRow>
+            <TableRow><TableCell><code>SenderEmail</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Sender email address</TableCell></TableRow>
+            <TableRow><TableCell><code>Subject</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Mail subject line (truncated)</TableCell></TableRow>
+            <TableRow><TableCell><code>Summary</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Summary text (Medium: 2 lines, hidden otherwise)</TableCell></TableRow>
+            <TableRow><TableCell><code>Labels</code></TableCell><TableCell><code>IReadOnlyList&lt;MailCardLabel&gt;</code></TableCell><TableCell><code>[]</code></TableCell><TableCell>Labels to display (overflow with +N)</TableCell></TableRow>
+            <TableRow><TableCell><code>ReceivedAt</code></TableCell><TableCell><code>DateTime</code></TableCell><TableCell>required</TableCell><TableCell>Received date/time</TableCell></TableRow>
+            <TableRow><TableCell><code>IsRead</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Read/unread state</TableCell></TableRow>
+            <TableRow><TableCell><code>Href</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Navigation target URL</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">
@@ -31,7 +36,6 @@
         <div class="col-md-6 col-lg-3">
             <label class="form-label">Mode</label>
             <select class="form-select form-select-sm" @bind="_mode">
-                <option value="@MailCardMode.Large">Large</option>
                 <option value="@MailCardMode.Medium">Medium</option>
                 <option value="@MailCardMode.Small">Small</option>
                 <option value="@MailCardMode.Row">Row</option>
@@ -116,7 +120,7 @@
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">All Modes</Heading>
-    <p class="text-muted mb-3">Comparison of all four layout modes with the same data.</p>
+    <p class="text-muted mb-3">Comparison of all three layout modes with the same data.</p>
     <div class="d-flex flex-column gap-3">
         @foreach (var mode in Enum.GetValues<MailCardMode>())
         {
@@ -194,7 +198,7 @@
 </Card>
 
 @code {
-    private MailCardMode _mode = MailCardMode.Large;
+    private MailCardMode _mode = MailCardMode.Medium;
     private string _senderName = "Alice Johnson";
     private string _senderEmail = "alice.johnson@example.com";
     private string _subject = "Q1 Report: Revenue exceeded expectations across all regions";

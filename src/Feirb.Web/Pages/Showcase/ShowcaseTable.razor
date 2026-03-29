@@ -1,0 +1,171 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="Table" Icon="table" Subtitle="Theme-aware table with structured components for headers, rows, and cells" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Structured table component that renders theme-aware HTML tables. Composed of Table, TableHeader, TableColumn, TableBody, TableRow, and TableCell.</p>
+
+    <Heading Level="HeadingLevel.Small">Table</Heading>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>TableSize</code></TableCell><TableCell><code>Default</code></TableCell><TableCell>Default, Small</TableCell></TableRow>
+            <TableRow><TableCell><code>Hover</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Highlight rows on hover</TableCell></TableRow>
+            <TableRow><TableCell><code>Striped</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Alternating row backgrounds</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+
+    <Heading Level="HeadingLevel.Small" Class="mt-3">TableRow</Heading>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>OnClick</code></TableCell><TableCell><code>EventCallback&lt;MouseEventArgs&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Row click handler (adds pointer cursor)</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+
+    <Heading Level="HeadingLevel.Small" Class="mt-3">TableCell</Heading>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>OnClick</code></TableCell><TableCell><code>EventCallback&lt;MouseEventArgs&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Cell click handler</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <label class="form-label mb-0">Size:</label>
+        <select class="form-select form-select-sm w-auto" @bind="_size">
+            <option value="@TableSize.Default">Default</option>
+            <option value="@TableSize.Small">Small</option>
+        </select>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="tableHover" @bind="_hover" />
+            <label class="form-check-label" for="tableHover">Hover</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="tableStriped" @bind="_striped" />
+            <label class="form-check-label" for="tableStriped">Striped</label>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <Table Size="_size" Hover="_hover" Striped="_striped">
+            <TableHeader>
+                <TableColumn>Name</TableColumn>
+                <TableColumn>Email</TableColumn>
+                <TableColumn>Role</TableColumn>
+            </TableHeader>
+            <TableBody>
+                @foreach (var person in _sampleData)
+                {
+                    <TableRow OnClick="() => OnRowClicked(person.Name)">
+                        <TableCell>@person.Name</TableCell>
+                        <TableCell>@person.Email</TableCell>
+                        <TableCell>@person.Role</TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+    </div>
+
+    @if (_clickedRow is not null)
+    {
+        <p class="mt-2 mb-0 text-muted">Clicked row: <strong>@_clickedRow</strong></p>
+    }
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Composition</Heading>
+    <p class="text-muted mb-3">The table is composed of six components that map directly to HTML table elements.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Component</TableColumn>
+            <TableColumn>Renders</TableColumn>
+            <TableColumn>Children</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Table</code></TableCell><TableCell><code>&lt;table&gt;</code></TableCell><TableCell>TableHeader, TableBody</TableCell></TableRow>
+            <TableRow><TableCell><code>TableHeader</code></TableCell><TableCell><code>&lt;thead&gt;&lt;tr&gt;</code></TableCell><TableCell>TableColumn</TableCell></TableRow>
+            <TableRow><TableCell><code>TableColumn</code></TableCell><TableCell><code>&lt;th&gt;</code></TableCell><TableCell>Any content</TableCell></TableRow>
+            <TableRow><TableCell><code>TableBody</code></TableCell><TableCell><code>&lt;tbody&gt;</code></TableCell><TableCell>TableRow</TableCell></TableRow>
+            <TableRow><TableCell><code>TableRow</code></TableCell><TableCell><code>&lt;tr&gt;</code></TableCell><TableCell>TableCell</TableCell></TableRow>
+            <TableRow><TableCell><code>TableCell</code></TableCell><TableCell><code>&lt;td&gt;</code></TableCell><TableCell>Any content</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private TableSize _size = TableSize.Default;
+    private bool _hover = true;
+    private bool _striped;
+    private string? _clickedRow;
+    private ElementReference _codeElement;
+
+    private static readonly (string Name, string Email, string Role)[] _sampleData =
+    [
+        ("Alice Johnson", "alice@example.com", "Admin"),
+        ("Bob Smith", "bob@example.com", "Editor"),
+        ("Carol White", "carol@example.com", "Viewer")
+    ];
+
+    private void OnRowClicked(string name) => _clickedRow = name;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode
+    {
+        get
+        {
+            var sizeStr = _size != TableSize.Default ? $" Size=\"TableSize.{_size}\"" : "";
+            var hoverStr = _hover ? " Hover" : "";
+            var stripedStr = _striped ? " Striped" : "";
+
+            return "<" + $"Table{sizeStr}{hoverStr}{stripedStr}>\n"
+                 + "    <TableHeader>\n"
+                 + "        <TableColumn>Name</TableColumn>\n"
+                 + "        <TableColumn>Email</TableColumn>\n"
+                 + "        <TableColumn>Role</TableColumn>\n"
+                 + "    </TableHeader>\n"
+                 + "    <TableBody>\n"
+                 + "        <TableRow OnClick=\"() => OnRowClicked(...)\">\n"
+                 + "            <TableCell>Alice Johnson</TableCell>\n"
+                 + "            <TableCell>alice@example.com</TableCell>\n"
+                 + "            <TableCell>Admin</TableCell>\n"
+                 + "        </TableRow>\n"
+                 + "    </TableBody>\n"
+                 + "</Table>";
+        }
+    }
+}
