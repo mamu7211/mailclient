@@ -3,7 +3,7 @@
 @* Theme-aware pagination control with previous/next and page indicator. *@
 @if (TotalPages > 1)
 {
-    <nav class="feirb-pagination @Class" aria-label="Pagination">
+    <nav class="feirb-pagination @(Sticky ? "feirb-pagination-sticky" : "") @Class" aria-label="Pagination">
         <button type="button"
                 class="feirb-pagination-btn"
                 disabled="@(CurrentPage <= 1)"
@@ -46,6 +46,10 @@
     /// <summary>Label for the next button.</summary>
     [Parameter]
     public string NextLabel { get; set; } = "Next";
+
+    /// <summary>Stick to the bottom of the viewport.</summary>
+    [Parameter]
+    public bool Sticky { get; set; }
 
     /// <summary>Additional CSS classes.</summary>
     [Parameter]

@@ -32,6 +32,16 @@
     cursor: not-allowed;
 }
 
+.feirb-pagination-sticky {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background-color: var(--bs-body-bg);
+    border-top: 1px solid var(--feirb-border-color);
+    margin: 0 -1.5rem;
+    padding: 0.75rem 1.5rem;
+}
+
 .feirb-pagination-info {
     font-size: 0.875rem;
     font-weight: 600;
