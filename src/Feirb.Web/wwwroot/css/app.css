@@ -504,7 +504,10 @@ code {
     opacity: 0.8;
 }
 
-.feirb-color-ring-segment:focus-visible {
+.feirb-color-ring-segment:focus {
     outline: none;
+}
+
+.feirb-color-ring-segment:focus-visible {
     filter: brightness(1.3);
 }
