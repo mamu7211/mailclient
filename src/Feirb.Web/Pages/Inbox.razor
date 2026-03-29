@@ -1,10 +1,14 @@
 @page "/mail/inbox"
 @attribute [Authorize]
 @using Feirb.Shared.Mail
+@using Feirb.Web.Components
 @using Feirb.Web.Components.UI
+@using Feirb.Web.Services
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResources> L
+@inject ViewportService Viewport
+@implements IDisposable
 
 <PageTitle>@L["PageTitleInbox"]</PageTitle>
 
@@ -28,6 +32,32 @@ else if (!string.IsNullOrEmpty(_errorMessage))
 else if (_messages is null || _messages.Items.Count == 0)
 {
     <p class="text-muted">@L["NoMessagesFound"]</p>
+}
+else if (UseCardLayout)
+{
+    <div class="d-flex flex-column gap-2">
+        @foreach (var msg in _messages.Items)
+        {
+            <MailCard Mode="MailCardMode.Row"
+                      SenderName="@msg.FromName"
+                      SenderEmail="@msg.FromEmail"
+                      Subject="@msg.Subject"
+                      Summary="@msg.Summary"
+                      ReceivedAt="msg.Date.LocalDateTime"
+                      IsRead="msg.IsRead"
+                      Href="@($"/mail/inbox/{msg.Id}")" />
+        }
+    </div>
+
+    <Pagination CurrentPage="_currentPage"
+                TotalPages="TotalPages"
+                CurrentPageChanged="OnPageChangedAsync"
+                PageSize="_pageSize"
+                PageSizeChanged="OnPageSizeChangedAsync"
+                PreviousLabel="@L["PaginationPrevious"]"
+                NextLabel="@L["PaginationNext"]"
+                PerPageLabel="@L["PaginationPerPage"]"
+                Sticky />
 }
 else
 {
@@ -86,11 +116,15 @@ else
 }
 
 @code {
+    private const int CardLayoutBreakpoint = 1000;
+
     private PaginatedResponse<MessageListItemResponse>? _messages;
     private bool _isLoading = true;
     private string? _errorMessage;
     private int _currentPage = 1;
     private int _pageSize = 5;
+
+    private bool UseCardLayout => Viewport.Width > 0 && Viewport.Width < CardLayoutBreakpoint;
 
     private int TotalPages => _messages is null || _messages.TotalCount == 0
         ? 1
@@ -98,6 +132,18 @@ else
 
     protected override async Task OnInitializedAsync() =>
         await LoadMessagesAsync();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Viewport.InitializeAsync();
+            Viewport.OnResize += OnViewportResize;
+            StateHasChanged();
+        }
+    }
+
+    private void OnViewportResize() => InvokeAsync(StateHasChanged);
 
     private async Task LoadMessagesAsync()
     {
@@ -139,4 +185,6 @@ else
 
     private void NavigateToMessage(Guid id) =>
         Navigation.NavigateTo($"/mail/inbox/{id}");
+
+    public void Dispose() => Viewport.OnResize -= OnViewportResize;
 }
