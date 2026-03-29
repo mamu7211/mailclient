@@ -2,7 +2,7 @@
     background: var(--feirb-surface);
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
-    overflow: hidden;
+    overflow: clip;
 }
 
 .content-section-header {
@@ -19,4 +19,5 @@
 
 .content-section-body {
     padding: 1.25rem;
+    overflow-x: auto;
 }
