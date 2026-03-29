@@ -38,7 +38,7 @@ else if (UseCardLayout)
     <div class="d-flex flex-column gap-2">
         @foreach (var msg in _messages.Items)
         {
-            <MailCard Mode="MailCardMode.Row"
+            <MailCard Mode="MailCardMode.Small"
                       SenderName="@msg.FromName"
                       SenderEmail="@msg.FromEmail"
                       Subject="@msg.Subject"
