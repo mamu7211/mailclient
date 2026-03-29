@@ -34,11 +34,11 @@ else
     <ContentSection Title="@L["NavInbox"]" Icon="envelope">
         <Table Hover Class="inbox-table">
             <TableHeader>
-                <TableColumn style="width: 8rem;">@L["ColumnMailbox"]</TableColumn>
-                <TableColumn style="width: 14rem;">@L["ColumnFrom"]</TableColumn>
-                <TableColumn>@L["ColumnSubject"]</TableColumn>
-                <TableColumn style="width: 8rem;">@L["ColumnCategory"]</TableColumn>
-                <TableColumn style="width: 10rem;">@L["ColumnDate"]</TableColumn>
+                <TableColumn Class="inbox-col-mailbox">@L["ColumnMailbox"]</TableColumn>
+                <TableColumn Class="inbox-col-from">@L["ColumnFrom"]</TableColumn>
+                <TableColumn Class="inbox-col-subject">@L["ColumnSubject"]</TableColumn>
+                <TableColumn Class="inbox-col-category">@L["ColumnCategory"]</TableColumn>
+                <TableColumn Class="inbox-col-date">@L["ColumnDate"]</TableColumn>
             </TableHeader>
             <TableBody>
                 @foreach (var msg in _messages.Items)

@@ -1,8 +1,32 @@
-/* Inbox table — fixed column layout */
+/* Inbox table — fixed column layout with horizontal scroll */
 ::deep .inbox-table {
     table-layout: fixed;
+    min-width: 50rem;
 }
 
+/* Column widths */
+::deep .inbox-col-mailbox {
+    width: 8rem;
+}
+
+::deep .inbox-col-from {
+    width: 14rem;
+}
+
+::deep .inbox-col-subject {
+    width: auto;
+    min-width: 10rem;
+}
+
+::deep .inbox-col-category {
+    width: 8rem;
+}
+
+::deep .inbox-col-date {
+    width: 10rem;
+}
+
+/* Subject cell — ellipsis truncation */
 ::deep .inbox-subject-cell {
     overflow: hidden;
 }
