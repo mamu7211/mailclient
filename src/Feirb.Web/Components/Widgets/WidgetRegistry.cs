@@ -6,6 +6,7 @@ public static class WidgetRegistry
     [
         new WidgetDefinition("mail-count", "WidgetMailCountName", "WidgetMailCountDescription", typeof(TotalMailCountWidget), Icon: "bi-envelope", DefaultWidth: 3, DefaultHeight: 2),
         new WidgetDefinition("mails-per-day", "WidgetMailsPerDayName", "WidgetMailsPerDayDescription", typeof(MailsPerDayWidget), Icon: "bi-bar-chart", DefaultWidth: 6, DefaultHeight: 3, DefaultConfig: "7"),
+        new WidgetDefinition("mailbox-doughnut", "WidgetMailboxDoughnutName", "WidgetMailboxDoughnutDescription", typeof(MailboxDoughnutWidget), Icon: "bi-pie-chart", DefaultWidth: 4, DefaultHeight: 3),
     ];
 
     public static WidgetDefinition? GetById(string id) =>

@@ -9,6 +9,8 @@ public record CreateMailboxRequest(
     string EmailAddress,
     [StringLength(256)]
     string? DisplayName,
+    [StringLength(9)]
+    string? BadgeColor,
     [Required, StringLength(256)]
     string ImapHost,
     [Required, Range(1, 65535)]

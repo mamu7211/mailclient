@@ -39,6 +39,10 @@
             <label for="displayName" class="form-label">@L["LabelDisplayName"]</label>
             <InputText id="displayName" class="form-control" @bind-Value="_model.DisplayName" placeholder="@L["PlaceholderDisplayName"]" />
         </div>
+        <div class="mb-3">
+            <label class="form-label">@L["LabelBadgeColor"]</label>
+            <ColorPicker @bind-Value="_model.BadgeColor" />
+        </div>
     </ContentSection>
 
     <ContentSection Icon="inbox" Title="@L["MailboxSectionImap"]" Subtitle="@L["SectionMailboxImapSubtitle"]" Class="mb-4">
@@ -171,7 +175,7 @@
         try
         {
             var request = new CreateMailboxRequest(
-                _model.Name!, _model.EmailAddress!, _model.DisplayName,
+                _model.Name!, _model.EmailAddress!, _model.DisplayName, _model.BadgeColor,
                 _model.ImapHost!, _model.ImapPort, _model.ImapUsername!, _model.ImapPassword,
                 _model.ImapUseTls,
                 _model.SmtpHost!, _model.SmtpPort, _model.SmtpUsername!, _model.SmtpPassword,
@@ -270,6 +274,9 @@
 
         [System.ComponentModel.DataAnnotations.StringLength(256)]
         public string? DisplayName { get; set; }
+
+        [System.ComponentModel.DataAnnotations.StringLength(9)]
+        public string? BadgeColor { get; set; }
 
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.StringLength(256)]

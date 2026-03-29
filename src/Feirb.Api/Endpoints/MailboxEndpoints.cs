@@ -33,7 +33,7 @@ public static class MailboxEndpoints
         var mailboxes = await db.Mailboxes
             .Where(m => m.UserId == userId)
             .OrderBy(m => m.Name)
-            .Select(m => new MailboxListResponse(m.Id, m.Name, m.EmailAddress))
+            .Select(m => new MailboxListResponse(m.Id, m.Name, m.EmailAddress, m.BadgeColor))
             .ToListAsync();
 
         return Results.Ok(mailboxes);
@@ -57,6 +57,7 @@ public static class MailboxEndpoints
             Name = request.Name,
             EmailAddress = request.EmailAddress,
             DisplayName = request.DisplayName,
+            BadgeColor = request.BadgeColor,
             ImapHost = request.ImapHost,
             ImapPort = request.ImapPort,
             ImapUsername = request.ImapUsername,
@@ -116,6 +117,7 @@ public static class MailboxEndpoints
         mailbox.Name = request.Name;
         mailbox.EmailAddress = request.EmailAddress;
         mailbox.DisplayName = request.DisplayName;
+        mailbox.BadgeColor = request.BadgeColor;
         mailbox.ImapHost = request.ImapHost;
         mailbox.ImapPort = request.ImapPort;
         mailbox.ImapUsername = request.ImapUsername;
@@ -164,6 +166,7 @@ public static class MailboxEndpoints
             mailbox.Name,
             mailbox.EmailAddress,
             mailbox.DisplayName,
+            mailbox.BadgeColor,
             mailbox.ImapHost,
             mailbox.ImapPort,
             mailbox.ImapUsername,

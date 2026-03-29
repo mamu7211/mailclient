@@ -17,6 +17,13 @@
             </button>
         </div>
     }
+    @if (!string.IsNullOrEmpty(_configError))
+    {
+        <div class="alert alert-warning py-1 px-2 mb-2 small">
+            <Icon Name="exclamation-triangle" Size="IconSize.Small" />
+            @_configError
+        </div>
+    }
     @Content
 </div>
 
@@ -33,6 +40,7 @@
 @code {
     private string? _config;
     private bool _settingsVisible;
+    private string? _configError;
 
     [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
     [Parameter, EditorRequired] public RenderFragment Content { get; set; } = null!;
@@ -54,10 +62,11 @@
                 var result = await response.Content.ReadFromJsonAsync<WidgetConfigResponse>();
                 _config = result?.ConfigValue;
             }
+            _configError = null;
         }
         catch
         {
-            // Widget will use defaults if config load fails
+            _configError = L["WidgetConfigLoadError"];
         }
 
         await OnConfigLoaded.InvokeAsync(_config);
@@ -77,11 +86,12 @@
             await Http.PutAsJsonAsync($"/api/dashboard/widgets/{InstanceId}/config",
                 new WidgetConfigRequest(newConfig));
             _config = newConfig;
+            _configError = null;
             await OnConfigLoaded.InvokeAsync(_config);
         }
         catch
         {
-            // Silently fail on save error
+            _configError = L["WidgetConfigSaveError"];
         }
 
         _settingsVisible = false;

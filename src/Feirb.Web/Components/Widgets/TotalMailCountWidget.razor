@@ -1,3 +1,4 @@
+@inherits WidgetBase
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 
@@ -5,41 +6,26 @@
     <Content>
         <div class="h-100 d-flex flex-column align-items-center justify-content-center">
             <span class="text-muted small">@L["WidgetMailCountName"]</span>
-            @if (_loading)
-            {
-                <div class="spinner-border spinner-border-sm mt-2" role="status"></div>
-            }
-            else
-            {
+            <WidgetStateView State="State" ErrorMessage="ErrorMessage" OnRetry="RetryAsync">
                 <span class="fw-bold text-primary" style="font-size: 6rem; line-height: 1;">@_totalCount</span>
-            }
+            </WidgetStateView>
         </div>
     </Content>
 </WidgetCard>
 
 @code {
     private int _totalCount;
-    private bool _loading = true;
 
-    [Parameter, EditorRequired] public string InstanceId { get; set; } = "";
-    [Parameter] public bool EditMode { get; set; }
-    [Parameter] public EventCallback OnRemove { get; set; }
+    protected override async Task OnInitializedAsync() =>
+        await ExecuteLoadAsync();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
-        try
+        var stats = await Http.GetFromJsonAsync<MailStatsResponse>("/api/mail/stats");
+        if (stats is not null)
         {
-            var stats = await Http.GetFromJsonAsync<MailStatsResponse>("/api/mail/stats");
-            if (stats is not null)
-                _totalCount = stats.TotalCount;
-        }
-        catch
-        {
-            _totalCount = 0;
-        }
-        finally
-        {
-            _loading = false;
+            _totalCount = stats.TotalCount;
+            State = WidgetState.Ready;
         }
     }
 }

@@ -289,6 +289,27 @@ Defined in `UIEnums.cs`:
 - **`HeadingLevel`**: `Large`, `Medium`, `Small`
 - **`LabelPillSize`**: `Small`, `Medium`, `Large`
 
+## ColorPicker
+
+Color picker with 12-preset ring, hex input, and confirm/cancel dialog. Trigger displays a colored swatch and a "Choose color" button.
+
+```razor
+<ColorPicker @bind-Value="_color" />
+
+@code {
+    private string? _color = "#FF0000";
+}
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string?` | `null` | Current hex color value (e.g. `#FF0000`) |
+| `ValueChanged` | `EventCallback<string?>` | — | Fires when color is confirmed |
+
+**Presets:** Red, Vermilion, Orange, Amber, Yellow, Chartreuse, Green, Teal, Blue, Violet, Purple, Magenta
+
+**Primitives used:** `Button` (trigger and dialog buttons), `Icon` (via Button)
+
 ## Design Tokens
 
 All primitives use CSS custom properties from `app.css`. Key tokens:
