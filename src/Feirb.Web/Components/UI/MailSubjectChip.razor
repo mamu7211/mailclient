@@ -1,0 +1,41 @@
+@namespace Feirb.Web.Components.UI
+
+@* Compact mail subject display with read/unread icon, subject, and summary. *@
+<div class="feirb-mail-subject-chip @Class">
+    <Icon Name="@(IsRead ? "envelope-open" : "envelope-fill")" Class="feirb-mail-subject-chip-icon" />
+    <div class="feirb-mail-subject-chip-info">
+        <div class="feirb-mail-subject-chip-line">
+            <span class="feirb-mail-subject-chip-text">@Subject</span>
+            @if (HasAttachments)
+            {
+                <Icon Name="paperclip" Size="IconSize.Small" />
+            }
+        </div>
+        @if (!string.IsNullOrEmpty(Summary))
+        {
+            <span class="feirb-mail-subject-chip-summary">@Summary</span>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Mail subject line.</summary>
+    [Parameter, EditorRequired]
+    public string Subject { get; set; } = default!;
+
+    /// <summary>AI-generated summary text.</summary>
+    [Parameter]
+    public string? Summary { get; set; }
+
+    /// <summary>Whether the mail has been read.</summary>
+    [Parameter]
+    public bool IsRead { get; set; }
+
+    /// <summary>Whether the mail has attachments.</summary>
+    [Parameter]
+    public bool HasAttachments { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}
