@@ -2,7 +2,6 @@
 ::deep .inbox-table {
     table-layout: fixed;
     width: 100%;
-    min-width: 42rem;
 }
 
 /* Column widths */
@@ -16,7 +15,6 @@
 
 ::deep .inbox-col-subject {
     width: auto;
-    min-width: 8rem;
 }
 
 ::deep .inbox-col-category {
