@@ -1,0 +1,59 @@
+@namespace Feirb.Web.Components.UI
+
+@* Compact job display with icon, name, description, cron schedule, and enabled state. *@
+<div class="feirb-job-chip @Class">
+    <Icon Name="gear" Class="feirb-job-chip-icon" />
+    <div class="feirb-job-chip-info">
+        <div class="feirb-job-chip-header">
+            <span class="feirb-job-chip-name">@Name</span>
+            <span class="feirb-job-chip-status-dot" style="background-color: @(Enabled ? "var(--bs-success)" : "var(--bs-secondary)");"></span>
+            <span class="feirb-job-chip-status-label @(Enabled ? "" : "feirb-job-chip-status-disabled")">@(Enabled ? EnabledLabel : DisabledLabel)</span>
+        </div>
+        @if (!string.IsNullOrEmpty(Description))
+        {
+            <span class="feirb-job-chip-description">@Description</span>
+        }
+        <div class="feirb-job-chip-schedule">
+            <Icon Name="clock" Size="IconSize.Small" Class="feirb-job-chip-schedule-icon" />
+            <code class="feirb-job-chip-cron">@Cron</code>
+            @if (!string.IsNullOrEmpty(CronHumanText) && CronHumanText != Cron)
+            {
+                <span class="feirb-job-chip-cron-text">@CronHumanText</span>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>Job display name.</summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = default!;
+
+    /// <summary>Job description text.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>Quartz cron expression.</summary>
+    [Parameter, EditorRequired]
+    public string Cron { get; set; } = default!;
+
+    /// <summary>Human-readable cron text.</summary>
+    [Parameter]
+    public string? CronHumanText { get; set; }
+
+    /// <summary>Whether the job is enabled.</summary>
+    [Parameter]
+    public bool Enabled { get; set; }
+
+    /// <summary>Localized label for enabled state.</summary>
+    [Parameter, EditorRequired]
+    public string EnabledLabel { get; set; } = default!;
+
+    /// <summary>Localized label for disabled state.</summary>
+    [Parameter, EditorRequired]
+    public string DisabledLabel { get; set; } = default!;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

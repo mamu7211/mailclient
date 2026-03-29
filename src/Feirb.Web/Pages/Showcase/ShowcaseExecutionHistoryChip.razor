@@ -1,0 +1,108 @@
+@using Feirb.Web.Components.UI
+@using Feirb.Shared.Admin.Jobs
+@inject IJSRuntime JS
+
+<InfoHeader Title="ExecutionHistoryChip" Icon="clock-history" Subtitle="Colored dots showing recent execution results" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Displays recent job execution results as a row of colored dots. Green for success, red for failure, yellow for cancelled. Each dot shows a tooltip with timestamp and error details on hover.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Executions</code></TableCell><TableCell><code>IReadOnlyList&lt;JobExecutionResponse&gt;?</code></TableCell><TableCell>required</TableCell><TableCell>Recent executions to display</TableCell></TableRow>
+            <TableRow><TableCell><code>MaxDots</code></TableCell><TableCell><code>int</code></TableCell><TableCell><code>8</code></TableCell><TableCell>Maximum number of dots to render</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">Max Dots</label>
+            <input type="number" class="form-control form-control-sm" style="width: 5rem;" @bind="_maxDots" min="1" max="20" />
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <ExecutionHistoryChip Executions="_sampleExecutions" MaxDots="_maxDots" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Examples</Heading>
+    <p class="text-muted mb-3">Different execution histories.</p>
+    <div class="d-flex flex-column gap-3">
+        <div>
+            <small class="text-muted d-block mb-1">All successful</small>
+            <ExecutionHistoryChip Executions="_allSuccess" />
+        </div>
+        <div>
+            <small class="text-muted d-block mb-1">Mixed results</small>
+            <ExecutionHistoryChip Executions="_sampleExecutions" />
+        </div>
+        <div>
+            <small class="text-muted d-block mb-1">Recent failures</small>
+            <ExecutionHistoryChip Executions="_recentFailures" />
+        </div>
+        <div>
+            <small class="text-muted d-block mb-1">No executions</small>
+            <ExecutionHistoryChip Executions="@(new List<JobExecutionResponse>())" />
+        </div>
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private int _maxDots = 8;
+    private ElementReference _codeElement;
+
+    private static readonly DateTimeOffset _baseTime = new(2026, 3, 29, 10, 0, 0, TimeSpan.Zero);
+
+    private static readonly List<JobExecutionResponse> _sampleExecutions =
+    [
+        new(Guid.NewGuid(), _baseTime, _baseTime.AddSeconds(12), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(5), _baseTime.AddMinutes(5).AddSeconds(8), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(10), _baseTime.AddMinutes(10).AddSeconds(3), "Failed", "Connection timeout"),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(15), _baseTime.AddMinutes(15).AddSeconds(15), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(20), _baseTime.AddMinutes(20).AddSeconds(1), "Cancelled", null),
+    ];
+
+    private static readonly List<JobExecutionResponse> _allSuccess =
+    [
+        new(Guid.NewGuid(), _baseTime, _baseTime.AddSeconds(5), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(5), _baseTime.AddMinutes(5).AddSeconds(4), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(10), _baseTime.AddMinutes(10).AddSeconds(6), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(15), _baseTime.AddMinutes(15).AddSeconds(3), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(20), _baseTime.AddMinutes(20).AddSeconds(7), "Success", null),
+    ];
+
+    private static readonly List<JobExecutionResponse> _recentFailures =
+    [
+        new(Guid.NewGuid(), _baseTime, _baseTime.AddSeconds(2), "Success", null),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(5), _baseTime.AddMinutes(5).AddSeconds(30), "Failed", "IMAP connection refused"),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(10), _baseTime.AddMinutes(10).AddSeconds(30), "Failed", "IMAP connection refused"),
+        new(Guid.NewGuid(), _baseTime.AddMinutes(15), _baseTime.AddMinutes(15).AddSeconds(30), "Failed", "IMAP connection refused"),
+    ];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<" + $"ExecutionHistoryChip Executions=\"@@executions\" MaxDots=\"{_maxDots}\" />";
+}

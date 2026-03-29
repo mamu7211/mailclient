@@ -1,0 +1,120 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="JobChip" Icon="gear" Subtitle="Compact job display with name, description, schedule, and status" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Displays a background job with its name, description, cron schedule, human-readable schedule text, and enabled/disabled status. Used in the Admin Jobs table.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Job display name</TableCell></TableRow>
+            <TableRow><TableCell><code>Description</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Job description text</TableCell></TableRow>
+            <TableRow><TableCell><code>Cron</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Quartz cron expression</TableCell></TableRow>
+            <TableRow><TableCell><code>CronHumanText</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Human-readable schedule text</TableCell></TableRow>
+            <TableRow><TableCell><code>Enabled</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Whether the job is enabled</TableCell></TableRow>
+            <TableRow><TableCell><code>EnabledLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Localized label for enabled state</TableCell></TableRow>
+            <TableRow><TableCell><code>DisabledLabel</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Localized label for disabled state</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control form-control-sm" @bind="_name" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Description</label>
+            <input type="text" class="form-control form-control-sm" @bind="_description" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Cron</label>
+            <input type="text" class="form-control form-control-sm" @bind="_cron" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">Human Text</label>
+            <input type="text" class="form-control form-control-sm" @bind="_humanText" @bind:event="oninput" />
+        </div>
+        <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" id="jobEnabled" @bind="_enabled" />
+            <label class="form-check-label" for="jobEnabled">Enabled</label>
+        </div>
+    </div>
+
+    <div class="showcase-preview-area">
+        <JobChip Name="@_name"
+                 Description="@_description"
+                 Cron="@_cron"
+                 CronHumanText="@_humanText"
+                 Enabled="_enabled"
+                 EnabledLabel="Enabled"
+                 DisabledLabel="Disabled" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Examples</Heading>
+    <p class="text-muted mb-3">Jobs in different states.</p>
+    <div class="d-flex flex-column gap-3">
+        <JobChip Name="Classification"
+                 Description="Classifies new mail messages using AI-powered label detection."
+                 Cron="0 */5 * * * ?"
+                 CronHumanText="Every 5 minutes"
+                 Enabled="true"
+                 EnabledLabel="Enabled"
+                 DisabledLabel="Disabled" />
+        <JobChip Name="Mail Sync"
+                 Description="Syncs new mail from all configured IMAP accounts."
+                 Cron="0 * * * * ?"
+                 CronHumanText="Every minute"
+                 Enabled="false"
+                 EnabledLabel="Enabled"
+                 DisabledLabel="Disabled" />
+        <JobChip Name="Cleanup"
+                 Description="Removes expired sessions and temporary data."
+                 Cron="0 0 3 * * ?"
+                 Enabled="true"
+                 EnabledLabel="Enabled"
+                 DisabledLabel="Disabled" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string _name = "Classification";
+    private string _description = "Classifies new mail messages using AI-powered label detection.";
+    private string _cron = "0 */5 * * * ?";
+    private string _humanText = "Every 5 minutes";
+    private bool _enabled = true;
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<" + $"JobChip Name=\"{_name}\"\n" +
+        $"         Description=\"{_description}\"\n" +
+        $"         Cron=\"{_cron}\"\n" +
+        $"         CronHumanText=\"{_humanText}\"\n" +
+        $"         Enabled=\"{_enabled.ToString().ToLowerInvariant()}\"\n" +
+        $"         EnabledLabel=\"Enabled\"\n" +
+        $"         DisabledLabel=\"Disabled\" />";
+}

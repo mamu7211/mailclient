@@ -78,6 +78,9 @@ builder.Services.Configure<ImapSyncSettings>(builder.Configuration.GetSection(Im
 builder.Services.AddQuartz();
 builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
 
+// Managed job infrastructure
+builder.Services.AddManagedJobInfrastructure();
+
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -145,6 +148,7 @@ var adminGroup = apiGroup.MapGroup("/admin").RequireAuthorization("RequireAdmin"
 adminGroup.MapAdminEndpoints();
 var systemSettingsGroup = adminGroup.MapGroup("/system-settings");
 systemSettingsGroup.MapSystemSettingsEndpoints();
+adminGroup.MapJobSettingsEndpoints();
 
 // Settings endpoints (per-user, JWT required)
 var settingsGroup = apiGroup.MapGroup("/settings");

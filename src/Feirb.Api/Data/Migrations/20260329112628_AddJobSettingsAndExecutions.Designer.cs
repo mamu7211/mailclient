@@ -3,6 +3,7 @@ using System;
 using Feirb.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Feirb.Api.Data.Migrations
 {
     [DbContext(typeof(FeirbDbContext))]
-    partial class FeirbDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260329112628_AddJobSettingsAndExecutions")]
+    partial class AddJobSettingsAndExecutions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,13 +150,13 @@ namespace Feirb.Api.Data.Migrations
                         .HasMaxLength(4096)
                         .HasColumnType("character varying(4096)");
 
-                    b.Property<DateTimeOffset?>("FinishedAt")
+                    b.Property<DateTime?>("FinishedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("JobSettingsId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTimeOffset>("StartedAt")
+                    b.Property<DateTime>("StartedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
@@ -194,7 +197,7 @@ namespace Feirb.Api.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTimeOffset?>("LastRunAt")
+                    b.Property<DateTime?>("LastRunAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastStatus")
@@ -202,7 +205,6 @@ namespace Feirb.Api.Data.Migrations
                         .HasColumnType("character varying(20)");
 
                     b.Property<Guid>("RowVersion")
-                        .IsConcurrencyToken()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");

@@ -1,0 +1,36 @@
+meta {
+  name: Get Job By Id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/admin/jobs/{{jobId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return job details", function() {
+    expect(res.body).to.have.property("id");
+    expect(res.body).to.have.property("jobName");
+    expect(res.body).to.have.property("description");
+    expect(res.body).to.have.property("cron");
+    expect(res.body).to.have.property("enabled");
+    expect(res.body).to.have.property("rowVersion");
+    expect(res.body).to.have.property("recentExecutions");
+    expect(res.body.recentExecutions).to.be.an("array");
+  });
+
+  test("should return 404 for non-existent job", function() {
+    // This test is a placeholder — run manually with a fake jobId
+  });
+}

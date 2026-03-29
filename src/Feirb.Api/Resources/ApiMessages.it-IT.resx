@@ -132,4 +132,10 @@
   <data name="InvalidTheme" xml:space="preserve">
     <value>Tema non valido.</value>
   </data>
+  <data name="JobNotFound" xml:space="preserve">
+    <value>Job non trovato.</value>
+  </data>
+  <data name="JobConcurrencyConflict" xml:space="preserve">
+    <value>Il job è stato modificato da un altro utente. Ricaricare e riprovare.</value>
+  </data>
 </root>

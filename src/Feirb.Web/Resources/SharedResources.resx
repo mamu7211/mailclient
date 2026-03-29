@@ -1164,6 +1164,69 @@
   <data name="SuccessThemeChanged" xml:space="preserve">
     <value>Theme changed to {0}.</value>
   </data>
+  <data name="JobsNoJobs" xml:space="preserve">
+    <value>No background jobs configured.</value>
+  </data>
+  <data name="JobsEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="JobsDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="JobsCronSchedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="JobsLastRun" xml:space="preserve">
+    <value>Last run</value>
+  </data>
+  <data name="JobsLastStatus" xml:space="preserve">
+    <value>Last status</value>
+  </data>
+  <data name="JobsNeverRun" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="JobsRecentExecutions" xml:space="preserve">
+    <value>Recent executions</value>
+  </data>
+  <data name="JobsEditTitle" xml:space="preserve">
+    <value>Edit Job Schedule</value>
+  </data>
+  <data name="JobsSchedulePreset1Min" xml:space="preserve">
+    <value>1 min</value>
+  </data>
+  <data name="JobsSchedulePreset5Min" xml:space="preserve">
+    <value>5 min</value>
+  </data>
+  <data name="JobsSchedulePreset15Min" xml:space="preserve">
+    <value>15 min</value>
+  </data>
+  <data name="JobsSchedulePresetHourly" xml:space="preserve">
+    <value>Hourly</value>
+  </data>
+  <data name="JobsSchedulePresetCustom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="JobsCronExpression" xml:space="preserve">
+    <value>Cron expression</value>
+  </data>
+  <data name="JobsCronInvalid" xml:space="preserve">
+    <value>Invalid cron expression.</value>
+  </data>
+  <data name="JobsUpdateSuccess" xml:space="preserve">
+    <value>Job schedule updated successfully.</value>
+  </data>
+  <data name="JobsUpdateConflict" xml:space="preserve">
+    <value>The job was modified by another user. Please reload and try again.</value>
+  </data>
+  <data name="JobsNoExecutions" xml:space="preserve">
+    <value>No executions yet.</value>
+  </data>
+  <data name="JobsLoadFailed" xml:space="preserve">
+    <value>Failed to load jobs.</value>
+  </data>
+  <data name="JobsUpdateFailed" xml:space="preserve">
+    <value>Failed to update job.</value>
+  </data>
   <data name="WidgetMailboxDoughnutName" xml:space="preserve">
     <value>Mailbox overview</value>
   </data>
@@ -1211,5 +1274,83 @@
   </data>
   <data name="Loading" xml:space="preserve">
     <value>Loading...</value>
+  </data>
+  <data name="ColumnJob" xml:space="preserve">
+    <value>Job</value>
+  </data>
+  <data name="ColumnLastRun" xml:space="preserve">
+    <value>Last Run</value>
+  </data>
+  <data name="ColumnHistory" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="CronEveryMinute" xml:space="preserve">
+    <value>Every minute</value>
+  </data>
+  <data name="CronEvery5Minutes" xml:space="preserve">
+    <value>Every 5 minutes</value>
+  </data>
+  <data name="CronEvery15Minutes" xml:space="preserve">
+    <value>Every 15 minutes</value>
+  </data>
+  <data name="CronEveryHour" xml:space="preserve">
+    <value>Every hour</value>
+  </data>
+  <data name="JobDetailPageTitle" xml:space="preserve">
+    <value>Job Settings</value>
+  </data>
+  <data name="JobDetailSubtitle" xml:space="preserve">
+    <value>Configure schedule and view execution history</value>
+  </data>
+  <data name="JobDetailHelp" xml:space="preserve">
+    <value>Edit the job's cron schedule, enable or disable it, trigger a manual run, and review past executions.</value>
+  </data>
+  <data name="JobDetailSectionSchedule" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="JobDetailSectionScheduleSubtitle" xml:space="preserve">
+    <value>Configure when this job runs</value>
+  </data>
+  <data name="JobDetailSectionHistory" xml:space="preserve">
+    <value>Execution History</value>
+  </data>
+  <data name="JobDetailSectionHistorySubtitle" xml:space="preserve">
+    <value>Past runs of this job</value>
+  </data>
+  <data name="ColumnTimestamp" xml:space="preserve">
+    <value>Timestamp</value>
+  </data>
+  <data name="ColumnDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ColumnError" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="JobDetailNoExecutions" xml:space="preserve">
+    <value>No executions recorded yet.</value>
+  </data>
+  <data name="ButtonRunNow" xml:space="preserve">
+    <value>Run Now</value>
+  </data>
+  <data name="JobRunNowSuccess" xml:space="preserve">
+    <value>Job triggered successfully.</value>
+  </data>
+  <data name="JobRunNowFailed" xml:space="preserve">
+    <value>Failed to trigger job.</value>
+  </data>
+  <data name="JobDetailLoadFailed" xml:space="preserve">
+    <value>Failed to load job details.</value>
+  </data>
+  <data name="JobDetailNotFound" xml:space="preserve">
+    <value>Job not found.</value>
+  </data>
+  <data name="JobDetailExecutionsLoadFailed" xml:space="preserve">
+    <value>Failed to load execution history.</value>
+  </data>
+  <data name="JobDetailRunning" xml:space="preserve">
+    <value>Running...</value>
   </data>
 </root>

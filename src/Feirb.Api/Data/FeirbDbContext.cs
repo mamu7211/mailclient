@@ -15,6 +15,8 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<DashboardLayout> DashboardLayouts => Set<DashboardLayout>();
     public DbSet<WidgetConfig> WidgetConfigs => Set<WidgetConfig>();
     public DbSet<Label> Labels => Set<Label>();
+    public DbSet<JobSettings> JobSettings => Set<JobSettings>();
+    public DbSet<JobExecution> JobExecutions => Set<JobExecution>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +138,43 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<JobSettings>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.JobName).IsUnique();
+            entity.Property(e => e.JobName).HasMaxLength(100);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Cron).HasMaxLength(100);
+            entity.Property(e => e.LastStatus)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+            entity.Property(e => e.RowVersion).IsConcurrencyToken();
+            entity.HasData(new JobSettings
+            {
+                Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
+                JobName = "Classification",
+                Description = "Classifies new mail messages using AI-powered label detection.",
+                Cron = "0 * * * * ?",
+                Enabled = false,
+                RowVersion = new Guid("00000000-0000-0000-0000-000000000001"),
+            });
+        });
+
+        modelBuilder.Entity<JobExecution>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.JobSettingsId);
+            entity.HasIndex(e => e.StartedAt);
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+            entity.Property(e => e.Error).HasMaxLength(4096);
+            entity.HasOne(e => e.JobSettings)
+                .WithMany(j => j.Executions)
+                .HasForeignKey(e => e.JobSettingsId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

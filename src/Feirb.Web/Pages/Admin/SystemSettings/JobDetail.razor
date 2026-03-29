@@ -1,0 +1,368 @@
+@page "/admin/jobs/{Id:guid}"
+@attribute [Authorize(Policy = "RequireAdmin")]
+@using Feirb.Shared.Admin.Jobs
+@using Feirb.Web.Services
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+@inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
+@inject UnsavedChangesService UnsavedChanges
+@implements IDisposable
+
+<PageTitle>@(_job?.JobName ?? L["JobDetailPageTitle"]) - Feirb</PageTitle>
+
+<InfoHeader Title="@(_job?.JobName ?? L["JobDetailPageTitle"])" Icon="clock" Subtitle="@L["JobDetailSubtitle"]">
+    <HelpContent>@L["JobDetailHelp"]</HelpContent>
+</InfoHeader>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible py-2" role="alert">
+        @_errorMessage
+        <button type="button" class="btn-close" @onclick="() => _errorMessage = null"></button>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_model is not null)
+{
+    <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
+        <DataAnnotationsValidator />
+        <ContentSection Icon="calendar-event" Title="@L["JobDetailSectionSchedule"]" Subtitle="@L["JobDetailSectionScheduleSubtitle"]" Class="mb-4">
+            <div class="mb-3">
+                <label class="form-label">@L["JobsCronSchedule"]</label>
+                <ToggleButtonGroup Items="_schedulePresets" SelectedId="@_selectedPreset" SelectedIdChanged="OnPresetChanged" />
+            </div>
+            @if (_selectedPreset == "custom")
+            {
+                <div class="mb-3">
+                    <label for="cronExpression" class="form-label">@L["JobsCronExpression"]</label>
+                    <input id="cronExpression" type="text"
+                           class="form-control @(_cronValidationError is not null ? "is-invalid" : "")"
+                           @bind="_model.Cron" @bind:event="oninput" @bind:after="ValidateCron" />
+                    @if (_cronValidationError is not null)
+                    {
+                        <div class="invalid-feedback">@_cronValidationError</div>
+                    }
+                </div>
+            }
+            <div class="form-check form-switch">
+                <InputCheckbox id="jobEnabled" class="form-check-input" @bind-Value="_model.Enabled" />
+                <label for="jobEnabled" class="form-check-label">
+                    @(_model.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
+                </label>
+            </div>
+        </ContentSection>
+    </TrackedEditForm>
+
+    <ContentSection Icon="clock-history" Title="@L["JobDetailSectionHistory"]" Subtitle="@L["JobDetailSectionHistorySubtitle"]">
+        @if (_executionsLoading)
+        {
+            <div class="text-center py-3">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (_executions is null || _executions.Items.Count == 0)
+        {
+            <p class="text-muted">@L["JobDetailNoExecutions"]</p>
+        }
+        else
+        {
+            <Table>
+                <TableHeader>
+                    <TableColumn Width="12rem">@L["ColumnTimestamp"]</TableColumn>
+                    <TableColumn Width="8rem">@L["ColumnDuration"]</TableColumn>
+                    <TableColumn Width="6rem">@L["ColumnStatus"]</TableColumn>
+                    <TableColumn Width="1fr">@L["ColumnError"]</TableColumn>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var exec in _executions.Items)
+                    {
+                        <TableRow>
+                            <TableCell>
+                                <DateTimeChip Value="exec.StartedAt" />
+                            </TableCell>
+                            <TableCell>
+                                <span style="font-size: 0.875rem;">@FormatDuration(exec.StartedAt, exec.FinishedAt)</span>
+                            </TableCell>
+                            <TableCell>
+                                <span class="badge @GetStatusBadgeClass(exec.Status)">@exec.Status</span>
+                            </TableCell>
+                            <TableCell>
+                                @if (!string.IsNullOrEmpty(exec.Error))
+                                {
+                                    <span class="text-danger" style="font-size: 0.8rem;" title="@exec.Error">
+                                        @Truncate(exec.Error, 80)
+                                    </span>
+                                }
+                            </TableCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+            <Pagination CurrentPage="_execPage" TotalPages="_execTotalPages"
+                        CurrentPageChanged="OnExecPageChangedAsync"
+                        PageSize="_execPageSize" PageSizeChanged="OnExecPageSizeChangedAsync"
+                        PreviousLabel="@L["PaginationPrevious"]"
+                        NextLabel="@L["PaginationNext"]"
+                        PerPageLabel="@L["PaginationPerPage"]" />
+        }
+    </ContentSection>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private JobSettingsResponse? _job;
+    private JobFormModel? _model;
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private string? _errorMessage;
+    private string _selectedPreset = "custom";
+    private string? _cronValidationError;
+
+    private PaginatedJobExecutionsResponse? _executions;
+    private bool _executionsLoading;
+    private int _execPage = 1;
+    private int _execPageSize = 10;
+    private int _execTotalPages;
+
+    private IReadOnlyList<ToggleButtonItem> _schedulePresets = [];
+    private ToolbarAction[] _toolbarActions = [];
+
+    private static readonly Dictionary<string, string> _presetCrons = new()
+    {
+        ["1min"] = "0 * * * * ?",
+        ["5min"] = "0 */5 * * * ?",
+        ["15min"] = "0 */15 * * * ?",
+        ["hourly"] = "0 0 * * * ?",
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _schedulePresets =
+        [
+            new("1min", L["JobsSchedulePreset1Min"]),
+            new("5min", L["JobsSchedulePreset5Min"]),
+            new("15min", L["JobsSchedulePreset15Min"]),
+            new("hourly", L["JobsSchedulePresetHourly"]),
+            new("custom", L["JobsSchedulePresetCustom"]),
+        ];
+
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning,
+                () => { Navigation.NavigateTo("/admin/jobs"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, async () => { await HandleSaveAsync(); }, "check-lg"),
+            new ToolbarAction(L["ButtonRunNow"], ButtonVariant.Danger, HandleRunNowAsync, "play-fill"),
+        ];
+        ToolbarState.AddActions(_toolbarActions);
+
+        await LoadJobAsync();
+        await LoadExecutionsAsync();
+    }
+
+    public void Dispose()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+        GC.SuppressFinalize(this);
+    }
+
+    private async Task LoadJobAsync()
+    {
+        try
+        {
+            _job = await Http.GetFromJsonAsync<JobSettingsResponse>($"/api/admin/jobs/{Id}");
+            if (_job is null)
+            {
+                _errorMessage = L["JobDetailNotFound"];
+                return;
+            }
+
+            _model = new JobFormModel { Cron = _job.Cron, Enabled = _job.Enabled };
+
+            var matchingPreset = _presetCrons.FirstOrDefault(p => p.Value == _job.Cron);
+            _selectedPreset = matchingPreset.Key ?? "custom";
+        }
+        catch
+        {
+            _errorMessage = L["JobDetailLoadFailed"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadExecutionsAsync()
+    {
+        _executionsLoading = true;
+        try
+        {
+            _executions = await Http.GetFromJsonAsync<PaginatedJobExecutionsResponse>(
+                $"/api/admin/jobs/{Id}/executions?page={_execPage}&pageSize={_execPageSize}");
+            if (_executions is not null)
+                _execTotalPages = (int)Math.Ceiling((double)_executions.TotalCount / _execPageSize);
+        }
+        catch
+        {
+            _errorMessage = L["JobDetailExecutionsLoadFailed"];
+        }
+        finally
+        {
+            _executionsLoading = false;
+        }
+    }
+
+    private async Task<bool> HandleSaveAsync()
+    {
+        if (_isSaving || _model is null || _job is null) return false;
+        _isSaving = true;
+        _errorMessage = null;
+
+        try
+        {
+            var effectiveCron = _presetCrons.TryGetValue(_selectedPreset, out var cron) ? cron : _model.Cron;
+            var request = new UpdateJobSettingsRequest(effectiveCron!, _model.Enabled, _job.RowVersion);
+            var response = await Http.PutAsJsonAsync($"/api/admin/jobs/{Id}", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var updated = await response.Content.ReadFromJsonAsync<JobSettingsResponse>();
+                if (updated is not null)
+                {
+                    _job = updated;
+                    _model.Cron = updated.Cron;
+                    _model.Enabled = updated.Enabled;
+                }
+
+                // TODO #156 - Workaround: Toolbar Save bypasses TrackedEditForm, clear dirty state manually
+                UnsavedChanges.Clear();
+                Notifications.Add(L["JobsUpdateSuccess"], NotificationSeverity.Success);
+                return true;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                _errorMessage = L["JobsUpdateConflict"];
+            }
+            else
+            {
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                _errorMessage = error?.Message ?? L["JobsUpdateFailed"];
+            }
+        }
+        catch
+        {
+            _errorMessage = L["JobsUpdateFailed"];
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+
+        return false;
+    }
+
+    private async Task HandleRunNowAsync()
+    {
+        try
+        {
+            var response = await Http.PostAsync($"/api/admin/jobs/{Id}/run", null);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["JobRunNowSuccess"], NotificationSeverity.Success);
+                await Task.Delay(2000);
+                await LoadExecutionsAsync();
+                StateHasChanged();
+            }
+            else
+            {
+                _errorMessage = L["JobRunNowFailed"];
+            }
+        }
+        catch
+        {
+            _errorMessage = L["JobRunNowFailed"];
+        }
+    }
+
+    private void OnPresetChanged(string presetId)
+    {
+        _selectedPreset = presetId;
+        if (_presetCrons.TryGetValue(presetId, out var cron) && _model is not null)
+        {
+            _model.Cron = cron;
+            _cronValidationError = null;
+        }
+    }
+
+    private void ValidateCron()
+    {
+        if (_model is null || string.IsNullOrWhiteSpace(_model.Cron))
+        {
+            _cronValidationError = L["JobsCronInvalid"];
+            return;
+        }
+
+        var parts = _model.Cron.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        _cronValidationError = parts.Length is 6 or 7 ? null : (string?)L["JobsCronInvalid"];
+    }
+
+    private async Task OnExecPageChangedAsync(int page)
+    {
+        _execPage = page;
+        await LoadExecutionsAsync();
+    }
+
+    private async Task OnExecPageSizeChangedAsync(int pageSize)
+    {
+        _execPageSize = pageSize;
+        _execPage = 1;
+        await LoadExecutionsAsync();
+    }
+
+    private static string FormatDuration(DateTimeOffset start, DateTimeOffset? end)
+    {
+        if (end is null)
+            return "...";
+
+        var duration = end.Value - start;
+        return duration.TotalSeconds < 60
+            ? $"{duration.TotalSeconds:F1}s"
+            : duration.TotalMinutes < 60
+                ? $"{(int)duration.TotalMinutes}m {duration.Seconds}s"
+                : $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "Success" => "bg-success",
+        "Cancelled" => "bg-warning",
+        _ => "bg-danger",
+    };
+
+    private static string Truncate(string text, int maxLength) =>
+        text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength), "...");
+
+    private sealed class JobFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        public string? Cron { get; set; }
+
+        public bool Enabled { get; set; }
+    }
+
+    private sealed record ErrorResponse(string Message);
+}

@@ -1,0 +1,47 @@
+@namespace Feirb.Web.Components.UI
+@using Feirb.Shared.Admin.Jobs
+
+@* Colored dots showing recent execution results with tooltips. *@
+<div class="feirb-execution-history-chip @Class">
+    @if (Executions is null || Executions.Count == 0)
+    {
+        <span class="feirb-execution-history-chip-empty">&mdash;</span>
+    }
+    else
+    {
+        @foreach (var execution in Executions.Take(MaxDots).Reverse())
+        {
+            <span class="feirb-execution-history-chip-dot"
+                  style="background-color: @GetDotColor(execution.Status);"
+                  title="@GetTooltip(execution)"></span>
+        }
+    }
+</div>
+
+@code {
+    /// <summary>Recent job executions to display.</summary>
+    [Parameter, EditorRequired]
+    public IReadOnlyList<JobExecutionResponse>? Executions { get; set; }
+
+    /// <summary>Maximum number of dots to render.</summary>
+    [Parameter]
+    public int MaxDots { get; set; } = 8;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private static string GetDotColor(string status) => status switch
+    {
+        "Success" => "var(--bs-success)",
+        "Cancelled" => "var(--bs-warning)",
+        _ => "var(--bs-danger)",
+    };
+
+    private static string GetTooltip(JobExecutionResponse execution)
+    {
+        var time = execution.StartedAt.ToString("g");
+        var details = execution.Error is not null ? $" — {execution.Error}" : "";
+        return $"{time} [{execution.Status}]{details}";
+    }
+}

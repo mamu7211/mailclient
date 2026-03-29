@@ -1,0 +1,41 @@
+meta {
+  name: Get All Jobs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/admin/jobs
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.length > 0) {
+    bru.setVar("jobId", res.body[0].id);
+    bru.setVar("jobRowVersion", JSON.stringify(res.body[0].rowVersion));
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return array of jobs", function() {
+    expect(res.body).to.be.an("array");
+    expect(res.body.length).to.be.greaterThan(0);
+  });
+
+  test("should include Classification job", function() {
+    const classification = res.body.find(j => j.jobName === "Classification");
+    expect(classification).to.not.be.undefined;
+    expect(classification.cron).to.be.a("string");
+    expect(classification).to.have.property("enabled");
+    expect(classification).to.have.property("recentExecutions");
+  });
+}

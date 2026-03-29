@@ -1,0 +1,20 @@
+/* ExecutionHistoryChip — colored dots for recent execution results */
+.feirb-execution-history-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.feirb-execution-history-chip-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    cursor: default;
+}
+
+.feirb-execution-history-chip-empty {
+    font-size: 0.875rem;
+    color: var(--feirb-on-surface-variant);
+}

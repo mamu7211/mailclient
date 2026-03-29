@@ -1,0 +1,21 @@
+meta {
+  name: Trigger Job Run
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/admin/jobs/{{jobId}}/run
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 202 Accepted", function() {
+    expect(res.status).to.equal(202);
+  });
+}

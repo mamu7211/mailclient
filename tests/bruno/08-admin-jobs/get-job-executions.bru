@@ -1,0 +1,29 @@
+meta {
+  name: Get Job Executions
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/admin/jobs/{{jobId}}/executions?page=1&pageSize=10
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return paginated response", function() {
+    expect(res.body).to.have.property("items");
+    expect(res.body).to.have.property("totalCount");
+    expect(res.body).to.have.property("page");
+    expect(res.body).to.have.property("pageSize");
+    expect(res.body.items).to.be.an("array");
+  });
+}

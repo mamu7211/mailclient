@@ -1,5 +1,7 @@
-@page "/admin/system-settings/jobs"
+@page "/admin/jobs"
 @attribute [Authorize(Policy = "RequireAdmin")]
+@using Feirb.Shared.Admin.Jobs
+@inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 
 <PageTitle>@L["AdminJobsTitle"] - Feirb</PageTitle>
@@ -7,4 +9,58 @@
 <InfoHeader Title="@L["AdminJobsTitle"]" Icon="clock" Subtitle="@L["PageSubtitleJobs"]">
     <HelpContent>@L["PageHelpJobs"]</HelpContent>
 </InfoHeader>
-<p class="text-muted">@L["StubComingSoon"]</p>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible py-2" role="alert">
+        @_errorMessage
+        <button type="button" class="btn-close" @onclick="() => _errorMessage = null"></button>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_jobs is null || _jobs.Count == 0)
+{
+    <p class="text-muted">@L["JobsNoJobs"]</p>
+}
+else
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var job in _jobs)
+        {
+            <NavigationItem Icon="gear"
+                            Title="@job.JobName"
+                            Subtitle="@job.Description"
+                            Href="@($"/admin/jobs/{job.Id}")" />
+        }
+    </div>
+}
+
+@code {
+    private List<JobSettingsResponse>? _jobs;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _jobs = await Http.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        }
+        catch
+        {
+            _errorMessage = L["JobsLoadFailed"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

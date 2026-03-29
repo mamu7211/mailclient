@@ -1,0 +1,40 @@
+meta {
+  name: Update Job
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/admin/jobs/{{jobId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "cron": "0 */5 * * * ?",
+    "enabled": false,
+    "rowVersion": {{jobRowVersion}}
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("jobRowVersion", JSON.stringify(res.body.rowVersion));
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated job", function() {
+    expect(res.body.cron).to.equal("0 */5 * * * ?");
+    expect(res.body).to.have.property("rowVersion");
+  });
+}

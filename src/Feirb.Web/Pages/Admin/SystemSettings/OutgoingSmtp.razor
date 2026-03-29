@@ -1,4 +1,4 @@
-@page "/admin/system-settings/outgoing-smtp"
+@page "/admin/outgoing-smtp"
 @attribute [Authorize(Policy = "RequireAdmin")]
 @using System.ComponentModel.DataAnnotations
 @using Feirb.Shared.Admin
@@ -127,7 +127,7 @@ else if (_model is not null)
     {
         _toolbarActions =
         [
-            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/admin/system-settings"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning, () => { Navigation.NavigateTo("/admin"); return Task.CompletedTask; }, "x-lg"),
             new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary, HandleSaveAsync, "check-lg")
         ];
         ToolbarState.AddActions(_toolbarActions);
