@@ -102,6 +102,9 @@
   <data name="MessageNotFound" xml:space="preserve">
     <value>Message not found.</value>
   </data>
+  <data name="SummaryPlaceholder" xml:space="preserve">
+    <value>AI-generated summary will appear here in a future update.</value>
+  </data>
   <data name="ResetEmailSubject" xml:space="preserve">
     <value>Reset your Feirb password</value>
   </data>

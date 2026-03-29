@@ -7,5 +7,7 @@ public record MessageListItemResponse(
     string FromName,
     string FromEmail,
     string Subject,
+    string? Summary,
     DateTimeOffset Date,
+    bool IsRead,
     bool HasAttachments);

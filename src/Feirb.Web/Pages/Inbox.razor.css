@@ -8,6 +8,24 @@
     overflow: hidden;
 }
 
+::deep .inbox-subject-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+::deep .inbox-subject-icon {
+    color: var(--feirb-on-surface-variant);
+    flex-shrink: 0;
+}
+
+::deep .inbox-subject-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
 ::deep .inbox-subject-line {
     display: flex;
     align-items: center;
@@ -16,8 +34,18 @@
 }
 
 ::deep .inbox-subject-text {
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     min-width: 0;
+}
+
+::deep .inbox-subject-summary {
+    font-size: 0.8125rem;
+    color: var(--feirb-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
 }

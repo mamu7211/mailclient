@@ -19,6 +19,7 @@ public static class MessageEndpoints
     private static async Task<IResult> ListMessagesAsync(
         HttpContext httpContext,
         FeirbDbContext db,
+        IStringLocalizer<ApiMessages> localizer,
         int page = 1,
         int pageSize = 25)
     {
@@ -39,10 +40,11 @@ public static class MessageEndpoints
             .Select(m => new { m.Id, MailboxName = m.Mailbox.Name, m.Mailbox.BadgeColor, m.From, m.Subject, m.Date, HasAttachments = m.Attachments.Any() })
             .ToListAsync();
 
+        var summaryPlaceholder = localizer["SummaryPlaceholder"].Value;
         var mapped = items.Select(m =>
         {
             var (name, email) = ParseFromAddress(m.From);
-            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, m.Date, m.HasAttachments);
+            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments);
         }).ToList();
 
         return Results.Ok(new PaginatedResponse<MessageListItemResponse>(mapped, page, pageSize, totalCount));

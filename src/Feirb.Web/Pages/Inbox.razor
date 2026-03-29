@@ -55,12 +55,18 @@ else
                             <PersonChip Name="@msg.FromName" Email="@msg.FromEmail" Size="PersonChipSize.Small" />
                         </TableCell>
                         <TableCell Class="inbox-subject-cell">
-                            <div class="inbox-subject-line">
-                                <span class="inbox-subject-text">@msg.Subject</span>
-                                @if (msg.HasAttachments)
-                                {
-                                    <Icon Name="paperclip" Size="IconSize.Small" />
-                                }
+                            <div class="inbox-subject-chip">
+                                <Icon Name="@(msg.IsRead ? "envelope-open" : "envelope-fill")" Class="inbox-subject-icon" />
+                                <div class="inbox-subject-info">
+                                    <div class="inbox-subject-line">
+                                        <span class="inbox-subject-text">@msg.Subject</span>
+                                        @if (msg.HasAttachments)
+                                        {
+                                            <Icon Name="paperclip" Size="IconSize.Small" />
+                                        }
+                                    </div>
+                                    <span class="inbox-subject-summary">@msg.Summary</span>
+                                </div>
                             </div>
                         </TableCell>
                         <TableCell>
