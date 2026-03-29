@@ -1,0 +1,23 @@
+/* Inbox table — fixed column layout */
+::deep .inbox-table {
+    table-layout: fixed;
+}
+
+/* Subject cell — truncation */
+::deep .inbox-subject-cell {
+    overflow: hidden;
+}
+
+::deep .inbox-subject-line {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+::deep .inbox-subject-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}

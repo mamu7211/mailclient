@@ -32,12 +32,12 @@ else if (_messages is null || _messages.Items.Count == 0)
 else
 {
     <ContentSection Title="@L["NavInbox"]" Icon="envelope">
-        <Table Hover>
+        <Table Hover Class="inbox-table">
             <TableHeader>
-                <TableColumn>@L["ColumnMailbox"]</TableColumn>
-                <TableColumn>@L["ColumnFrom"]</TableColumn>
+                <TableColumn style="width: 8rem;">@L["ColumnMailbox"]</TableColumn>
+                <TableColumn style="width: 14rem;">@L["ColumnFrom"]</TableColumn>
                 <TableColumn>@L["ColumnSubject"]</TableColumn>
-                <TableColumn>@L["ColumnDate"]</TableColumn>
+                <TableColumn style="width: 10rem;">@L["ColumnDate"]</TableColumn>
             </TableHeader>
             <TableBody>
                 @foreach (var msg in _messages.Items)
@@ -53,15 +53,17 @@ else
                         <TableCell>
                             <PersonChip Name="@msg.FromName" Email="@msg.FromEmail" Size="PersonChipSize.Small" />
                         </TableCell>
-                        <TableCell>
-                            <div class="d-flex align-items-center gap-1">
-                                <span>@msg.Subject</span>
+                        <TableCell Class="inbox-subject-cell">
+                            <div class="inbox-subject-line">
+                                <span class="inbox-subject-text">@msg.Subject</span>
                                 @if (msg.HasAttachments)
                                 {
                                     <Icon Name="paperclip" Size="IconSize.Small" />
                                 }
                             </div>
-                            <span class="text-muted" style="font-size: 0.8125rem;">@L["LabelUncategorized"]</span>
+                            <div>
+                                <LabelPill Name="@L["LabelUncategorized"]" Color="#6c757d" Size="LabelPillSize.Small" />
+                            </div>
                         </TableCell>
                         <TableCell>
                             <DateTimeChip Value="msg.Date"
