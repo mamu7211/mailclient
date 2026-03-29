@@ -17,6 +17,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<Label> Labels => Set<Label>();
     public DbSet<JobSettings> JobSettings => Set<JobSettings>();
     public DbSet<JobExecution> JobExecutions => Set<JobExecution>();
+    public DbSet<Avatar> Avatars => Set<Avatar>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -176,6 +177,14 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
                 .WithMany(j => j.Executions)
                 .HasForeignKey(e => e.JobSettingsId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Avatar>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.EmailHash).IsUnique();
+            entity.Property(e => e.EmailHash).HasMaxLength(32);
+            entity.Property(e => e.Email).HasMaxLength(256);
         });
     }
 }
