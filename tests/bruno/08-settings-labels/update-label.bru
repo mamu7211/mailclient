@@ -1,0 +1,35 @@
+meta {
+  name: Update Label
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/settings/labels/{{testLabelId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Bruno Test Label Updated",
+    "color": "#1D76DB",
+    "description": "Updated description"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated label", function() {
+    expect(res.body.name).to.equal("Bruno Test Label Updated");
+    expect(res.body.color).to.equal("#1D76DB");
+    expect(res.body.description).to.equal("Updated description");
+  });
+}

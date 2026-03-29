@@ -1,0 +1,42 @@
+meta {
+  name: Create Label
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/settings/labels
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Bruno Test Label",
+    "color": "#FF5733",
+    "description": "A test label created by Bruno"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("testLabelId", res.body.id);
+  }
+}
+
+tests {
+  test("should return 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("should return label data", function() {
+    expect(res.body.name).to.equal("Bruno Test Label");
+    expect(res.body.color).to.equal("#FF5733");
+    expect(res.body.description).to.equal("A test label created by Bruno");
+    expect(res.body.id).to.be.a("string");
+  });
+}

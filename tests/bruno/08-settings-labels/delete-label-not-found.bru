@@ -1,0 +1,21 @@
+meta {
+  name: Delete Label Not Found
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/settings/labels/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

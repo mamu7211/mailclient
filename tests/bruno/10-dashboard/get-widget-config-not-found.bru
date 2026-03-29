@@ -1,0 +1,21 @@
+meta {
+  name: Get Widget Config Not Found
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/dashboard/widgets/non-existent-widget/config
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

@@ -1,0 +1,31 @@
+meta {
+  name: Get Mail Stats
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/mail/stats
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return stats structure", function() {
+    expect(res.body).to.have.property("totalCount");
+    expect(res.body).to.have.property("mailsPerMailbox");
+    expect(res.body).to.have.property("timeSeries");
+    expect(res.body).to.have.property("granularity");
+    expect(res.body.totalCount).to.be.a("number");
+    expect(res.body.mailsPerMailbox).to.be.an("array");
+    expect(res.body.timeSeries).to.be.an("array");
+  });
+}

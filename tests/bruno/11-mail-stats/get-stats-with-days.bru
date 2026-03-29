@@ -1,0 +1,25 @@
+meta {
+  name: Get Mail Stats With Days Parameter
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/mail/stats?days=30
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return weekly granularity for 30 days", function() {
+    expect(res.body.granularity).to.equal(1);
+  });
+}
