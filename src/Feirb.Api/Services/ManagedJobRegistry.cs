@@ -10,15 +10,15 @@ public class ManagedJobRegistry
         _jobs = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         foreach (var registration in registrations)
         {
-            _jobs[registration.JobName] = registration.JobType;
+            _jobs[registration.JobTypeName] = registration.ClrType;
         }
     }
 
-    public Type GetJobType(string jobName) =>
-        _jobs.TryGetValue(jobName, out var type)
+    public Type GetClrType(string jobTypeName) =>
+        _jobs.TryGetValue(jobTypeName, out var type)
             ? type
-            : throw new InvalidOperationException($"No managed job registered for '{jobName}'.");
+            : throw new InvalidOperationException($"No managed job registered for '{jobTypeName}'.");
 
-    public bool HasJob(string jobName) =>
-        _jobs.ContainsKey(jobName);
+    public bool HasJobType(string jobTypeName) =>
+        _jobs.ContainsKey(jobTypeName);
 }

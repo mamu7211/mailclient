@@ -163,8 +163,8 @@ public class JobServiceTests : IDisposable
     private static ManagedJobRegistry CreateRegistryWithClassification()
     {
         var registration = Substitute.For<IManagedJobRegistration>();
-        registration.JobName.Returns("Classification");
-        registration.JobType.Returns(typeof(TestClassificationJob));
+        registration.JobTypeName.Returns("classification");
+        registration.ClrType.Returns(typeof(TestClassificationJob));
         return new ManagedJobRegistry([registration]);
     }
 

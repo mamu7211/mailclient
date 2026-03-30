@@ -12,12 +12,12 @@ public static class ManagedJobExtensions
         return services;
     }
 
-    public static IServiceCollection AddManagedJob<TJob>(this IServiceCollection services, string jobName)
+    public static IServiceCollection AddManagedJob<TJob>(this IServiceCollection services, string jobTypeName)
         where TJob : ManagedJob
     {
         services.AddTransient<TJob>();
 
-        services.AddSingleton<IManagedJobRegistration>(new ManagedJobRegistration(jobName, typeof(TJob)));
+        services.AddSingleton<IManagedJobRegistration>(new ManagedJobRegistration(jobTypeName, typeof(TJob)));
 
         return services;
     }
@@ -25,8 +25,8 @@ public static class ManagedJobExtensions
 
 public interface IManagedJobRegistration
 {
-    string JobName { get; }
-    Type JobType { get; }
+    string JobTypeName { get; }
+    Type ClrType { get; }
 }
 
-file record ManagedJobRegistration(string JobName, Type JobType) : IManagedJobRegistration;
+file record ManagedJobRegistration(string JobTypeName, Type ClrType) : IManagedJobRegistration;

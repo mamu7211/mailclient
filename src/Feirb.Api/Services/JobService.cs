@@ -101,12 +101,12 @@ public class JobService(
         }
         else if (!wasEnabled && job.Enabled)
         {
-            await scheduler.ScheduleJobAsync(job.JobName, job.Cron);
+            await scheduler.ScheduleJobAsync(job.JobName, job.JobType!, job.Cron);
             logger.LogInformation("Job '{JobName}' enabled with cron '{Cron}'", job.JobName, job.Cron);
         }
         else if (wasEnabled && job.Enabled && oldCron != job.Cron)
         {
-            await scheduler.RescheduleJobAsync(job.JobName, job.Cron);
+            await scheduler.RescheduleJobAsync(job.JobName, job.JobType!, job.Cron);
             logger.LogInformation("Job '{JobName}' rescheduled with cron '{Cron}'", job.JobName, job.Cron);
         }
 
@@ -122,9 +122,9 @@ public class JobService(
         if (job is null)
             return false;
 
-        if (!registry.HasJob(job.JobName))
+        if (job.JobType is null || !registry.HasJobType(job.JobType))
         {
-            logger.LogWarning("No managed job registered for '{JobName}', cannot trigger", job.JobName);
+            logger.LogWarning("No managed job registered for JobType '{JobType}', cannot trigger", job.JobType);
             return false;
         }
 
@@ -137,7 +137,7 @@ public class JobService(
         }
         else
         {
-            var jobType = registry.GetJobType(job.JobName);
+            var jobType = registry.GetClrType(job.JobType);
             var adhocKey = new JobKey($"managed-adhoc-{job.JobName}-{Guid.NewGuid():N}", "managed-jobs");
             var quartzJob = JobBuilder.Create(jobType)
                 .WithIdentity(adhocKey)
