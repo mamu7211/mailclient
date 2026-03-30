@@ -146,17 +146,25 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.JobName).IsUnique();
+            entity.HasIndex(e => new { e.JobType, e.ResourceId });
             entity.Property(e => e.JobName).HasMaxLength(100);
+            entity.Property(e => e.JobType).HasMaxLength(50);
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.Cron).HasMaxLength(100);
+            entity.Property(e => e.ResourceType).HasMaxLength(500);
             entity.Property(e => e.LastStatus)
                 .HasConversion<string>()
                 .HasMaxLength(20);
             entity.Property(e => e.RowVersion).IsConcurrencyToken();
+            entity.HasOne<User>()
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
             entity.HasData(new JobSettings
             {
                 Id = new Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890"),
                 JobName = "Classification",
+                JobType = "classification",
                 Description = "Classifies new mail messages using AI-powered label detection.",
                 Cron = "0 * * * * ?",
                 Enabled = false,
