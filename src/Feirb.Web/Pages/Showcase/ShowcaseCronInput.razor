@@ -1,0 +1,89 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="CronInput" Icon="clock" Subtitle="Quartz cron expression input with validation and human-readable description" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>A text input that validates Quartz cron expressions (6&#8211;7 fields) in real time. Valid expressions show a human-readable schedule description; invalid expressions show a localized error message.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Value</code></TableCell><TableCell><code>string?</code></TableCell><TableCell>&#8212;</TableCell><TableCell>The cron expression</TableCell></TableRow>
+            <TableRow><TableCell><code>ValueChanged</code></TableCell><TableCell><code>EventCallback&lt;string?&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Fires when the value changes</TableCell></TableRow>
+            <TableRow><TableCell><code>For</code></TableCell><TableCell><code>Expression&lt;Func&lt;string?&gt;&gt;?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Model field expression for EditContext tracking</TableCell></TableRow>
+            <TableRow><TableCell><code>Id</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>HTML id for the input element</TableCell></TableRow>
+            <TableRow><TableCell><code>Placeholder</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>0 */5 * * * ?</code></TableCell><TableCell>Placeholder text</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes for the wrapper</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <label class="form-label mb-0">Presets:</label>
+            <ToggleButtonGroup Items="_presets" SelectedId="@_selectedPreset" SelectedIdChanged="OnPresetChanged" />
+        </div>
+    </div>
+    <div class="showcase-preview-area" style="max-width: 32rem;">
+        <CronInput @bind-Value="_cronValue" Id="showcase-cron" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string? _cronValue = "0 */5 * * * ?";
+    private string _selectedPreset = "every-5min";
+    private ElementReference _codeElement;
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _presets =
+    [
+        new("every-min", "Every min"),
+        new("every-5min", "Every 5 min"),
+        new("every-hour", "Every hour"),
+        new("weekdays", "Weekdays"),
+        new("custom", "Custom"),
+    ];
+
+    private static readonly Dictionary<string, string> _presetValues = new()
+    {
+        ["every-min"] = "0 * * * * ?",
+        ["every-5min"] = "0 */5 * * * ?",
+        ["every-hour"] = "0 0 * * * ?",
+        ["weekdays"] = "0 0 8 ? * MON-FRI",
+        ["custom"] = "",
+    };
+
+    private void OnPresetChanged(string presetId)
+    {
+        _selectedPreset = presetId;
+        if (_presetValues.TryGetValue(presetId, out var value))
+        {
+            _cronValue = value;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<CronInput @bind-Value=\"_cronValue\" />\n" +
+        "\n" +
+        "@code {\n" +
+        $"    private string? _cronValue = \"{_cronValue}\";\n" +
+        "}";
+}
