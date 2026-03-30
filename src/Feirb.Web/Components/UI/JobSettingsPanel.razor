@@ -12,6 +12,10 @@
         </div>
     </div>
 }
+else if (_loadError)
+{
+    <div class="alert alert-danger py-2 mb-0">@L["JobSettingsPanelLoadError"]</div>
+}
 else if (_jobs.Count == 0)
 {
     <p class="text-muted mb-0">@L["JobSettingsPanelNoJobs"]</p>
@@ -39,41 +43,43 @@ else
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label">@L["JobsCronSchedule"]</label>
-                <ToggleButtonGroup Items="_schedulePresets"
-                                   SelectedId="@GetSelectedPreset(job)"
-                                   SelectedIdChanged="(preset) => OnPresetChangedAsync(job, preset)" />
-            </div>
-
-            @if (GetSelectedPreset(job) == "custom")
-            {
+            <fieldset disabled="@_isSaving">
                 <div class="mb-3">
-                    <label class="form-label">@L["JobsCronExpression"]</label>
-                    <CronInput @bind-Value="@_customCrons[job.Id]"
-                               Id="@($"cron-{job.Id}")" />
+                    <label class="form-label">@L["JobsCronSchedule"]</label>
+                    <ToggleButtonGroup Items="_schedulePresets"
+                                       SelectedId="@GetSelectedPreset(job)"
+                                       SelectedIdChanged="(preset) => OnPresetChangedAsync(job, preset)" />
                 </div>
-                <div class="mb-3">
+
+                @if (GetSelectedPreset(job) == "custom")
+                {
+                    <div class="mb-3">
+                        <label class="form-label">@L["JobsCronExpression"]</label>
+                        <CronInput @bind-Value="@_customCrons[job.Id]"
+                                   Id="@($"cron-{job.Id}")" />
+                    </div>
+                    <div class="mb-3">
+                        <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                                OnClick="() => ApplyCustomCronAsync(job)" Disabled="_isSaving">
+                            @L["ButtonApply"]
+                        </Button>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" id="@($"job-enabled-{job.Id}")" class="form-check-input"
+                               checked="@job.Enabled" @onchange="(e) => ToggleEnabledAsync(job, (bool)e.Value!)" />
+                        <label for="@($"job-enabled-{job.Id}")" class="form-check-label">
+                            @(job.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
+                        </label>
+                    </div>
                     <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
-                            OnClick="() => ApplyCustomCronAsync(job)" Disabled="_isSaving">
-                        @L["ButtonApply"]
+                            Icon="play-fill" OnClick="() => RunNowAsync(job)" Disabled="_isSaving">
+                        @L["ButtonRunNow"]
                     </Button>
                 </div>
-            }
-
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="form-check form-switch">
-                    <input type="checkbox" id="@($"job-enabled-{job.Id}")" class="form-check-input"
-                           checked="@job.Enabled" @onchange="(e) => ToggleEnabledAsync(job, (bool)e.Value!)" />
-                    <label for="@($"job-enabled-{job.Id}")" class="form-check-label">
-                        @(job.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
-                    </label>
-                </div>
-                <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
-                        Icon="play-fill" OnClick="() => RunNowAsync(job)" Disabled="_isSaving">
-                    @L["ButtonRunNow"]
-                </Button>
-            </div>
+            </fieldset>
         </div>
     }
 }
@@ -92,6 +98,7 @@ else
     private Dictionary<Guid, string> _customCrons = [];
     private bool _isLoading = true;
     private bool _isSaving;
+    private bool _loadError;
 
     private IReadOnlyList<ToggleButtonItem> _schedulePresets = [];
 
@@ -120,6 +127,7 @@ else
     private async Task LoadJobsAsync()
     {
         _isLoading = true;
+        _loadError = false;
         try
         {
             _jobs = await Http.GetFromJsonAsync<List<JobSettingsResponse>>(
@@ -129,6 +137,7 @@ else
         catch
         {
             _jobs = [];
+            _loadError = true;
         }
         finally
         {
@@ -189,6 +198,19 @@ else
                     }
                 }
             }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                Notifications.Add(L["JobsUpdateConflict"], NotificationSeverity.Warning);
+                await LoadJobsAsync();
+            }
+            else
+            {
+                Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
         }
         finally
         {
@@ -208,6 +230,14 @@ else
                 await Task.Delay(2000);
                 await LoadJobsAsync();
             }
+            else
+            {
+                Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
         }
         finally
         {

@@ -1005,6 +1005,9 @@
   <data name="JobSettingsPanelNoJobs" xml:space="preserve">
     <value>Keine geplanten Aufgaben für diese Ressource.</value>
   </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Aufgabeneinstellungen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.</value>
+  </data>
   <data name="ButtonApply" xml:space="preserve">
     <value>Anwenden</value>
   </data>

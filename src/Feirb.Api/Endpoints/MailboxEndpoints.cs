@@ -99,7 +99,7 @@ public static class MailboxEndpoints
 
         try
         {
-            await jobService.TriggerRunAsync(jobSettings.Id, userId, true);
+            await jobService.TriggerRunAsync(jobSettings.Id, userId, false);
         }
         catch (Exception)
         {

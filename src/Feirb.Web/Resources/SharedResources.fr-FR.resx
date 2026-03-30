@@ -1005,6 +1005,9 @@
   <data name="JobSettingsPanelNoJobs" xml:space="preserve">
     <value>Aucune tâche planifiée pour cette ressource.</value>
   </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Impossible de charger les paramètres de tâche. Veuillez réessayer plus tard.</value>
+  </data>
   <data name="ButtonApply" xml:space="preserve">
     <value>Appliquer</value>
   </data>

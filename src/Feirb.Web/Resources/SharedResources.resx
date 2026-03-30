@@ -1005,6 +1005,9 @@
   <data name="JobSettingsPanelNoJobs" xml:space="preserve">
     <value>No scheduled jobs for this resource.</value>
   </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Failed to load job settings. Please try again later.</value>
+  </data>
   <data name="ButtonApply" xml:space="preserve">
     <value>Apply</value>
   </data>
