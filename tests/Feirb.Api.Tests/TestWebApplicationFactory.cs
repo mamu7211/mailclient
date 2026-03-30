@@ -26,25 +26,15 @@ public static class TestWebApplicationFactory
                 services.AddDbContext<FeirbDbContext>(options =>
                     options.UseInMemoryDatabase(dbName));
 
-                // Remove Quartz and ImapSyncScheduler hosted services to avoid
+                // Remove Quartz and scheduler hosted services to avoid
                 // LoggerFactory disposal race during test teardown
                 var hostedServiceDescriptors = services.Where(d =>
                     d.ServiceType == typeof(IHostedService) &&
                     (d.ImplementationType?.FullName?.Contains("Quartz") == true ||
-                     d.ImplementationType == typeof(ImapSyncScheduler) ||
                      d.ImplementationType == typeof(JobSettingsScheduler) ||
                      d.ImplementationFactory is not null)).ToList();
                 foreach (var d in hostedServiceDescriptors)
                     services.Remove(d);
-
-                // Replace IImapSyncScheduler with a no-op for endpoint DI
-                var schedulerDescriptors = services.Where(d =>
-                    d.ServiceType == typeof(IImapSyncScheduler) ||
-                    d.ServiceType == typeof(ImapSyncScheduler)).ToList();
-                foreach (var d in schedulerDescriptors)
-                    services.Remove(d);
-
-                services.AddSingleton<IImapSyncScheduler, NoOpImapSyncScheduler>();
 
                 // Replace IJobSettingsScheduler with a no-op for test DI
                 services.RemoveAll<IJobSettingsScheduler>();
@@ -52,13 +42,4 @@ public static class TestWebApplicationFactory
                 services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
             });
         });
-
-    private sealed class NoOpImapSyncScheduler : IImapSyncScheduler
-    {
-        public Task ScheduleMailboxAsync(Guid mailboxId, int pollIntervalMinutes, bool triggerImmediately = false) =>
-            Task.CompletedTask;
-
-        public Task UnscheduleMailboxAsync(Guid mailboxId) => Task.CompletedTask;
-        public Task RescheduleMailboxAsync(Guid mailboxId, int pollIntervalMinutes) => Task.CompletedTask;
-    }
 }

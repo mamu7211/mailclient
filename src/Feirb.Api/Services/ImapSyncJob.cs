@@ -1,18 +1,23 @@
-using Quartz;
+using Feirb.Api.Data.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Feirb.Api.Services;
 
-public class ImapSyncJob(IImapSyncService syncService) : IJob
+public class ImapSyncJob(IServiceScopeFactory scopeFactory, ILogger<ImapSyncJob> logger)
+    : ManagedJob(scopeFactory, logger)
 {
-    public const string MailboxIdKey = "MailboxId";
-
-    public async Task Execute(IJobExecutionContext context)
+    protected override async Task RunAsync(
+        IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(context);
-        var mailboxId = Guid.Parse(context.MergedJobDataMap.GetString(MailboxIdKey)!);
-        await syncService.SyncMailboxAsync(mailboxId, context.CancellationToken);
-    }
+        ArgumentNullException.ThrowIfNull(jobSettings);
 
-    public static JobKey GetJobKey(Guid mailboxId) => new($"imap-sync-{mailboxId}", "imap-sync");
-    public static TriggerKey GetTriggerKey(Guid mailboxId) => new($"imap-trigger-{mailboxId}", "imap-sync");
+        if (jobSettings.ResourceId is not { } mailboxId)
+        {
+            logger.LogWarning("ImapSyncJob '{JobName}' has no ResourceId, skipping", jobSettings.JobName);
+            return;
+        }
+
+        var syncService = serviceProvider.GetRequiredService<IImapSyncService>();
+        await syncService.SyncMailboxAsync(mailboxId, cancellationToken);
+    }
 }

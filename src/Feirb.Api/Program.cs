@@ -80,14 +80,12 @@ builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete
 
 // Managed job infrastructure
 builder.Services.AddManagedJobInfrastructure();
+builder.Services.AddManagedJob<ImapSyncJob>("imap-sync");
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddSingleton<IImapSyncService, ImapSyncService>();
-builder.Services.AddSingleton<ImapSyncScheduler>();
-builder.Services.AddSingleton<IImapSyncScheduler>(sp => sp.GetRequiredService<ImapSyncScheduler>());
-builder.Services.AddHostedService(sp => sp.GetRequiredService<ImapSyncScheduler>());
+builder.Services.AddScoped<IImapSyncService, ImapSyncService>();
 
 var app = builder.Build();
 
