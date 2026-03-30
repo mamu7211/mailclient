@@ -13,12 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CronExpressionDescriptor" Version="2.45.0" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="10.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="10.0.0" />
+    <PackageReference Include="Quartz" Version="3.16.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.16.0" />
   </ItemGroup>
 

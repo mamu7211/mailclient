@@ -1353,4 +1353,7 @@
   <data name="JobDetailRunning" xml:space="preserve">
     <value>Running...</value>
   </data>
+  <data name="CronInputInvalid" xml:space="preserve">
+    <value>Invalid Quartz cron expression.</value>
+  </data>
 </root>

@@ -1,0 +1,80 @@
+@namespace Feirb.Web.Components.UI
+@using System.Linq.Expressions
+@using Feirb.Web.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject IStringLocalizer<SharedResources> L
+
+<div class="@($"feirb-cron-input {Class}")">
+    <InputText id="@Id"
+               class="@InputCssClass"
+               @bind-Value="Value"
+               @bind-Value:after="OnValueChangedAsync"
+               placeholder="@(Placeholder ?? "0 */5 * * * ?")" />
+    @if (_validationError is not null)
+    {
+        <div class="invalid-feedback">@_validationError</div>
+    }
+    @if (_description is not null)
+    {
+        <div class="form-text text-success">
+            <i class="bi bi-check-circle me-1"></i>@_description
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>The cron expression value.</summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>Fires when the value changes.</summary>
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    /// <summary>Optional model field expression for EditContext change tracking.</summary>
+    [Parameter]
+    public Expression<Func<string?>>? For { get; set; }
+
+    /// <summary>HTML id attribute for the input.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>Placeholder text.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Additional CSS classes for the wrapper.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
+    private string? _validationError;
+    private string? _description;
+
+    protected override void OnParametersSet() => Validate();
+
+    private async Task OnValueChangedAsync()
+    {
+        Validate();
+        await ValueChanged.InvokeAsync(Value);
+
+        if (EditContext is not null && For is not null)
+        {
+            EditContext.NotifyFieldChanged(FieldIdentifier.Create(For));
+        }
+    }
+
+    private void Validate()
+    {
+        var (isValid, description) = CronValidator.Validate(Value);
+        _validationError = isValid ? null : (string)L["CronInputInvalid"];
+        _description = description;
+    }
+
+    private string InputCssClass =>
+        string.IsNullOrWhiteSpace(Value) ? "form-control"
+        : _validationError is not null ? "form-control is-invalid"
+        : "form-control is-valid";
+}

@@ -45,13 +45,9 @@ else if (_model is not null)
             {
                 <div class="mb-3">
                     <label for="cronExpression" class="form-label">@L["JobsCronExpression"]</label>
-                    <InputText id="cronExpression"
-                               class="@CronInputCssClass"
-                               @bind-Value="_model.Cron" @bind-Value:after="ValidateCron" />
-                    @if (_cronValidationError is not null)
-                    {
-                        <div class="invalid-feedback">@_cronValidationError</div>
-                    }
+                    <CronInput Id="cronExpression"
+                               @bind-Value="_model.Cron"
+                               For="() => _model.Cron" />
                 </div>
             }
             <div class="form-check form-switch">
@@ -130,8 +126,6 @@ else if (_model is not null)
     private bool _isSaving;
     private string? _errorMessage;
     private string _selectedPreset = "custom";
-    private string? _cronValidationError;
-
     private PaginatedJobExecutionsResponse? _executions;
     private bool _executionsLoading;
     private int _execPage = 1;
@@ -302,24 +296,7 @@ else if (_model is not null)
         if (_presetCrons.TryGetValue(presetId, out var cron) && _model is not null)
         {
             _model.Cron = cron;
-            _cronValidationError = null;
         }
-
-    }
-
-    private string CronInputCssClass =>
-        _cronValidationError is not null ? "form-control is-invalid" : "form-control";
-
-    private void ValidateCron()
-    {
-        if (_model is null || string.IsNullOrWhiteSpace(_model.Cron))
-        {
-            _cronValidationError = L["JobsCronInvalid"];
-            return;
-        }
-
-        var parts = _model.Cron.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        _cronValidationError = parts.Length is 6 or 7 ? null : (string?)L["JobsCronInvalid"];
     }
 
     private async Task OnExecPageChangedAsync(int page)
