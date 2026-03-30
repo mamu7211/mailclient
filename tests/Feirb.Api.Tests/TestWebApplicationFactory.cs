@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 
 namespace Feirb.Api.Tests;
 
@@ -40,6 +41,22 @@ public static class TestWebApplicationFactory
                 services.RemoveAll<IJobSettingsScheduler>();
                 services.RemoveAll<JobSettingsScheduler>();
                 services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
+
+                // Replace ISchedulerFactory with a no-op to avoid disposed Quartz scheduler
+                services.RemoveAll<ISchedulerFactory>();
+                services.AddSingleton<ISchedulerFactory, NoOpSchedulerFactory>();
             });
         });
+
+    private sealed class NoOpSchedulerFactory : ISchedulerFactory
+    {
+        public Task<IReadOnlyList<IScheduler>> GetAllSchedulers(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<IScheduler>>([]);
+
+        public Task<IScheduler> GetScheduler(CancellationToken cancellationToken = default) =>
+            Task.FromResult(NSubstitute.Substitute.For<IScheduler>());
+
+        public Task<IScheduler?> GetScheduler(string schedName, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IScheduler?>(NSubstitute.Substitute.For<IScheduler>());
+    }
 }

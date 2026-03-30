@@ -46,7 +46,8 @@ public static class MailboxEndpoints
         HttpContext httpContext,
         FeirbDbContext db,
         IDataProtectionProvider dataProtection,
-        IJobSettingsScheduler jobScheduler)
+        IJobSettingsScheduler jobScheduler,
+        IJobService jobService)
     {
         var userId = GetCurrentUserId(httpContext);
         var imapProtector = dataProtection.CreateProtector(_imapPasswordPurpose);
@@ -95,6 +96,15 @@ public static class MailboxEndpoints
         await db.SaveChangesAsync();
 
         await jobScheduler.ScheduleJobAsync(jobSettings.JobName, _imapSyncJobType, _defaultSyncCron);
+
+        try
+        {
+            await jobService.TriggerRunAsync(jobSettings.Id, userId, true);
+        }
+        catch (Exception)
+        {
+            // Best-effort immediate sync — cron will catch up
+        }
 
         return Results.Created($"/api/settings/mailboxes/{mailbox.Id}", ToDetailResponse(mailbox));
     }

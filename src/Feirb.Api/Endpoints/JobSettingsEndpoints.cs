@@ -33,21 +33,28 @@ public static class JobSettingsEndpoints
 
     private static async Task<IResult> GetJobByIdAsync(
         Guid id,
+        HttpContext httpContext,
         IJobService jobService,
-        IStringLocalizer<ApiMessages> localizer) =>
-        await jobService.GetByIdAsync(id) is { } result
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        var result = await jobService.GetByIdAsync(id, userId, isAdmin);
+        return result is not null
             ? Results.Ok(result)
             : Results.NotFound(new { message = localizer["JobNotFound"].Value });
+    }
 
     private static async Task<IResult> UpdateJobAsync(
         Guid id,
         UpdateJobSettingsRequest request,
+        HttpContext httpContext,
         IJobService jobService,
         IStringLocalizer<ApiMessages> localizer)
     {
+        var (userId, isAdmin) = GetAuthContext(httpContext);
         try
         {
-            var result = await jobService.UpdateAsync(id, request);
+            var result = await jobService.UpdateAsync(id, request, userId, isAdmin);
             if (result is null)
                 return Results.NotFound(new { message = localizer["JobNotFound"].Value });
 
@@ -65,16 +72,21 @@ public static class JobSettingsEndpoints
 
     private static async Task<IResult> TriggerJobRunAsync(
         Guid id,
+        HttpContext httpContext,
         IJobService jobService,
-        IStringLocalizer<ApiMessages> localizer) =>
-        await jobService.TriggerRunAsync(id)
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        return await jobService.TriggerRunAsync(id, userId, isAdmin)
             ? Results.Accepted()
             : Results.NotFound(new { message = localizer["JobNotFound"].Value });
+    }
 
     private static async Task<IResult> GetJobExecutionsAsync(
         Guid id,
         int page,
         int pageSize,
+        HttpContext httpContext,
         IJobService jobService,
         IStringLocalizer<ApiMessages> localizer)
     {
@@ -82,7 +94,8 @@ public static class JobSettingsEndpoints
         if (pageSize < 1) pageSize = 10;
         if (pageSize > 100) pageSize = 100;
 
-        var result = await jobService.GetExecutionsAsync(id, page, pageSize);
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        var result = await jobService.GetExecutionsAsync(id, userId, isAdmin, page, pageSize);
         if (result is null)
             return Results.NotFound(new { message = localizer["JobNotFound"].Value });
 
@@ -90,11 +103,18 @@ public static class JobSettingsEndpoints
     }
 
     private static async Task<IResult> GetJobsByResourceAsync(
+        HttpContext httpContext,
         string resourceType,
         Guid resourceId,
-        IJobService jobService) =>
-        Results.Ok(await jobService.GetByResourceAsync(resourceType, resourceId));
+        IJobService jobService)
+    {
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        return Results.Ok(await jobService.GetByResourceAsync(resourceType, resourceId, userId, isAdmin));
+    }
 
     private static Guid GetCurrentUserId(HttpContext httpContext) =>
         Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+    private static (Guid userId, bool isAdmin) GetAuthContext(HttpContext httpContext) =>
+        (GetCurrentUserId(httpContext), httpContext.User.IsInRole("Admin"));
 }
