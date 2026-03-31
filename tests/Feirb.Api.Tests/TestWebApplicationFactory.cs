@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Quartz;
 
 namespace Feirb.Api.Tests;
 
@@ -26,39 +27,36 @@ public static class TestWebApplicationFactory
                 services.AddDbContext<FeirbDbContext>(options =>
                     options.UseInMemoryDatabase(dbName));
 
-                // Remove Quartz and ImapSyncScheduler hosted services to avoid
+                // Remove Quartz and scheduler hosted services to avoid
                 // LoggerFactory disposal race during test teardown
                 var hostedServiceDescriptors = services.Where(d =>
                     d.ServiceType == typeof(IHostedService) &&
                     (d.ImplementationType?.FullName?.Contains("Quartz") == true ||
-                     d.ImplementationType == typeof(ImapSyncScheduler) ||
                      d.ImplementationType == typeof(JobSettingsScheduler) ||
                      d.ImplementationFactory is not null)).ToList();
                 foreach (var d in hostedServiceDescriptors)
                     services.Remove(d);
 
-                // Replace IImapSyncScheduler with a no-op for endpoint DI
-                var schedulerDescriptors = services.Where(d =>
-                    d.ServiceType == typeof(IImapSyncScheduler) ||
-                    d.ServiceType == typeof(ImapSyncScheduler)).ToList();
-                foreach (var d in schedulerDescriptors)
-                    services.Remove(d);
-
-                services.AddSingleton<IImapSyncScheduler, NoOpImapSyncScheduler>();
-
                 // Replace IJobSettingsScheduler with a no-op for test DI
                 services.RemoveAll<IJobSettingsScheduler>();
                 services.RemoveAll<JobSettingsScheduler>();
                 services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
+
+                // Replace ISchedulerFactory with a no-op to avoid disposed Quartz scheduler
+                services.RemoveAll<ISchedulerFactory>();
+                services.AddSingleton<ISchedulerFactory, NoOpSchedulerFactory>();
             });
         });
 
-    private sealed class NoOpImapSyncScheduler : IImapSyncScheduler
+    private sealed class NoOpSchedulerFactory : ISchedulerFactory
     {
-        public Task ScheduleMailboxAsync(Guid mailboxId, int pollIntervalMinutes, bool triggerImmediately = false) =>
-            Task.CompletedTask;
+        public Task<IReadOnlyList<IScheduler>> GetAllSchedulers(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<IScheduler>>([]);
 
-        public Task UnscheduleMailboxAsync(Guid mailboxId) => Task.CompletedTask;
-        public Task RescheduleMailboxAsync(Guid mailboxId, int pollIntervalMinutes) => Task.CompletedTask;
+        public Task<IScheduler> GetScheduler(CancellationToken cancellationToken = default) =>
+            Task.FromResult(NSubstitute.Substitute.For<IScheduler>());
+
+        public Task<IScheduler?> GetScheduler(string schedName, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IScheduler?>(NSubstitute.Substitute.For<IScheduler>());
     }
 }

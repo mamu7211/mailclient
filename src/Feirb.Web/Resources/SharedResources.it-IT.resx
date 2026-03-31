@@ -996,6 +996,21 @@
   <data name="SectionMailboxSmtpSubtitle" xml:space="preserve">
     <value>Configura il server SMTP utilizzato per inviare le e-mail in uscita da questa casella di posta.</value>
   </data>
+  <data name="MailboxSectionSyncSchedule" xml:space="preserve">
+    <value>Pianificazione sincronizzazione</value>
+  </data>
+  <data name="SectionMailboxSyncScheduleSubtitle" xml:space="preserve">
+    <value>Configura la frequenza con cui questa casella di posta controlla la presenza di nuove e-mail.</value>
+  </data>
+  <data name="JobSettingsPanelNoJobs" xml:space="preserve">
+    <value>Nessuna attività pianificata per questa risorsa.</value>
+  </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Impossibile caricare le impostazioni delle attività. Riprova più tardi.</value>
+  </data>
+  <data name="ButtonApply" xml:space="preserve">
+    <value>Applica</value>
+  </data>
   <data name="SectionPersonalInfoSubtitle" xml:space="preserve">
     <value>Aggiorna il tuo nome utente e il tuo indirizzo e-mail.</value>
   </data>

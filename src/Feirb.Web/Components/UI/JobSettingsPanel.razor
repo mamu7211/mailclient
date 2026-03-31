@@ -1,0 +1,254 @@
+@namespace Feirb.Web.Components.UI
+@using Feirb.Shared.Admin.Jobs
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject NotificationService Notifications
+
+@if (_isLoading)
+{
+    <div class="text-center py-3">
+        <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">@L["Loading"]</span>
+        </div>
+    </div>
+}
+else if (_loadError)
+{
+    <div class="alert alert-danger py-2 mb-0">@L["JobSettingsPanelLoadError"]</div>
+}
+else if (_jobs.Count == 0)
+{
+    <p class="text-muted mb-0">@L["JobSettingsPanelNoJobs"]</p>
+}
+else
+{
+    @foreach (var job in _jobs)
+    {
+        <div class="feirb-job-settings-panel @Class">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <span class="fw-semibold">@job.JobName</span>
+                    <span class="text-muted ms-2" style="font-size: 0.85rem;">@job.Description</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <ExecutionHistoryChip Executions="job.RecentExecutions" MaxDots="10" />
+                    @if (job.LastRunAt is not null)
+                    {
+                        <DateTimeChip Value="job.LastRunAt.Value" />
+                    }
+                    @if (job.LastStatus is not null)
+                    {
+                        <span class="badge @GetStatusBadgeClass(job.LastStatus)">@job.LastStatus</span>
+                    }
+                </div>
+            </div>
+
+            <fieldset disabled="@_isSaving">
+                <div class="mb-3">
+                    <label class="form-label">@L["JobsCronSchedule"]</label>
+                    <ToggleButtonGroup Items="_schedulePresets"
+                                       SelectedId="@GetSelectedPreset(job)"
+                                       SelectedIdChanged="(preset) => OnPresetChangedAsync(job, preset)" />
+                </div>
+
+                @if (GetSelectedPreset(job) == "custom")
+                {
+                    <div class="mb-3">
+                        <label class="form-label">@L["JobsCronExpression"]</label>
+                        <CronInput @bind-Value="@_customCrons[job.Id]"
+                                   Id="@($"cron-{job.Id}")" />
+                    </div>
+                    <div class="mb-3">
+                        <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                                OnClick="() => ApplyCustomCronAsync(job)" Disabled="_isSaving">
+                            @L["ButtonApply"]
+                        </Button>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" id="@($"job-enabled-{job.Id}")" class="form-check-input"
+                               checked="@job.Enabled" @onchange="(e) => ToggleEnabledAsync(job, (bool)e.Value!)" />
+                        <label for="@($"job-enabled-{job.Id}")" class="form-check-label">
+                            @(job.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
+                        </label>
+                    </div>
+                    <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
+                            Icon="play-fill" OnClick="() => RunNowAsync(job)" Disabled="_isSaving">
+                        @L["ButtonRunNow"]
+                    </Button>
+                </div>
+            </fieldset>
+        </div>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string ResourceType { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Guid ResourceId { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    private List<JobSettingsResponse> _jobs = [];
+    private Dictionary<Guid, string> _customCrons = [];
+    private bool _isLoading = true;
+    private bool _isSaving;
+    private bool _loadError;
+
+    private IReadOnlyList<ToggleButtonItem> _schedulePresets = [];
+
+    private static readonly Dictionary<string, string> _presetCrons = new()
+    {
+        ["1min"] = "0 * * * * ?",
+        ["5min"] = "0 */5 * * * ?",
+        ["15min"] = "0 */15 * * * ?",
+        ["hourly"] = "0 0 * * * ?",
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _schedulePresets =
+        [
+            new("1min", L["JobsSchedulePreset1Min"]),
+            new("5min", L["JobsSchedulePreset5Min"]),
+            new("15min", L["JobsSchedulePreset15Min"]),
+            new("hourly", L["JobsSchedulePresetHourly"]),
+            new("custom", L["JobsSchedulePresetCustom"]),
+        ];
+
+        await LoadJobsAsync();
+    }
+
+    private async Task LoadJobsAsync()
+    {
+        _isLoading = true;
+        _loadError = false;
+        try
+        {
+            _jobs = await Http.GetFromJsonAsync<List<JobSettingsResponse>>(
+                $"/api/jobs/by-resource/{Uri.EscapeDataString(ResourceType)}/{ResourceId}") ?? [];
+            _customCrons = _jobs.ToDictionary(j => j.Id, j => j.Cron);
+        }
+        catch
+        {
+            _jobs = [];
+            _loadError = true;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetSelectedPreset(JobSettingsResponse job)
+    {
+        var match = _presetCrons.FirstOrDefault(p => p.Value == job.Cron);
+        return match.Key ?? "custom";
+    }
+
+    private async Task OnPresetChangedAsync(JobSettingsResponse job, string preset)
+    {
+        if (preset == "custom")
+        {
+            _customCrons[job.Id] = job.Cron;
+            StateHasChanged();
+            return;
+        }
+
+        if (_presetCrons.TryGetValue(preset, out var cron))
+        {
+            await UpdateJobAsync(job, cron, job.Enabled);
+        }
+    }
+
+    private async Task ApplyCustomCronAsync(JobSettingsResponse job)
+    {
+        if (_customCrons.TryGetValue(job.Id, out var cron) && !string.IsNullOrWhiteSpace(cron))
+        {
+            await UpdateJobAsync(job, cron, job.Enabled);
+        }
+    }
+
+    private async Task ToggleEnabledAsync(JobSettingsResponse job, bool enabled) =>
+        await UpdateJobAsync(job, job.Cron, enabled);
+
+    private async Task UpdateJobAsync(JobSettingsResponse job, string cron, bool enabled)
+    {
+        _isSaving = true;
+        try
+        {
+            var request = new UpdateJobSettingsRequest(cron, enabled, job.RowVersion);
+            var response = await Http.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var updated = await response.Content.ReadFromJsonAsync<JobSettingsResponse>();
+                if (updated is not null)
+                {
+                    var index = _jobs.FindIndex(j => j.Id == job.Id);
+                    if (index >= 0)
+                    {
+                        _jobs[index] = updated;
+                        _customCrons[updated.Id] = updated.Cron;
+                    }
+                }
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+            {
+                Notifications.Add(L["JobsUpdateConflict"], NotificationSeverity.Warning);
+                await LoadJobsAsync();
+            }
+            else
+            {
+                Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private async Task RunNowAsync(JobSettingsResponse job)
+    {
+        _isSaving = true;
+        try
+        {
+            var response = await Http.PostAsync($"/api/jobs/{job.Id}/run", null);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["JobRunNowSuccess"], NotificationSeverity.Success);
+                await Task.Delay(2000);
+                await LoadJobsAsync();
+            }
+            else
+            {
+                Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add(L["JobsUpdateFailed"], NotificationSeverity.Error);
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "Success" => "bg-success",
+        "Cancelled" => "bg-warning text-dark",
+        _ => "bg-danger",
+    };
+}

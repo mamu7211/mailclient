@@ -177,7 +177,7 @@ else if (_model is not null)
     {
         try
         {
-            _job = await Http.GetFromJsonAsync<JobSettingsResponse>($"/api/admin/jobs/{Id}");
+            _job = await Http.GetFromJsonAsync<JobSettingsResponse>($"/api/jobs/{Id}");
             if (_job is null)
             {
                 _errorMessage = L["JobDetailNotFound"];
@@ -205,7 +205,7 @@ else if (_model is not null)
         try
         {
             _executions = await Http.GetFromJsonAsync<PaginatedJobExecutionsResponse>(
-                $"/api/admin/jobs/{Id}/executions?page={_execPage}&pageSize={_execPageSize}");
+                $"/api/jobs/{Id}/executions?page={_execPage}&pageSize={_execPageSize}");
             if (_executions is not null)
                 _execTotalPages = (int)Math.Ceiling((double)_executions.TotalCount / _execPageSize);
         }
@@ -229,7 +229,7 @@ else if (_model is not null)
         {
             var effectiveCron = _presetCrons.TryGetValue(_selectedPreset, out var cron) ? cron : _model.Cron;
             var request = new UpdateJobSettingsRequest(effectiveCron!, _model.Enabled, _job.RowVersion);
-            var response = await Http.PutAsJsonAsync($"/api/admin/jobs/{Id}", request);
+            var response = await Http.PutAsJsonAsync($"/api/jobs/{Id}", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -271,7 +271,7 @@ else if (_model is not null)
     {
         try
         {
-            var response = await Http.PostAsync($"/api/admin/jobs/{Id}/run", null);
+            var response = await Http.PostAsync($"/api/jobs/{Id}/run", null);
             if (response.IsSuccessStatusCode)
             {
                 Notifications.Add(L["JobRunNowSuccess"], NotificationSeverity.Success);

@@ -80,14 +80,12 @@ builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete
 
 // Managed job infrastructure
 builder.Services.AddManagedJobInfrastructure();
+builder.Services.AddManagedJob<ImapSyncJob>("imap-sync");
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddSingleton<IImapSyncService, ImapSyncService>();
-builder.Services.AddSingleton<ImapSyncScheduler>();
-builder.Services.AddSingleton<IImapSyncScheduler>(sp => sp.GetRequiredService<ImapSyncScheduler>());
-builder.Services.AddHostedService(sp => sp.GetRequiredService<ImapSyncScheduler>());
+builder.Services.AddScoped<IImapSyncService, ImapSyncService>();
 
 var app = builder.Build();
 
@@ -143,12 +141,15 @@ app.MapGet("/api/dev/config", (IConfiguration config) => Results.Ok(new
 var setupGroup = app.MapGroup(ApiRoutes.Setup).AllowAnonymous();
 setupGroup.MapSetupEndpoints();
 
+// Job endpoints (role-based filtering: admin sees all, user sees own + system)
+var jobsGroup = apiGroup.MapGroup("/jobs").RequireAuthorization();
+jobsGroup.MapJobSettingsEndpoints();
+
 // Admin endpoints require admin role
 var adminGroup = apiGroup.MapGroup("/admin").RequireAuthorization("RequireAdmin");
 adminGroup.MapAdminEndpoints();
 var systemSettingsGroup = adminGroup.MapGroup("/system-settings");
 systemSettingsGroup.MapSystemSettingsEndpoints();
-adminGroup.MapJobSettingsEndpoints();
 
 // Settings endpoints (per-user, JWT required)
 var settingsGroup = apiGroup.MapGroup("/settings");

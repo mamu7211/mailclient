@@ -40,7 +40,7 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
 
         try
         {
-            await RunAsync(scope.ServiceProvider, context.CancellationToken);
+            await RunAsync(scope.ServiceProvider, jobSettings, context.CancellationToken);
             execution.Status = JobExecutionStatus.Success;
             execution.FinishedAt = DateTimeOffset.UtcNow;
 
@@ -75,7 +75,7 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         }
     }
 
-    protected abstract Task RunAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken);
+    protected abstract Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken);
 
     private async Task CheckConsecutiveFailuresAsync(
         FeirbDbContext db, JobSettings jobSettings, IServiceProvider serviceProvider)

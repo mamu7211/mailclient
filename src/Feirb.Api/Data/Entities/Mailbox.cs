@@ -27,7 +27,6 @@ public class Mailbox
     // Sync settings
     public string? BadgeColor { get; set; }
     public int InitialSyncDays { get; set; }
-    public int PollIntervalMinutes { get; set; } = 60;
 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

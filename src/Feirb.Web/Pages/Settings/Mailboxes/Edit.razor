@@ -124,18 +124,21 @@ else if (_model is not null)
                     <ValidationMessage For="() => _model.SmtpPort" />
                 </div>
             </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="smtpUsername" class="form-label">@L["LabelSmtpUsernameMailbox"]</label>
-                    <InputText id="smtpUsername" class="form-control" @bind-Value="_model.SmtpUsername" />
-                    <ValidationMessage For="() => _model.SmtpUsername" />
+            @if (_model.SmtpRequiresAuth)
+            {
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="smtpUsername" class="form-label">@L["LabelSmtpUsernameMailbox"]</label>
+                        <InputText id="smtpUsername" class="form-control" @bind-Value="_model.SmtpUsername" />
+                        <ValidationMessage For="() => _model.SmtpUsername" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="smtpPassword" class="form-label">@L["LabelSmtpPasswordMailbox"]</label>
+                        <InputText id="smtpPassword" class="form-control" type="password" @bind-Value="_model.SmtpPassword"
+                            placeholder="@L["PasswordPlaceholderKeep"]" />
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label for="smtpPassword" class="form-label">@L["LabelSmtpPasswordMailbox"]</label>
-                    <InputText id="smtpPassword" class="form-control" type="password" @bind-Value="_model.SmtpPassword"
-                        placeholder="@L["PasswordPlaceholderKeep"]" />
-                </div>
-            </div>
+            }
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <div class="form-check">
@@ -163,6 +166,10 @@ else if (_model is not null)
             }
         </ContentSection>
     </TrackedEditForm>
+
+    <ContentSection Icon="clock" Title="@L["MailboxSectionSyncSchedule"]" Subtitle="@L["SectionMailboxSyncScheduleSubtitle"]" Class="mb-4">
+        <JobSettingsPanel ResourceType="Mailbox" ResourceId="@Id" />
+    </ContentSection>
 }
 
 @* Delete Confirmation Modal *@

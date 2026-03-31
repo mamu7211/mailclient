@@ -36,7 +36,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var response = await _client.GetAsync("/api/admin/jobs");
+        var response = await _client.GetAsync("/api/jobs");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var jobs = await response.Content.ReadFromJsonAsync<List<JobSettingsResponse>>();
@@ -50,21 +50,25 @@ public class JobSettingsEndpointsTests : IDisposable
     [Fact]
     public async Task GetAllJobs_Unauthenticated_ReturnsUnauthorizedAsync()
     {
-        var response = await _client.GetAsync("/api/admin/jobs");
+        var response = await _client.GetAsync("/api/jobs");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
-    public async Task GetAllJobs_AsNonAdmin_ReturnsForbiddenAsync()
+    public async Task GetAllJobs_AsNonAdmin_ReturnsSystemJobsAsync()
     {
         await SetupAndLoginAsAdminAsync();
         var tokens = await CreateAndLoginAsRegularUserAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var response = await _client.GetAsync("/api/admin/jobs");
+        var response = await _client.GetAsync("/api/jobs");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var jobs = await response.Content.ReadFromJsonAsync<List<JobSettingsResponse>>();
+        jobs.Should().NotBeNull();
+        jobs.Should().ContainSingle();
+        jobs![0].JobName.Should().Be("Classification");
     }
 
     [Fact]
@@ -73,11 +77,11 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
         var request = new UpdateJobSettingsRequest("0 */5 * * * ?", true, job.RowVersion);
-        var response = await _client.PutAsJsonAsync($"/api/admin/jobs/{job.Id}", request);
+        var response = await _client.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var updated = await response.Content.ReadFromJsonAsync<JobSettingsResponse>();
@@ -92,11 +96,11 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
         var request = new UpdateJobSettingsRequest("not-a-cron", false, job.RowVersion);
-        var response = await _client.PutAsJsonAsync($"/api/admin/jobs/{job.Id}", request);
+        var response = await _client.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -108,7 +112,7 @@ public class JobSettingsEndpointsTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new UpdateJobSettingsRequest("0 * * * * ?", true, Guid.Empty);
-        var response = await _client.PutAsJsonAsync($"/api/admin/jobs/{Guid.NewGuid()}", request);
+        var response = await _client.PutAsJsonAsync($"/api/jobs/{Guid.NewGuid()}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -119,7 +123,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
         // Seed some executions
@@ -140,7 +144,7 @@ public class JobSettingsEndpointsTests : IDisposable
             await db.SaveChangesAsync();
         }
 
-        var response = await _client.GetAsync($"/api/admin/jobs/{job.Id}/executions?page=1&pageSize=2");
+        var response = await _client.GetAsync($"/api/jobs/{job.Id}/executions?page=1&pageSize=2");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<PaginatedJobExecutionsResponse>();
@@ -157,7 +161,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
         // Seed 7 executions
@@ -178,7 +182,7 @@ public class JobSettingsEndpointsTests : IDisposable
             await db.SaveChangesAsync();
         }
 
-        var response = await _client.GetAsync("/api/admin/jobs");
+        var response = await _client.GetAsync("/api/jobs");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<List<JobSettingsResponse>>();
@@ -191,10 +195,10 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+        var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
-        var response = await _client.GetAsync($"/api/admin/jobs/{job.Id}");
+        var response = await _client.GetAsync($"/api/jobs/{job.Id}");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var result = await response.Content.ReadFromJsonAsync<JobSettingsResponse>();
@@ -211,7 +215,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var response = await _client.GetAsync($"/api/admin/jobs/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"/api/jobs/{Guid.NewGuid()}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -222,7 +226,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var response = await _client.PostAsync($"/api/admin/jobs/{Guid.NewGuid()}/run", null);
+        var response = await _client.PostAsync($"/api/jobs/{Guid.NewGuid()}/run", null);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }

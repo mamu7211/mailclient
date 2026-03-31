@@ -162,7 +162,7 @@ public class ManagedJobTests : IDisposable
         bool succeeds,
         string? errorMessage) : ManagedJob(scopeFactory, logger)
     {
-        protected override Task RunAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+        protected override Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
         {
             if (!succeeds)
                 throw new InvalidOperationException(errorMessage ?? "Test failure");

@@ -52,7 +52,7 @@ else
     {
         try
         {
-            _jobs = await Http.GetFromJsonAsync<List<JobSettingsResponse>>("/api/admin/jobs");
+            _jobs = await Http.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         }
         catch
         {

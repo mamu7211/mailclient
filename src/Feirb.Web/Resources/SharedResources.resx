@@ -996,6 +996,21 @@
   <data name="SectionMailboxSmtpSubtitle" xml:space="preserve">
     <value>Configure the SMTP server used to send outgoing mail from this mailbox.</value>
   </data>
+  <data name="MailboxSectionSyncSchedule" xml:space="preserve">
+    <value>Sync Schedule</value>
+  </data>
+  <data name="SectionMailboxSyncScheduleSubtitle" xml:space="preserve">
+    <value>Configure how often this mailbox checks for new mail.</value>
+  </data>
+  <data name="JobSettingsPanelNoJobs" xml:space="preserve">
+    <value>No scheduled jobs for this resource.</value>
+  </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Failed to load job settings. Please try again later.</value>
+  </data>
+  <data name="ButtonApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
   <data name="SectionPersonalInfoSubtitle" xml:space="preserve">
     <value>Update your username and email address.</value>
   </data>

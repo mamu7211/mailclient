@@ -1,0 +1,81 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="JobSettingsPanel" Icon="clock" Subtitle="Inline job schedule management panel for resource pages" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Displays and manages job schedules for a specific resource. Shows schedule presets, custom cron input, enable/disable toggle, execution history dots, and a Run Now button. Used on the Mailbox Edit page to manage IMAP sync schedules inline.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>ResourceType</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Type of the owning resource (e.g. "Mailbox")</TableCell></TableRow>
+            <TableRow><TableCell><code>ResourceId</code></TableCell><TableCell><code>Guid</code></TableCell><TableCell>required</TableCell><TableCell>ID of the owning resource</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <p class="text-muted mb-3">Live panel — loads jobs for the specified resource from the API. Enter a valid ResourceType and ResourceId to see the panel in action.</p>
+
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <div>
+            <label class="form-label">ResourceType</label>
+            <input type="text" class="form-control form-control-sm" @bind="_resourceType" @bind:event="oninput" />
+        </div>
+        <div>
+            <label class="form-label">ResourceId</label>
+            <input type="text" class="form-control form-control-sm" @bind="_resourceIdText" @bind:event="oninput" />
+        </div>
+        <div class="mt-4">
+            <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="Reload">Load</Button>
+        </div>
+    </div>
+
+    @if (_resourceId is not null)
+    {
+        <div class="showcase-preview-area">
+            <JobSettingsPanel ResourceType="@_resourceType" ResourceId="@_resourceId.Value" @key="_reloadKey" />
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">Enter a valid GUID as ResourceId and click Load.</p>
+    }
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private string _resourceType = "Mailbox";
+    private string _resourceIdText = "";
+    private Guid? _resourceId;
+    private int _reloadKey;
+    private ElementReference _codeElement;
+
+    private void Reload()
+    {
+        _resourceId = Guid.TryParse(_resourceIdText, out var id) ? id : null;
+        _reloadKey++;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<" + $"JobSettingsPanel ResourceType=\"{_resourceType}\"\n" +
+        $"                   ResourceId=\"@@mailboxId\" />";
+}

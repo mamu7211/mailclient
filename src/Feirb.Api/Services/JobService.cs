@@ -26,7 +26,43 @@ public class JobService(
         return jobs.Select(MapToResponse).ToList();
     }
 
-    public async Task<JobSettingsResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<List<JobSettingsResponse>> GetForUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var jobs = await db.JobSettings
+            .Include(j => j.Executions
+                .OrderByDescending(e => e.StartedAt)
+                .Take(5))
+            .Where(j => j.UserId == userId || j.UserId == null)
+            .OrderBy(j => j.JobName)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return jobs.Select(MapToResponse).ToList();
+    }
+
+    public async Task<List<JobSettingsResponse>> GetByResourceAsync(
+        string resourceType, Guid resourceId, Guid userId, bool isAdmin,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.JobSettings
+            .Include(j => j.Executions
+                .OrderByDescending(e => e.StartedAt)
+                .Take(5))
+            .Where(j => j.ResourceType == resourceType && j.ResourceId == resourceId);
+
+        if (!isAdmin)
+            query = query.Where(j => j.UserId == userId || j.UserId == null);
+
+        var jobs = await query
+            .OrderBy(j => j.JobName)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return jobs.Select(MapToResponse).ToList();
+    }
+
+    public async Task<JobSettingsResponse?> GetByIdAsync(
+        Guid id, Guid userId, bool isAdmin, CancellationToken cancellationToken = default)
     {
         var job = await db.JobSettings
             .Include(j => j.Executions
@@ -35,14 +71,26 @@ public class JobService(
             .AsNoTracking()
             .FirstOrDefaultAsync(j => j.Id == id, cancellationToken);
 
-        return job is null ? null : MapToResponse(job);
+        if (job is null)
+            return null;
+
+        if (!isAdmin && job.UserId != userId && job.UserId != null)
+            return null;
+
+        return MapToResponse(job);
     }
 
     public async Task<PaginatedJobExecutionsResponse?> GetExecutionsAsync(
-        Guid jobId, int page, int pageSize, CancellationToken cancellationToken = default)
+        Guid jobId, Guid userId, bool isAdmin, int page, int pageSize,
+        CancellationToken cancellationToken = default)
     {
-        var jobExists = await db.JobSettings.AnyAsync(j => j.Id == jobId, cancellationToken);
-        if (!jobExists)
+        var job = await db.JobSettings.AsNoTracking()
+            .FirstOrDefaultAsync(j => j.Id == jobId, cancellationToken);
+
+        if (job is null)
+            return null;
+
+        if (!isAdmin && job.UserId != userId && job.UserId != null)
             return null;
 
         var query = db.JobExecutions
@@ -67,7 +115,8 @@ public class JobService(
     }
 
     public async Task<JobSettingsResponse?> UpdateAsync(
-        Guid id, UpdateJobSettingsRequest request, CancellationToken cancellationToken = default)
+        Guid id, UpdateJobSettingsRequest request, Guid userId, bool isAdmin,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -78,6 +127,9 @@ public class JobService(
             .FirstOrDefaultAsync(j => j.Id == id, cancellationToken);
 
         if (job is null)
+            return null;
+
+        if (!isAdmin && job.UserId != userId)
             return null;
 
         if (!CronExpression.IsValidExpression(request.Cron))
@@ -99,21 +151,26 @@ public class JobService(
             await scheduler.UnscheduleJobAsync(job.JobName);
             logger.LogInformation("Job '{JobName}' disabled", job.JobName);
         }
+        else if (job.JobType is null || !registry.HasJobType(job.JobType))
+        {
+            logger.LogWarning("No managed job registered for JobType '{JobType}', skipping schedule update", job.JobType);
+        }
         else if (!wasEnabled && job.Enabled)
         {
-            await scheduler.ScheduleJobAsync(job.JobName, job.Cron);
+            await scheduler.ScheduleJobAsync(job.JobName, job.JobType, job.Cron);
             logger.LogInformation("Job '{JobName}' enabled with cron '{Cron}'", job.JobName, job.Cron);
         }
         else if (wasEnabled && job.Enabled && oldCron != job.Cron)
         {
-            await scheduler.RescheduleJobAsync(job.JobName, job.Cron);
+            await scheduler.RescheduleJobAsync(job.JobName, job.JobType, job.Cron);
             logger.LogInformation("Job '{JobName}' rescheduled with cron '{Cron}'", job.JobName, job.Cron);
         }
 
         return MapToResponse(job);
     }
 
-    public async Task<bool> TriggerRunAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<bool> TriggerRunAsync(
+        Guid id, Guid userId, bool isAdmin, CancellationToken cancellationToken = default)
     {
         var job = await db.JobSettings
             .AsNoTracking()
@@ -122,9 +179,12 @@ public class JobService(
         if (job is null)
             return false;
 
-        if (!registry.HasJob(job.JobName))
+        if (!isAdmin && job.UserId != userId)
+            return false;
+
+        if (job.JobType is null || !registry.HasJobType(job.JobType))
         {
-            logger.LogWarning("No managed job registered for '{JobName}', cannot trigger", job.JobName);
+            logger.LogWarning("No managed job registered for JobType '{JobType}', cannot trigger", job.JobType);
             return false;
         }
 
@@ -137,7 +197,7 @@ public class JobService(
         }
         else
         {
-            var jobType = registry.GetJobType(job.JobName);
+            var jobType = registry.GetClrType(job.JobType);
             var adhocKey = new JobKey($"managed-adhoc-{job.JobName}-{Guid.NewGuid():N}", "managed-jobs");
             var quartzJob = JobBuilder.Create(jobType)
                 .WithIdentity(adhocKey)
@@ -159,11 +219,14 @@ public class JobService(
         new(
             job.Id,
             job.JobName,
+            job.JobType,
             job.Description,
             job.Cron,
             job.Enabled,
             job.LastRunAt,
             job.LastStatus?.ToString(),
+            job.ResourceId,
+            job.ResourceType,
             job.RowVersion,
             job.Executions
                 .OrderByDescending(e => e.StartedAt)

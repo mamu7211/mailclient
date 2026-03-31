@@ -3,6 +3,7 @@ using System;
 using Feirb.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Feirb.Api.Data.Migrations
 {
     [DbContext(typeof(FeirbDbContext))]
-    partial class FeirbDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330184752_RemoveMailboxPollIntervalMinutes")]
+    partial class RemoveMailboxPollIntervalMinutes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("EmailHash")
                         .IsUnique();
 
-                    b.ToTable("Avatars", (string)null);
+                    b.ToTable("Avatars");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedAttachment", b =>
@@ -82,7 +85,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("CachedMessageId");
 
-                    b.ToTable("CachedAttachments", (string)null);
+                    b.ToTable("CachedAttachments");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedMessage", b =>
@@ -144,7 +147,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("MailboxId", "MessageId")
                         .IsUnique();
 
-                    b.ToTable("CachedMessages", (string)null);
+                    b.ToTable("CachedMessages");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.DashboardLayout", b =>
@@ -168,7 +171,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("DashboardLayouts", (string)null);
+                    b.ToTable("DashboardLayouts");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.JobExecution", b =>
@@ -201,7 +204,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("StartedAt");
 
-                    b.ToTable("JobExecutions", (string)null);
+                    b.ToTable("JobExecutions");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.JobSettings", b =>
@@ -262,7 +265,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("JobType", "ResourceId");
 
-                    b.ToTable("JobSettings", (string)null);
+                    b.ToTable("JobSettings");
 
                     b.HasData(
                         new
@@ -308,7 +311,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Labels", (string)null);
+                    b.ToTable("Labels");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.Mailbox", b =>
@@ -394,7 +397,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Mailboxes", (string)null);
+                    b.ToTable("Mailboxes");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.PasswordResetToken", b =>
@@ -427,7 +430,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PasswordResetTokens", (string)null);
+                    b.ToTable("PasswordResetTokens");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.SmtpSettings", b =>
@@ -474,7 +477,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmtpSettings", (string)null);
+                    b.ToTable("SmtpSettings");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.User", b =>
@@ -536,7 +539,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.WidgetConfig", b =>
@@ -563,7 +566,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("UserId", "WidgetInstanceId")
                         .IsUnique();
 
-                    b.ToTable("WidgetConfigs", (string)null);
+                    b.ToTable("WidgetConfigs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
@@ -582,7 +585,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys", (string)null);
+                    b.ToTable("DataProtectionKeys");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedAttachment", b =>

@@ -36,14 +36,15 @@ public class JobSettingsScheduler(
             var scheduled = 0;
             foreach (var job in jobs)
             {
-                if (registry.HasJob(job.JobName))
+                if (job.JobType is not null && registry.HasJobType(job.JobType))
                 {
-                    await ScheduleQuartzJobAsync(scheduler, job.JobName, job.Cron, stoppingToken);
+                    await ScheduleQuartzJobAsync(scheduler, job.JobName, job.JobType, job.Cron, stoppingToken);
                     scheduled++;
                 }
                 else
                 {
-                    logger.LogWarning("No managed job registered for '{JobName}', skipping", job.JobName);
+                    logger.LogWarning("No managed job registered for JobType '{JobType}' (JobName '{JobName}'), skipping",
+                        job.JobType, job.JobName);
                 }
             }
 
@@ -59,16 +60,16 @@ public class JobSettingsScheduler(
         }
     }
 
-    public async Task ScheduleJobAsync(string jobName, string cronExpression)
+    public async Task ScheduleJobAsync(string jobName, string jobType, string cronExpression)
     {
-        if (!registry.HasJob(jobName))
+        if (!registry.HasJobType(jobType))
         {
-            logger.LogWarning("No managed job registered for '{JobName}', cannot schedule", jobName);
+            logger.LogWarning("No managed job registered for JobType '{JobType}', cannot schedule", jobType);
             return;
         }
 
         var scheduler = await schedulerFactory.GetScheduler();
-        await ScheduleQuartzJobAsync(scheduler, jobName, cronExpression);
+        await ScheduleQuartzJobAsync(scheduler, jobName, jobType, cronExpression);
     }
 
     public async Task UnscheduleJobAsync(string jobName)
@@ -83,11 +84,11 @@ public class JobSettingsScheduler(
         }
     }
 
-    public async Task RescheduleJobAsync(string jobName, string cronExpression)
+    public async Task RescheduleJobAsync(string jobName, string jobType, string cronExpression)
     {
-        if (!registry.HasJob(jobName))
+        if (!registry.HasJobType(jobType))
         {
-            logger.LogWarning("No managed job registered for '{JobName}', cannot reschedule", jobName);
+            logger.LogWarning("No managed job registered for JobType '{JobType}', cannot reschedule", jobType);
             return;
         }
 
@@ -99,17 +100,18 @@ public class JobSettingsScheduler(
             await scheduler.DeleteJob(jobKey);
         }
 
-        await ScheduleQuartzJobAsync(scheduler, jobName, cronExpression);
+        await ScheduleQuartzJobAsync(scheduler, jobName, jobType, cronExpression);
     }
 
     private async Task ScheduleQuartzJobAsync(
-        IScheduler scheduler, string jobName, string cronExpression, CancellationToken cancellationToken = default)
+        IScheduler scheduler, string jobName, string jobType, string cronExpression,
+        CancellationToken cancellationToken = default)
     {
-        var jobType = registry.GetJobType(jobName);
+        var clrType = registry.GetClrType(jobType);
         var jobKey = GetJobKey(jobName);
         var triggerKey = GetTriggerKey(jobName);
 
-        var job = JobBuilder.Create(jobType)
+        var job = JobBuilder.Create(clrType)
             .WithIdentity(jobKey)
             .UsingJobData(ManagedJob.JobNameKey, jobName)
             .Build();
@@ -120,7 +122,8 @@ public class JobSettingsScheduler(
             .Build();
 
         await scheduler.ScheduleJob(job, trigger, cancellationToken);
-        logger.LogDebug("Scheduled managed job '{JobName}' with cron '{Cron}'", jobName, cronExpression);
+        logger.LogDebug("Scheduled managed job '{JobName}' (type '{JobType}') with cron '{Cron}'",
+            jobName, jobType, cronExpression);
     }
 
     private static JobKey GetJobKey(string jobName) => new($"managed-{jobName}", _groupName);

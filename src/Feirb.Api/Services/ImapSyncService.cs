@@ -114,6 +114,7 @@ public class ImapSyncService(
         catch (Exception ex)
         {
             logger.LogError(ex, "Sync failed for mailbox {MailboxId}", mailboxId);
+            throw;
         }
     }
 

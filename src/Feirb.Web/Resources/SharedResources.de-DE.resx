@@ -996,6 +996,21 @@
   <data name="SectionMailboxSmtpSubtitle" xml:space="preserve">
     <value>Konfigurieren Sie den SMTP-Server, der zum Versenden ausgehender E-Mails aus diesem Postfach verwendet wird.</value>
   </data>
+  <data name="MailboxSectionSyncSchedule" xml:space="preserve">
+    <value>Synchronisierungsplan</value>
+  </data>
+  <data name="SectionMailboxSyncScheduleSubtitle" xml:space="preserve">
+    <value>Legen Sie fest, wie oft dieses Postfach nach neuen E-Mails sucht.</value>
+  </data>
+  <data name="JobSettingsPanelNoJobs" xml:space="preserve">
+    <value>Keine geplanten Aufgaben für diese Ressource.</value>
+  </data>
+  <data name="JobSettingsPanelLoadError" xml:space="preserve">
+    <value>Aufgabeneinstellungen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.</value>
+  </data>
+  <data name="ButtonApply" xml:space="preserve">
+    <value>Anwenden</value>
+  </data>
   <data name="SectionPersonalInfoSubtitle" xml:space="preserve">
     <value>Aktualisieren Sie Ihren Benutzernamen und Ihre E-Mail-Adresse.</value>
   </data>

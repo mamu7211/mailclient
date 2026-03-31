@@ -8,6 +8,7 @@ internal static class DatabaseSeeder
 {
     private const string _imapPasswordPurpose = "MailboxImapPassword";
     private const string _smtpPasswordPurpose = "MailboxSmtpPassword";
+    private const string _imapSyncJobType = "imap-sync";
 
     public static async Task SeedAsync(FeirbDbContext db, ILogger logger, IDataProtectionProvider dataProtection)
     {
@@ -43,7 +44,11 @@ internal static class DatabaseSeeder
             logger.LogInformation("Seeded system SMTP settings for GreenMail");
         }
 
+        // Save before backfill so mailboxes are visible to the query
         if (seeded)
+            await db.SaveChangesAsync();
+
+        if (await BackfillImapSyncJobsAsync(db, logger))
             await db.SaveChangesAsync();
     }
 
@@ -67,6 +72,33 @@ internal static class DatabaseSeeder
         db.Users.Add(user);
         logger.LogInformation("Seeded user {Email}", email);
         return (user, true);
+    }
+
+    private static async Task<bool> BackfillImapSyncJobsAsync(FeirbDbContext db, ILogger logger)
+    {
+        var mailboxesWithoutJob = await db.Mailboxes
+            .Where(m => !db.JobSettings.Any(j => j.JobType == _imapSyncJobType && j.ResourceId == m.Id))
+            .Select(m => new { m.Id, m.Name, m.UserId })
+            .ToListAsync();
+
+        foreach (var mailbox in mailboxesWithoutJob)
+        {
+            db.JobSettings.Add(new JobSettings
+            {
+                Id = Guid.NewGuid(),
+                JobName = $"imap-sync:{mailbox.Id}",
+                JobType = _imapSyncJobType,
+                Description = $"IMAP sync for {mailbox.Name}",
+                Cron = "0 0 * * * ?",
+                Enabled = true,
+                UserId = mailbox.UserId,
+                ResourceId = mailbox.Id,
+                ResourceType = "Mailbox",
+            });
+            logger.LogInformation("Backfilled IMAP sync job for mailbox {MailboxId}", mailbox.Id);
+        }
+
+        return mailboxesWithoutJob.Count > 0;
     }
 
     private static async Task<bool> SeedMailboxAsync(

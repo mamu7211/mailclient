@@ -72,7 +72,6 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.SmtpUsername).HasMaxLength(256);
             entity.Property(e => e.SmtpEncryptedPassword).HasMaxLength(1024);
             entity.Property(e => e.BadgeColor).HasMaxLength(9);
-            entity.Property(e => e.PollIntervalMinutes).HasDefaultValue(60);
             entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
