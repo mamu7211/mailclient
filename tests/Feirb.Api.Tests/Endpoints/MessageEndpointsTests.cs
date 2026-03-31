@@ -204,7 +204,7 @@ public class MessageEndpointsTests : IDisposable
     private async Task<Guid> CreateMailboxAsync(string name, string email)
     {
         var request = new CreateMailboxRequest(name, email, null, null,
-            "imap.test.com", 993, "user@test.com", "imappass", true, true,
+            "imap.test.com", 993, "user@test.com", "imappass", true,
             "smtp.test.com", 587, "user@test.com", "smtppass", true, true);
         var response = await _client.PostAsJsonAsync("/api/settings/mailboxes", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);

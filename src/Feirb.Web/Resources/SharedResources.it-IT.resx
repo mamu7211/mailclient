@@ -576,9 +576,6 @@
   <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
     <value>Autenticazione richiesta</value>
   </data>
-  <data name="LabelImapRequiresAuth" xml:space="preserve">
-    <value>Autenticazione richiesta</value>
-  </data>
   <data name="ButtonAddMailbox" xml:space="preserve">
     <value>Aggiungi casella di posta</value>
   </data>

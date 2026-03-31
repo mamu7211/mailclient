@@ -53,7 +53,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("EmailHash")
                         .IsUnique();
 
-                    b.ToTable("Avatars");
+                    b.ToTable("Avatars", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedAttachment", b =>
@@ -82,7 +82,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("CachedMessageId");
 
-                    b.ToTable("CachedAttachments");
+                    b.ToTable("CachedAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedMessage", b =>
@@ -144,7 +144,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("MailboxId", "MessageId")
                         .IsUnique();
 
-                    b.ToTable("CachedMessages");
+                    b.ToTable("CachedMessages", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.DashboardLayout", b =>
@@ -168,7 +168,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("DashboardLayouts");
+                    b.ToTable("DashboardLayouts", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.JobExecution", b =>
@@ -201,7 +201,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("StartedAt");
 
-                    b.ToTable("JobExecutions");
+                    b.ToTable("JobExecutions", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.JobSettings", b =>
@@ -262,7 +262,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("JobType", "ResourceId");
 
-                    b.ToTable("JobSettings");
+                    b.ToTable("JobSettings", (string)null);
 
                     b.HasData(
                         new
@@ -308,7 +308,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Labels");
+                    b.ToTable("Labels", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.Mailbox", b =>
@@ -345,13 +345,11 @@ namespace Feirb.Api.Data.Migrations
                     b.Property<int>("ImapPort")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("ImapRequiresAuth")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("ImapUseTls")
                         .HasColumnType("boolean");
 
                     b.Property<string>("ImapUsername")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
@@ -396,7 +394,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Mailboxes");
+                    b.ToTable("Mailboxes", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.PasswordResetToken", b =>
@@ -429,7 +427,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PasswordResetTokens");
+                    b.ToTable("PasswordResetTokens", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.SmtpSettings", b =>
@@ -476,7 +474,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmtpSettings");
+                    b.ToTable("SmtpSettings", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.User", b =>
@@ -538,7 +536,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.WidgetConfig", b =>
@@ -565,7 +563,7 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("UserId", "WidgetInstanceId")
                         .IsUnique();
 
-                    b.ToTable("WidgetConfigs");
+                    b.ToTable("WidgetConfigs", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
@@ -584,7 +582,7 @@ namespace Feirb.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DataProtectionKeys");
+                    b.ToTable("DataProtectionKeys", (string)null);
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedAttachment", b =>

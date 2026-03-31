@@ -15,11 +15,10 @@ public record CreateMailboxRequest(
     string ImapHost,
     [Required, Range(1, 65535)]
     int ImapPort,
-    [StringLength(256)]
-    string? ImapUsername,
+    [Required, StringLength(256)]
+    string ImapUsername,
     string? ImapPassword,
     bool ImapUseTls,
-    bool ImapRequiresAuth,
     [Required, StringLength(256)]
     string SmtpHost,
     [Required, Range(1, 65535)]

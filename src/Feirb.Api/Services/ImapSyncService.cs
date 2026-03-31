@@ -34,7 +34,7 @@ public class ImapSyncService(
             return;
         }
 
-        if (mailbox.ImapRequiresAuth && string.IsNullOrEmpty(mailbox.ImapEncryptedPassword))
+        if (string.IsNullOrEmpty(mailbox.ImapEncryptedPassword))
         {
             logger.LogWarning("Mailbox {MailboxId} has no IMAP password configured, skipping sync", mailboxId);
             return;
@@ -42,15 +42,12 @@ public class ImapSyncService(
 
         try
         {
+            var protector = dataProtection.CreateProtector(_imapPasswordPurpose);
+            var password = protector.Unprotect(mailbox.ImapEncryptedPassword);
+
             using var client = new ImapClient();
             await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, mailbox.ImapUseTls, cancellationToken);
-
-            if (mailbox.ImapRequiresAuth)
-            {
-                var protector = dataProtection.CreateProtector(_imapPasswordPurpose);
-                var password = protector.Unprotect(mailbox.ImapEncryptedPassword!);
-                await client.AuthenticateAsync(mailbox.ImapUsername, password, cancellationToken);
-            }
+            await client.AuthenticateAsync(mailbox.ImapUsername, password, cancellationToken);
 
             var inbox = client.Inbox;
             await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);

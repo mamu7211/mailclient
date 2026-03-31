@@ -12,10 +12,9 @@ public class Mailbox
     // IMAP settings
     public required string ImapHost { get; set; }
     public int ImapPort { get; set; } = 993;
-    public string? ImapUsername { get; set; }
+    public required string ImapUsername { get; set; }
     public string? ImapEncryptedPassword { get; set; }
     public bool ImapUseTls { get; set; } = true;
-    public bool ImapRequiresAuth { get; set; } = true;
 
     // SMTP settings
     public required string SmtpHost { get; set; }

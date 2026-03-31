@@ -183,7 +183,7 @@ public class MailboxEndpointsTests : IDisposable
 
         var updateRequest = new UpdateMailboxRequest(
             "New Name", "new@test.com", "Display", null,
-            "imap.new.com", 993, "user", null, true, true,
+            "imap.new.com", 993, "user", null, true,
             "smtp.new.com", 587, "user", null, true, true);
         var response = await _client.PutAsJsonAsync($"/api/settings/mailboxes/{id}", updateRequest);
 
@@ -207,7 +207,7 @@ public class MailboxEndpointsTests : IDisposable
 
         var updateRequest = new UpdateMailboxRequest(
             "Hacked", "hacked@test.com", null, null,
-            "imap.hack.com", 993, "user", "pass", true, true,
+            "imap.hack.com", 993, "user", "pass", true,
             "smtp.hack.com", 587, "user", "pass", true, true);
         var response = await _client.PutAsJsonAsync($"/api/settings/mailboxes/{id}", updateRequest);
 
@@ -269,7 +269,7 @@ public class MailboxEndpointsTests : IDisposable
 
     private static CreateMailboxRequest CreateTestRequest(string name, string email) =>
         new(name, email, null, null,
-            "imap.test.com", 993, "user@test.com", "imappass", true, true,
+            "imap.test.com", 993, "user@test.com", "imappass", true,
             "smtp.test.com", 587, "user@test.com", "smtppass", true, true);
 
     private async Task<Guid> CreateMailboxAsync(string name, string email)
