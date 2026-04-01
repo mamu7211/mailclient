@@ -30,3 +30,67 @@ main {
 .content {
     padding: 2rem;
 }
+
+/* Debug drawer — slide-out panel from right edge */
+.debug-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 149;
+}
+
+.debug-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 150;
+    display: flex;
+    align-items: flex-start;
+    transform: translateX(calc(100% - 2.5rem));
+    transition: transform 0.2s ease;
+}
+
+.debug-drawer.open {
+    transform: translateX(0);
+}
+
+.debug-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 5rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: 1px solid var(--feirb-border-color);
+    border-right: none;
+    border-radius: 0.5rem 0 0 0.5rem;
+    background-color: var(--feirb-surface);
+    color: var(--bs-body-color);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+    align-self: center;
+}
+
+.debug-tab:hover {
+    background-color: var(--feirb-surface-container);
+}
+
+.debug-panel {
+    width: 600px;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background-color: var(--feirb-surface);
+    border-left: 1px solid var(--feirb-border-color);
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+}

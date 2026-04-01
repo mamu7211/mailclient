@@ -19,9 +19,29 @@
             @Body
         </article>
     </main>
+
+    @if (_debugPanelOpen)
+    {
+        <div class="debug-backdrop" @onclick="CloseDebugPanel"></div>
+    }
+
+    <div class="debug-drawer @(_debugPanelOpen ? "open" : "")">
+        <button type="button" class="debug-tab" @onclick="ToggleDebugPanel">
+            <span>Debug</span>
+        </button>
+        <div class="debug-panel">
+            <Feirb.Web.Components.ContentSection Icon="bug" Title="Debug" />
+        </div>
+    </div>
 </div>
 
 @code {
+    private bool _debugPanelOpen;
+
+    private void ToggleDebugPanel() => _debugPanelOpen = !_debugPanelOpen;
+
+    private void CloseDebugPanel() => _debugPanelOpen = false;
+
     private bool _themeSynced;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
