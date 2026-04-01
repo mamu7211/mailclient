@@ -1369,13 +1369,13 @@
     <value>Annuler</value>
   </data>
   <data name="AvatarUploadError" xml:space="preserve">
-    <value>Impossible de telecharger l'avatar.</value>
+    <value>Impossible de télécharger l'avatar.</value>
   </data>
   <data name="AvatarUploadSuccess" xml:space="preserve">
-    <value>Avatar mis a jour avec succes.</value>
+    <value>Avatar mis à jour avec succès.</value>
   </data>
   <data name="AvatarInvalidFormat" xml:space="preserve">
-    <value>Le fichier selectionne est trop volumineux ou n'est pas une image valide.</value>
+    <value>Le fichier sélectionné est trop volumineux ou n'est pas une image valide.</value>
   </data>
   <data name="AvatarAlt" xml:space="preserve">
     <value>Avatar du profil</value>
