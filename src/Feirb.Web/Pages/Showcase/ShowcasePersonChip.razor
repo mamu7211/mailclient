@@ -5,7 +5,7 @@
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Info</Heading>
-    <p>Compact person display with avatar placeholder, name, and optional email. Used in MailCard and table rows.</p>
+    <p>Compact person display with avatar, name, and optional email. Shows a dashed placeholder icon when no avatar exists. When an avatar is uploaded for the email address, the image loads automatically via the public avatar endpoint. Used in MailCard and table rows.</p>
     <Table Size="TableSize.Small">
         <TableHeader>
             <TableColumn>Parameter</TableColumn>
@@ -50,6 +50,26 @@
 </Card>
 
 <Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Avatar Lookup</Heading>
+    <p class="text-muted mb-3">Enter an email address that has an uploaded avatar to see it render. Try <code>admin@feirb.local</code> if you uploaded one in settings.</p>
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="flex: 1;">
+            <input type="email" class="form-control form-control-sm" placeholder="Enter email to test avatar..."
+                   @bind="_avatarTestEmail" @bind:event="oninput" />
+        </div>
+    </div>
+    <div class="d-flex flex-wrap gap-4">
+        @foreach (var size in Enum.GetValues<PersonChipSize>())
+        {
+            <div>
+                <span class="badge bg-secondary mb-2">@size</span>
+                <PersonChip Name="Avatar Test" Email="@_avatarTestEmail" Size="size" />
+            </div>
+        }
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">All Sizes</Heading>
     <p class="text-muted mb-3">Comparison of all three sizes with the same data.</p>
     <div class="d-flex flex-column gap-3">
@@ -71,6 +91,7 @@
 @code {
     private string _name = "Alice Johnson";
     private string _email = "alice.johnson@example.com";
+    private string _avatarTestEmail = "admin@feirb.local";
     private PersonChipSize _size = PersonChipSize.Default;
     private ElementReference _codeElement;
 

@@ -8,6 +8,7 @@
 
 /* Avatar */
 .feirb-person-chip-avatar {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -15,6 +16,16 @@
     width: 2.75rem;
     height: 2.75rem;
     border: 2px dashed var(--bs-primary);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.feirb-person-chip-avatar-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     border-radius: 50%;
 }
 

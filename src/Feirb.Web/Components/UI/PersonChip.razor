@@ -1,9 +1,16 @@
 @namespace Feirb.Web.Components.UI
+@using Feirb.Shared.Avatars
 
 @* Compact person display with avatar placeholder, name, and optional email. *@
 <div class="feirb-person-chip feirb-person-chip-@SizeCss @Class">
     <div class="feirb-person-chip-avatar">
         <Icon Name="person" Class="feirb-person-chip-avatar-icon" />
+        @if (_avatarUrl is not null)
+        {
+            <img src="@_avatarUrl" alt="" class="feirb-person-chip-avatar-img"
+                 onload="this.parentElement.style.borderStyle='solid'"
+                 onerror="this.style.display='none'" />
+        }
     </div>
     <div class="feirb-person-chip-info">
         <span class="feirb-person-chip-name">@Name</span>
@@ -30,6 +37,15 @@
     /// <summary>Additional CSS classes.</summary>
     [Parameter]
     public string? Class { get; set; }
+
+    private string? _avatarUrl;
+
+    protected override void OnParametersSet()
+    {
+        _avatarUrl = !string.IsNullOrEmpty(Email)
+            ? $"/api/avatars/{AvatarHashHelper.ComputeEmailHash(Email)}"
+            : null;
+    }
 
     private string SizeCss => Size switch
     {
