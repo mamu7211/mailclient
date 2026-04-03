@@ -19,6 +19,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<JobExecution> JobExecutions => Set<JobExecution>();
     public DbSet<CachedMessageClassificationQueueItem> ClassificationQueueItems => Set<CachedMessageClassificationQueueItem>();
     public DbSet<ClassificationResult> ClassificationResults => Set<ClassificationResult>();
+    public DbSet<ClassificationRule> ClassificationRules => Set<ClassificationRule>();
     public DbSet<Avatar> Avatars => Set<Avatar>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
@@ -213,6 +214,17 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasOne(e => e.CachedMessage)
                 .WithMany()
                 .HasForeignKey(e => e.CachedMessageId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ClassificationRule>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.Property(e => e.Instruction).HasMaxLength(500);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

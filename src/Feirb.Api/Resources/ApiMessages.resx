@@ -147,4 +147,13 @@
   <data name="AvatarInvalidImage" xml:space="preserve">
     <value>The uploaded file is not a valid image.</value>
   </data>
+  <data name="ClassificationRuleNotFound" xml:space="preserve">
+    <value>Classification rule not found.</value>
+  </data>
+  <data name="ClassificationRuleDeleted" xml:space="preserve">
+    <value>Classification rule deleted successfully.</value>
+  </data>
+  <data name="ClassificationRuleInstructionInvalid" xml:space="preserve">
+    <value>Instruction is required and must not exceed 500 characters.</value>
+  </data>
 </root>
