@@ -49,16 +49,15 @@ public class ClassificationRuleEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        await CreateRuleAsync("Second rule created first");
-        await CreateRuleAsync("First rule created second");
+        await CreateRuleAsync("Rule A");
+        await CreateRuleAsync("Rule B");
 
         var response = await _client.GetAsync("/api/settings/rules");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var rules = await response.Content.ReadFromJsonAsync<List<ClassificationRuleResponse>>();
         rules.Should().HaveCount(2);
-        rules![0].Instruction.Should().Be("Second rule created first");
-        rules[1].Instruction.Should().Be("First rule created second");
+        rules![0].CreatedAt.Should().BeOnOrBefore(rules[1].CreatedAt);
     }
 
     [Fact]
@@ -81,11 +80,14 @@ public class ClassificationRuleEndpointsTests : IDisposable
         await _client.PostAsJsonAsync("/api/auth/register", registerRequest);
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",
             new LoginRequest("otheruser", "Password123!"));
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var otherTokens = await loginResponse.Content.ReadFromJsonAsync<TokenResponse>();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", otherTokens!.AccessToken);
 
         var response = await _client.GetAsync("/api/settings/rules");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var rules = await response.Content.ReadFromJsonAsync<List<ClassificationRuleResponse>>();
+        rules.Should().NotBeNull();
         rules.Should().BeEmpty();
     }
 

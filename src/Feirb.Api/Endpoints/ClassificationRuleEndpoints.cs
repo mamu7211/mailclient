@@ -27,6 +27,7 @@ public static class ClassificationRuleEndpoints
         var rules = await db.ClassificationRules
             .Where(r => r.UserId == userId)
             .OrderBy(r => r.CreatedAt)
+            .ThenBy(r => r.Id)
             .Select(r => new ClassificationRuleResponse(r.Id, r.Instruction, r.CreatedAt, r.UpdatedAt))
             .ToListAsync();
 
