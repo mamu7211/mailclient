@@ -17,10 +17,6 @@ RUN dotnet restore src/Feirb.Api/Feirb.Api.csproj
 COPY src/ src/
 RUN dotnet publish src/Feirb.Api/Feirb.Api.csproj -c Release -o /app/publish
 
-# Resolve .NET 10 fingerprinted asset references in index.html
-COPY tests/resolve-fingerprints.sh /tmp/
-RUN chmod +x /tmp/resolve-fingerprints.sh && /tmp/resolve-fingerprints.sh /app/publish
-
 # --- runtime ---
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
