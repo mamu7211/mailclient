@@ -4,10 +4,10 @@
 # Use --watch to enable hot reload via dotnet watch.
 # Use --auto-login to auto-login as admin in development.
 #
-# Test runners:
+# Test runners (--bruno and --playwright require the API to be running):
 # Use --bruno [folder] to run Bruno API tests.
 # Use --playwright [spec] to run Playwright E2E tests.
-# Use --unit to run xUnit tests.
+# Use --unit to run xUnit tests (no running API needed).
 
 set -euo pipefail
 
@@ -41,7 +41,9 @@ run_playwright() {
     local spec="${1:-}"
     check_api
     cd "$SCRIPT_DIR/tests/playwright"
-    npm install --silent
+    if [ ! -d "node_modules" ]; then
+        npm ci --silent
+    fi
     if [ -n "$spec" ]; then
         echo "Running Playwright tests: $spec"
         npx playwright test "$spec"
