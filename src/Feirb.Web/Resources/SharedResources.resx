@@ -1431,4 +1431,61 @@
   <data name="ColumnJobName" xml:space="preserve">
     <value>Job</value>
   </data>
+  <data name="SettingsClassificationTitle" xml:space="preserve">
+    <value>Classification Rules</value>
+  </data>
+  <data name="SettingsClassificationSubtitle" xml:space="preserve">
+    <value>Define rules that instruct the AI how to categorize your emails</value>
+  </data>
+  <data name="PageTitleClassificationRules" xml:space="preserve">
+    <value>Classification Rules - Feirb</value>
+  </data>
+  <data name="ClassificationRulesHeading" xml:space="preserve">
+    <value>Classification Rules</value>
+  </data>
+  <data name="ClassificationRulesSubtitle" xml:space="preserve">
+    <value>Rules are free-text instructions that tell the AI how to classify your incoming emails.</value>
+  </data>
+  <data name="PageHelpClassificationRules" xml:space="preserve">
+    <value>Classification rules are instructions for the AI to automatically categorize your emails. Each rule describes a pattern or condition, such as "Emails from newsletters should be labeled 'Newsletter'" or "Mark emails from my team as 'Work'". The AI reads all your rules when classifying new messages.</value>
+  </data>
+  <data name="ButtonCreateRule" xml:space="preserve">
+    <value>Create rule</value>
+  </data>
+  <data name="CreateRuleTitle" xml:space="preserve">
+    <value>Create Rule</value>
+  </data>
+  <data name="EditRuleTitle" xml:space="preserve">
+    <value>Edit Rule</value>
+  </data>
+  <data name="RuleInstructionField" xml:space="preserve">
+    <value>Instruction</value>
+  </data>
+  <data name="PlaceholderRuleInstruction" xml:space="preserve">
+    <value>e.g. Emails from newsletters should be labeled 'Newsletter'</value>
+  </data>
+  <data name="ConfirmDeleteRuleTitle" xml:space="preserve">
+    <value>Delete Rule</value>
+  </data>
+  <data name="ConfirmDeleteRuleMessage" xml:space="preserve">
+    <value>Are you sure you want to delete this classification rule?</value>
+  </data>
+  <data name="SuccessRuleCreated" xml:space="preserve">
+    <value>Classification rule created.</value>
+  </data>
+  <data name="SuccessRuleUpdated" xml:space="preserve">
+    <value>Classification rule updated.</value>
+  </data>
+  <data name="SuccessRuleDeleted" xml:space="preserve">
+    <value>Classification rule deleted.</value>
+  </data>
+  <data name="ErrorRuleFailed" xml:space="preserve">
+    <value>An error occurred while managing classification rules.</value>
+  </data>
+  <data name="LoadingRules" xml:space="preserve">
+    <value>Loading rules...</value>
+  </data>
+  <data name="NoRulesFound" xml:space="preserve">
+    <value>No classification rules defined yet. Create a rule to get started.</value>
+  </data>
 </root>

@@ -1431,4 +1431,61 @@
   <data name="ColumnJobName" xml:space="preserve">
     <value>Job</value>
   </data>
+  <data name="SettingsClassificationTitle" xml:space="preserve">
+    <value>Regole di classificazione</value>
+  </data>
+  <data name="SettingsClassificationSubtitle" xml:space="preserve">
+    <value>Definisci regole che indicano all'IA come categorizzare le tue email</value>
+  </data>
+  <data name="PageTitleClassificationRules" xml:space="preserve">
+    <value>Regole di classificazione - Feirb</value>
+  </data>
+  <data name="ClassificationRulesHeading" xml:space="preserve">
+    <value>Regole di classificazione</value>
+  </data>
+  <data name="ClassificationRulesSubtitle" xml:space="preserve">
+    <value>Le regole sono istruzioni in testo libero che indicano all'IA come classificare le email in arrivo.</value>
+  </data>
+  <data name="PageHelpClassificationRules" xml:space="preserve">
+    <value>Le regole di classificazione sono istruzioni per l'IA per categorizzare automaticamente le tue email. Ogni regola descrive un modello o una condizione, ad esempio "Le email dalle newsletter devono essere etichettate 'Newsletter'" o "Contrassegna le email del mio team come 'Lavoro'". L'IA legge tutte le tue regole quando classifica i nuovi messaggi.</value>
+  </data>
+  <data name="ButtonCreateRule" xml:space="preserve">
+    <value>Crea regola</value>
+  </data>
+  <data name="CreateRuleTitle" xml:space="preserve">
+    <value>Crea regola</value>
+  </data>
+  <data name="EditRuleTitle" xml:space="preserve">
+    <value>Modifica regola</value>
+  </data>
+  <data name="RuleInstructionField" xml:space="preserve">
+    <value>Istruzione</value>
+  </data>
+  <data name="PlaceholderRuleInstruction" xml:space="preserve">
+    <value>es. Le email dalle newsletter devono essere etichettate 'Newsletter'</value>
+  </data>
+  <data name="ConfirmDeleteRuleTitle" xml:space="preserve">
+    <value>Elimina regola</value>
+  </data>
+  <data name="ConfirmDeleteRuleMessage" xml:space="preserve">
+    <value>Sei sicuro di voler eliminare questa regola di classificazione?</value>
+  </data>
+  <data name="SuccessRuleCreated" xml:space="preserve">
+    <value>Regola di classificazione creata.</value>
+  </data>
+  <data name="SuccessRuleUpdated" xml:space="preserve">
+    <value>Regola di classificazione aggiornata.</value>
+  </data>
+  <data name="SuccessRuleDeleted" xml:space="preserve">
+    <value>Regola di classificazione eliminata.</value>
+  </data>
+  <data name="ErrorRuleFailed" xml:space="preserve">
+    <value>Si è verificato un errore durante la gestione delle regole di classificazione.</value>
+  </data>
+  <data name="LoadingRules" xml:space="preserve">
+    <value>Caricamento regole...</value>
+  </data>
+  <data name="NoRulesFound" xml:space="preserve">
+    <value>Nessuna regola di classificazione definita. Crea una regola per iniziare.</value>
+  </data>
 </root>
