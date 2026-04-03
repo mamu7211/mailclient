@@ -1,0 +1,15 @@
+# Playwright E2E test runner
+# Build context: repository root (..)
+
+FROM mcr.microsoft.com/playwright:v1.58.2-noble
+
+WORKDIR /app
+COPY tests/playwright/package.json tests/playwright/package-lock.json ./
+RUN npm ci
+
+COPY tests/playwright/ .
+
+COPY tests/wait-for-api.sh /usr/local/bin/wait-for-api
+RUN chmod +x /usr/local/bin/wait-for-api
+
+ENTRYPOINT ["bash", "-c", "wait-for-api && npx playwright test"]

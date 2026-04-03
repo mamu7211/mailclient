@@ -1,0 +1,29 @@
+# Multi-stage Dockerfile for Feirb API (includes Blazor WASM frontend)
+# Build context: repository root (..)
+
+# --- build ---
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY global.json Directory.Build.props Feirb.sln ./
+COPY src/Feirb.Api/Feirb.Api.csproj src/Feirb.Api/
+COPY src/Feirb.Web/Feirb.Web.csproj src/Feirb.Web/
+COPY src/Feirb.Shared/Feirb.Shared.csproj src/Feirb.Shared/
+COPY src/Feirb.ServiceDefaults/Feirb.ServiceDefaults.csproj src/Feirb.ServiceDefaults/
+COPY src/Feirb.AppHost/Feirb.AppHost.csproj src/Feirb.AppHost/
+
+RUN dotnet restore src/Feirb.Api/Feirb.Api.csproj
+
+COPY src/ src/
+RUN dotnet publish src/Feirb.Api/Feirb.Api.csproj -c Release -o /app/publish
+
+# --- runtime ---
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "Feirb.Api.dll"]

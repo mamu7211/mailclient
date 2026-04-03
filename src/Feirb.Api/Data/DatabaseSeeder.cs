@@ -10,7 +10,7 @@ internal static class DatabaseSeeder
     private const string _smtpPasswordPurpose = "MailboxSmtpPassword";
     private const string _imapSyncJobType = "imap-sync";
 
-    public static async Task SeedAsync(FeirbDbContext db, ILogger logger, IDataProtectionProvider dataProtection)
+    public static async Task SeedAsync(FeirbDbContext db, ILogger logger, IDataProtectionProvider dataProtection, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(db);
         ArgumentNullException.ThrowIfNull(logger);
@@ -24,16 +24,20 @@ internal static class DatabaseSeeder
         var aliceUser = await SeedUserAsync(db, logger, "alice", "alice@feirb.local", "alice@feirb.local", isAdmin: false);
         seeded |= aliceUser.created;
 
-        seeded |= await SeedMailboxAsync(db, logger, dataProtection, adminUser.user, "#4A90D9");
-        seeded |= await SeedMailboxAsync(db, logger, dataProtection, aliceUser.user, "#E67E22");
+        var mailHost = configuration["GREENMAIL_HOST"] ?? "localhost";
+        var smtpPort = int.TryParse(configuration["GREENMAIL_SMTP_PORT"], out var sp) ? sp : 3025;
+        var imapPort = int.TryParse(configuration["GREENMAIL_IMAP_PORT"], out var ip) ? ip : 3143;
+
+        seeded |= await SeedMailboxAsync(db, logger, dataProtection, adminUser.user, "#4A90D9", mailHost, smtpPort, imapPort);
+        seeded |= await SeedMailboxAsync(db, logger, dataProtection, aliceUser.user, "#E67E22", mailHost, smtpPort, imapPort);
 
         if (!await db.SmtpSettings.AnyAsync())
         {
             db.SmtpSettings.Add(new SmtpSettings
             {
                 Id = Guid.NewGuid(),
-                Host = "localhost",
-                Port = 3025,
+                Host = mailHost,
+                Port = smtpPort,
                 UseTls = false,
                 RequiresAuth = false,
                 FromAddress = "noreply@feirb.local",
@@ -103,7 +107,7 @@ internal static class DatabaseSeeder
 
     private static async Task<bool> SeedMailboxAsync(
         FeirbDbContext db, ILogger logger, IDataProtectionProvider dataProtection,
-        User user, string badgeColor)
+        User user, string badgeColor, string mailHost, int smtpPort, int imapPort)
     {
         if (await db.Mailboxes.AnyAsync(m => m.UserId == user.Id))
             return false;
@@ -118,13 +122,13 @@ internal static class DatabaseSeeder
             Name = user.Email,
             EmailAddress = user.Email,
             DisplayName = user.Username[0..1].ToUpperInvariant() + user.Username[1..],
-            ImapHost = "localhost",
-            ImapPort = 3143,
+            ImapHost = mailHost,
+            ImapPort = imapPort,
             ImapUsername = user.Email,
             ImapEncryptedPassword = imapProtector.Protect(user.Email),
             ImapUseTls = false,
-            SmtpHost = "localhost",
-            SmtpPort = 3025,
+            SmtpHost = mailHost,
+            SmtpPort = smtpPort,
             SmtpUsername = user.Email,
             SmtpEncryptedPassword = smtpProtector.Protect(user.Email),
             SmtpUseTls = false,

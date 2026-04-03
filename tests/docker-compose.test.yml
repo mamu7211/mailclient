@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:17-alpine
+    environment:
+      POSTGRES_USER: feirb
+      POSTGRES_PASSWORD: feirb
+      POSTGRES_DB: feirb
+
+  greenmail:
+    image: docker.io/greenmail/standalone
+    environment:
+      GREENMAIL_OPTS: >-
+        -Dgreenmail.preload.dir=/preload
+        -Dgreenmail.setup.test.all
+        -Dgreenmail.hostname=0.0.0.0
+        -Dgreenmail.api.port=8080
+        -Dgreenmail.api.hostname=0.0.0.0
+    volumes:
+      - ../seeding/mails:/preload:ro
+
+  api:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile.api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__mailclientdb: Host=postgres;Port=5432;Database=feirb;Username=feirb;Password=feirb
+      FEIRB_SEED_DATA: "true"
+      GREENMAIL_HOST: greenmail
+      GREENMAIL_SMTP_PORT: "3025"
+      GREENMAIL_IMAP_PORT: "3143"
+    depends_on:
+      - postgres
+      - greenmail
+
+  bruno:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile.bruno
+    depends_on:
+      - api
+
+  playwright:
+    build:
+      context: ..
+      dockerfile: tests/Dockerfile.playwright
+    environment:
+      BASE_URL: http://api:8080
+      CI: "true"
+    depends_on:
+      - api
+    volumes:
+      - ./test-results/playwright:/app/test-results
+      - ./test-results/playwright-report:/app/playwright-report
