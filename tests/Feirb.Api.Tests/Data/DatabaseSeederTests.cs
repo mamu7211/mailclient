@@ -3,6 +3,7 @@ using Feirb.Api.Data.Entities;
 using FluentAssertions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Feirb.Api.Tests.Data;
@@ -25,12 +26,15 @@ public class DatabaseSeederTests
     private static IDataProtectionProvider CreateDataProtection() =>
         DataProtectionProvider.Create("Tests");
 
+    private static IConfiguration CreateConfiguration() =>
+        new ConfigurationBuilder().Build();
+
     [Fact]
     public async Task SeedAsync_EmptyDatabase_CreatesUsersMailboxesAndSmtpSettingsAsync()
     {
         using var db = CreateInMemoryContext();
 
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection());
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection(), CreateConfiguration());
 
         var users = await db.Users.OrderBy(u => u.Username).ToListAsync();
         users.Should().HaveCount(2);
@@ -91,7 +95,7 @@ public class DatabaseSeederTests
         });
         await db.SaveChangesAsync();
 
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection());
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection(), CreateConfiguration());
 
         var users = await db.Users.ToListAsync();
         users.Should().HaveCount(2);
@@ -111,7 +115,7 @@ public class DatabaseSeederTests
         });
         await db.SaveChangesAsync();
 
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection());
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), CreateDataProtection(), CreateConfiguration());
 
         var settings = await db.SmtpSettings.ToListAsync();
         settings.Should().HaveCount(1);
@@ -124,8 +128,8 @@ public class DatabaseSeederTests
         using var db = CreateInMemoryContext();
         var dp = CreateDataProtection();
 
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp);
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp);
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp, CreateConfiguration());
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp, CreateConfiguration());
 
         (await db.Users.CountAsync()).Should().Be(2);
         (await db.Mailboxes.CountAsync()).Should().Be(2);
@@ -139,10 +143,10 @@ public class DatabaseSeederTests
         var dp = CreateDataProtection();
 
         // First seed creates everything
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp);
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp, CreateConfiguration());
 
         // Second seed should not duplicate mailboxes
-        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp);
+        await DatabaseSeeder.SeedAsync(db, CreateLogger(), dp, CreateConfiguration());
 
         var mailboxes = await db.Mailboxes.ToListAsync();
         mailboxes.Should().HaveCount(2);

@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+**/node_modules/
+.git/
+tests/playwright/test-results/
+tests/playwright/playwright-report/
+tests/test-results/

@@ -105,7 +105,7 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DatabaseSeeder");
         var dataProtection = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
-        await DatabaseSeeder.SeedAsync(db, logger, dataProtection);
+        await DatabaseSeeder.SeedAsync(db, logger, dataProtection, app.Configuration);
     }
 }
 

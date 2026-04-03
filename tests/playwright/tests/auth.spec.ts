@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 
-const ADMIN_USERNAME = "admin-playwright";
-const ADMIN_EMAIL = "admin@playwright.local";
-const ADMIN_PASSWORD = "TestPassword123!";
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin-playwright";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@playwright.local";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "TestPassword123!";
 
 const TEST_USERNAME = `e2euser_${Date.now()}`;
 const TEST_EMAIL = `${TEST_USERNAME}@feirb.local`;

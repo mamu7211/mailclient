@@ -1,0 +1,21 @@
+meta {
+  name: Delete Rule Not Found
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/settings/rules/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const ADMIN_USERNAME = "admin-playwright";
-const ADMIN_PASSWORD = "TestPassword123!";
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin-playwright";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "TestPassword123!";
 
 test.describe.serial("Admin Users table", () => {
   test.beforeEach(async ({ page }) => {
