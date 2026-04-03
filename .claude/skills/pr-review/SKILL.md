@@ -83,10 +83,10 @@ Perform a thorough code review on a given pull request, covering correctness, co
 
    Omit rows with a count of 0.
 
-6. **On user request**, submit findings as a GitHub PR review:
-   ```bash
-   gh pr review {pr_number} --comment --body "..."
-   ```
+6. **After presenting findings, ask the user** what follow-up actions to take:
+   - **Create an issue** for suggestions (🟡) — group them into a single issue with the appropriate label
+   - **Post a PR comment** for nitpicks (🔵) — use `gh pr comment {pr_number}` to add a comment listing the nitpicks
+   - **Submit a full PR review** — use `gh pr review {pr_number} --comment --body "..."` for the complete review
 
 ## Principles
 
