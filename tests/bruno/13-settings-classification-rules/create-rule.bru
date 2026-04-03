@@ -1,0 +1,40 @@
+meta {
+  name: Create Classification Rule
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/settings/rules
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "instruction": "Emails from newsletters should be labeled 'Newsletter'"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("testRuleId", res.body.id);
+  }
+}
+
+tests {
+  test("should return 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("should return rule data", function() {
+    expect(res.body.instruction).to.equal("Emails from newsletters should be labeled 'Newsletter'");
+    expect(res.body.id).to.be.a("string");
+    expect(res.body.createdAt).to.be.a("string");
+    expect(res.body.updatedAt).to.be.a("string");
+  });
+}

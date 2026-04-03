@@ -3,7 +3,86 @@
 # Use --no-seeding to skip seeding.
 # Use --watch to enable hot reload via dotnet watch.
 # Use --auto-login to auto-login as admin in development.
+#
+# Test runners:
+# Use --bruno [folder] to run Bruno API tests.
+# Use --playwright [spec] to run Playwright E2E tests.
+# Use --unit to run xUnit tests.
 
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_URL="${BASE_URL:-https://localhost:7272}"
+
+check_api() {
+    local status
+    status=$(curl -k -s -o /dev/null -w '%{http_code}' "$BASE_URL/api/setup/status" 2>/dev/null || echo "000")
+    if [ "$status" != "200" ]; then
+        echo "Error: API is not reachable at $BASE_URL"
+        echo "Start it with: ./run.sh"
+        exit 1
+    fi
+}
+
+run_bruno() {
+    local folder="${1:-}"
+    check_api
+    cd "$SCRIPT_DIR/tests/bruno"
+    if [ -n "$folder" ]; then
+        echo "Running Bruno tests: 01-auth/login.bru + $folder/"
+        npx bru run 01-auth/login.bru "$folder/" --env local
+    else
+        echo "Running all Bruno tests"
+        npx bru run --env local
+    fi
+}
+
+run_playwright() {
+    local spec="${1:-}"
+    check_api
+    cd "$SCRIPT_DIR/tests/playwright"
+    npm install --silent
+    if [ -n "$spec" ]; then
+        echo "Running Playwright tests: $spec"
+        npx playwright test "$spec"
+    else
+        echo "Running all Playwright tests"
+        npx playwright test
+    fi
+}
+
+run_unit() {
+    echo "Running xUnit tests"
+    dotnet test "$SCRIPT_DIR/Feirb.sln" --verbosity normal
+}
+
+# Test runner modes
+case "${1:-}" in
+    --bruno)
+        shift
+        arg=""
+        if [ $# -gt 0 ] && [[ ! "$1" =~ ^-- ]]; then
+            arg="$1"
+        fi
+        run_bruno "$arg"
+        exit 0
+        ;;
+    --playwright)
+        shift
+        arg=""
+        if [ $# -gt 0 ] && [[ ! "$1" =~ ^-- ]]; then
+            arg="$1"
+        fi
+        run_playwright "$arg"
+        exit 0
+        ;;
+    --unit)
+        run_unit
+        exit 0
+        ;;
+esac
+
+# Default: start Aspire
 SEED="true"
 WATCH=""
 AUTO_LOGIN=""

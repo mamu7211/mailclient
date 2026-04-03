@@ -1,0 +1,31 @@
+meta {
+  name: Update Classification Rule
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/api/settings/rules/{{testRuleId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "instruction": "Mark emails from my team as 'Work'"
+  }
+}
+
+tests {
+  test("should return 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("should return updated rule", function() {
+    expect(res.body.instruction).to.equal("Mark emails from my team as 'Work'");
+  });
+}
