@@ -65,13 +65,25 @@ Perform a thorough code review on a given pull request, covering correctness, co
 2. **Use severity levels:**
    - 🔴 **Blocker** — must fix before merge (bugs, security issues, broken tests)
    - 🟡 **Suggestion** — should fix, improves quality (convention violations, missing tests, i18n gaps)
-   - 🟢 **Nitpick** — optional, minor improvements (style, naming preferences)
+   - 🔵 **Nitpick** — optional, minor improvements (style, naming preferences)
+   - 🟢 **Good** — praiseworthy patterns worth calling out
 
-3. **Prefix every finding** with its severity icon (🔴, 🟡, or 🟢) so findings are scannable at a glance.
+3. **Prefix every finding** with its severity icon (🔴, 🟡, 🔵, or 🟢) so findings are scannable at a glance.
 
 4. **Reference specific files and lines** when pointing out issues.
 
-5. **On user request**, submit findings as a GitHub PR review:
+5. **End with a summary table** showing the count of each severity level:
+
+   | Icon | Severity | Count |
+   |------|----------|-------|
+   | 🟢 | Good | 4 |
+   | 🔵 | Nitpick | 2 |
+   | 🟡 | Suggestion | 3 |
+   | 🔴 | Blocker | 0 |
+
+   Omit rows with a count of 0.
+
+6. **On user request**, submit findings as a GitHub PR review:
    ```bash
    gh pr review {pr_number} --comment --body "..."
    ```
