@@ -47,18 +47,17 @@ tests/
 ## First-Time Setup
 
 ```bash
-# 1. Copy the Claude Code permissions template (if not present)
-cp .claude/settings.local.json.template .claude/settings.local.json
-
-# 2. Build
+# 1. Build
 dotnet build Feirb.sln
 
-# 3. Start the app with dev-harness (seeds data, waits for health)
+# 2. Start the app with dev-harness (seeds data, waits for health)
 .claude/skills/dev-harness/start.sh
 
-# 4. Authenticate
+# 3. Authenticate
 .claude/skills/dev-harness/login.sh
 ```
+
+Tool permissions are configured in `.claude/settings.json` (checked in) so dev-harness scripts work without manual approval.
 
 On first run, the Ollama model (`qwen3:0.6b` for dev) downloads automatically (~400MB). Models persist in `.ollama-data/` across restarts.
 
