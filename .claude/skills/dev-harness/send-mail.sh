@@ -11,11 +11,13 @@ BODY="${4:-This is a test email for classification testing.}"
 python3 -c "
 import smtplib
 from email.mime.text import MIMEText
+from email.utils import formatdate
 
 msg = MIMEText('$BODY')
 msg['Subject'] = '$SUBJECT'
 msg['From'] = '$FROM'
 msg['To'] = '$TO'
+msg['Date'] = formatdate(localtime=True)
 
 with smtplib.SMTP('localhost', 3025) as s:
     s.send_message(msg)

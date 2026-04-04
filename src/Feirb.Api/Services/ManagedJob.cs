@@ -29,6 +29,26 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
             return;
         }
 
+        var alreadyRunning = await db.JobExecutions
+            .AnyAsync(je => je.JobSettingsId == jobSettings.Id
+                && je.FinishedAt == null, context.CancellationToken);
+
+        if (alreadyRunning)
+        {
+            logger.LogDebug("Job '{JobName}' is already running, skipping this execution", jobName);
+
+            db.JobExecutions.Add(new JobExecution
+            {
+                Id = Guid.NewGuid(),
+                JobSettingsId = jobSettings.Id,
+                StartedAt = DateTimeOffset.UtcNow,
+                FinishedAt = DateTimeOffset.UtcNow,
+                Status = JobExecutionStatus.Skipped,
+            });
+            await db.SaveChangesAsync(context.CancellationToken);
+            return;
+        }
+
         var execution = new JobExecution
         {
             Id = Guid.NewGuid(),

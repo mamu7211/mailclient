@@ -115,6 +115,39 @@ public class ManagedJobTests : IDisposable
     }
 
     [Fact]
+    public async Task Execute_AlreadyRunning_SkipsExecutionAsync()
+    {
+        var jobSettingsId = SeedJobSettings();
+
+        // Simulate a running execution (FinishedAt is null)
+        using (var db = new FeirbDbContext(_dbOptions))
+        {
+            db.JobExecutions.Add(new JobExecution
+            {
+                Id = Guid.NewGuid(),
+                JobSettingsId = jobSettingsId,
+                StartedAt = DateTimeOffset.UtcNow.AddMinutes(-1),
+                FinishedAt = null,
+                Status = JobExecutionStatus.Success,
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var job = CreateTestJob(succeeds: true);
+        await job.Execute(CreateJobContext());
+
+        using var verifyDb = new FeirbDbContext(_dbOptions);
+        var executions = await verifyDb.JobExecutions
+            .Where(e => e.JobSettingsId == jobSettingsId)
+            .OrderBy(e => e.StartedAt)
+            .ToListAsync();
+        executions.Should().HaveCount(2);
+        executions[0].Status.Should().Be(JobExecutionStatus.Success, "the original running execution");
+        executions[1].Status.Should().Be(JobExecutionStatus.Skipped, "the skipped execution");
+        executions[1].FinishedAt.Should().NotBeNull();
+    }
+
+    [Fact]
     public async Task Execute_JobSettingsNotFound_SkipsWithoutErrorAsync()
     {
         var job = CreateTestJob(succeeds: true);
