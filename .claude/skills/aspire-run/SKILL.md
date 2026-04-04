@@ -17,9 +17,9 @@ Start the Feirb application via .NET Aspire. This is the primary way to run all 
 
 2. Report the service URLs once started:
    - **Aspire Dashboard:** https://localhost:18888
-   - **Blazor Frontend:** https://localhost:7100
-   - **API Backend:** https://localhost:7200
+   - **API Backend:** https://localhost:7272
    - **GreenMail API:** http://localhost:8080
+   - **Ollama:** http://localhost:11434
 
 3. If the command fails, check:
    - Docker is running (`docker info`)
