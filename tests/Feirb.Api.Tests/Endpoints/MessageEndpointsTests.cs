@@ -3,13 +3,13 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 using Feirb.Shared.Auth;
 using Feirb.Shared.Mail;
 using Feirb.Shared.Settings;
 using Feirb.Shared.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Feirb.Api.Tests.Endpoints;
