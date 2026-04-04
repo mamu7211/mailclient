@@ -43,6 +43,7 @@ else if (UseCardLayout)
                       SenderEmail="@msg.FromEmail"
                       Subject="@msg.Subject"
                       Summary="@msg.Summary"
+                      Labels="@msg.Labels.Select(l => new MailCardLabel(l.Name, l.Color)).ToList()"
                       ReceivedAt="msg.Date.LocalDateTime"
                       IsRead="msg.IsRead"
                       Href="@($"/mail/inbox/{msg.Id}")" />
@@ -64,11 +65,11 @@ else
     <ContentSection Title="@L["NavInbox"]" Icon="envelope">
         <Table Hover>
             <TableHeader>
-                <TableColumn Width="8rem">@L["ColumnMailbox"]</TableColumn>
-                <TableColumn Width="2fr">@L["ColumnFrom"]</TableColumn>
-                <TableColumn Width="3fr">@L["ColumnSubject"]</TableColumn>
-                <TableColumn Width="1fr">@L["ColumnCategory"]</TableColumn>
-                <TableColumn Width="10rem">@L["ColumnDate"]</TableColumn>
+                <TableColumn Width="auto">@L["ColumnMailbox"]</TableColumn>
+                <TableColumn Width="auto">@L["ColumnFrom"]</TableColumn>
+                <TableColumn Width="1fr">@L["ColumnSubject"]</TableColumn>
+                <TableColumn Width="auto">@L["ColumnCategory"]</TableColumn>
+                <TableColumn Width="auto">@L["ColumnDate"]</TableColumn>
             </TableHeader>
             <TableBody>
                 @foreach (var msg in _messages.Items)
@@ -89,7 +90,19 @@ else
                                              HasAttachments="msg.HasAttachments" />
                         </TableCell>
                         <TableCell>
-                            <LabelPill Name="@L["LabelNone"]" Color="#6c757d" Size="LabelPillSize.Small" />
+                            <div class="d-flex flex-column align-items-start gap-1">
+                                @if (msg.Labels.Count > 0)
+                                {
+                                    @foreach (var label in msg.Labels)
+                                    {
+                                        <LabelPill Name="@label.Name" Color="@label.Color" Size="LabelPillSize.Small" />
+                                    }
+                                }
+                                else
+                                {
+                                    <LabelPill Name="@L["LabelNone"]" Color="#6c757d" Size="LabelPillSize.Small" />
+                                }
+                            </div>
                         </TableCell>
                         <TableCell>
                             <DateTimeChip Value="msg.Date"
@@ -114,7 +127,7 @@ else
 }
 
 @code {
-    private const int CardLayoutBreakpoint = 1000;
+    private const int CardLayoutBreakpoint = 1100;
 
     private PaginatedResponse<MessageListItemResponse>? _messages;
     private bool _isLoading = true;

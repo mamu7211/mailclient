@@ -16,14 +16,9 @@
 
         <div class="mail-card-footer">
             <div class="mail-card-labels">
-                @{ var maxLabels = MaxLabelsForMode; }
-                @foreach (var label in VisibleLabels)
+                @foreach (var label in Labels)
                 {
                     <LabelPill Name="@label.Name" Color="@label.Color" Size="@LabelPillSizeForMode" />
-                }
-                @if (Labels.Count > maxLabels)
-                {
-                    <span class="mail-card-label-overflow">+@(Labels.Count - maxLabels)</span>
                 }
             </div>
         </div>
@@ -79,14 +74,6 @@
         _ => "medium"
     };
 
-    private int MaxLabelsForMode => Mode switch
-    {
-        MailCardMode.Medium => 3,
-        MailCardMode.Small => 1,
-        MailCardMode.Row => 4,
-        _ => 3
-    };
-
     private PersonChipSize PersonChipSizeForMode => Mode switch
     {
         MailCardMode.Small => PersonChipSize.Small,
@@ -94,12 +81,6 @@
         _ => PersonChipSize.Default
     };
 
-    private LabelPillSize LabelPillSizeForMode => Mode switch
-    {
-        MailCardMode.Small => LabelPillSize.Small,
-        _ => LabelPillSize.Medium
-    };
+    private LabelPillSize LabelPillSizeForMode => LabelPillSize.Medium;
 
-    private IEnumerable<MailCardLabel> VisibleLabels =>
-        Labels.Take(MaxLabelsForMode);
 }

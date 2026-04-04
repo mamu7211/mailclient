@@ -37,14 +37,15 @@ public static class MessageEndpoints
             .OrderByDescending(m => m.Date)
             .Skip(skip)
             .Take(pageSize)
-            .Select(m => new { m.Id, MailboxName = m.Mailbox.Name, m.Mailbox.BadgeColor, m.From, m.Subject, m.Date, HasAttachments = m.Attachments.Any() })
+            .Select(m => new { m.Id, MailboxName = m.Mailbox.Name, m.Mailbox.BadgeColor, m.From, m.Subject, m.Date, HasAttachments = m.Attachments.Any(), Labels = m.Labels.Select(l => new { l.Name, l.Color }).ToList() })
             .ToListAsync();
 
         var summaryPlaceholder = localizer["SummaryPlaceholder"].Value;
         var mapped = items.Select(m =>
         {
             var (name, email) = ParseFromAddress(m.From);
-            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments);
+            var labels = m.Labels.Select(l => new MessageLabelResponse(l.Name, l.Color)).ToList();
+            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments, labels);
         }).ToList();
 
         return Results.Ok(new PaginatedResponse<MessageListItemResponse>(mapped, page, pageSize, totalCount));

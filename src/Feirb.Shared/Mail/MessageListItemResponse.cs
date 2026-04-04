@@ -10,4 +10,5 @@ public record MessageListItemResponse(
     string? Summary,
     DateTimeOffset Date,
     bool IsRead,
-    bool HasAttachments);
+    bool HasAttachments,
+    List<MessageLabelResponse> Labels);
