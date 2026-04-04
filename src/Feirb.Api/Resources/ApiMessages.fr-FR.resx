@@ -156,4 +156,16 @@
   <data name="ClassificationRuleInstructionInvalid" xml:space="preserve">
     <value>L'instruction est requise et ne doit pas dépasser 500 caractères.</value>
   </data>
+  <data name="ClassificationMailboxNotFound" xml:space="preserve">
+    <value>Boîte mail introuvable pour ce message.</value>
+  </data>
+  <data name="ClassificationLlmResponseInvalid" xml:space="preserve">
+    <value>Impossible d'interpréter la réponse du LLM comme tableau JSON.</value>
+  </data>
+  <data name="ClassificationUnknownLabels" xml:space="preserve">
+    <value>Labels inconnus dans la réponse : {0}</value>
+  </data>
+  <data name="ClassificationOllamaUnavailable" xml:space="preserve">
+    <value>Le service Ollama est indisponible, classification ignorée.</value>
+  </data>
 </root>

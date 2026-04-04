@@ -17,6 +17,7 @@ public class ClassificationJobTests : IDisposable
     private readonly DbContextOptions<FeirbDbContext> _dbOptions;
     private readonly Guid _jobSettingsId = Guid.NewGuid();
     private readonly Guid _mailboxId = Guid.NewGuid();
+    private readonly Guid _userId = Guid.NewGuid();
 
     public ClassificationJobTests()
     {
@@ -29,13 +30,14 @@ public class ClassificationJobTests : IDisposable
         services.AddSingleton(_dbOptions);
         services.AddScoped(sp => new FeirbDbContext(sp.GetRequiredService<DbContextOptions<FeirbDbContext>>()));
         services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
-        services.AddScoped<IClassificationService, NoopClassificationService>();
+        services.AddScoped<IClassificationService>(_ => new SuccessClassificationService());
         services.AddLogging();
 
         _serviceProvider = services.BuildServiceProvider();
 
         using var db = new FeirbDbContext(_dbOptions);
         db.Database.EnsureCreated();
+        SeedMailbox(db);
     }
 
     public void Dispose()
@@ -45,7 +47,7 @@ public class ClassificationJobTests : IDisposable
     }
 
     [Fact]
-    public async Task Execute_ProcessesPendingItems_ClassifiesAndWritesResultAsync()
+    public async Task Execute_ProcessesPendingItems_RemovesQueueEntryAndWritesResultAsync()
     {
         var messageId = SeedMessageWithQueueItem();
         SeedJobSettings();
@@ -54,16 +56,18 @@ public class ClassificationJobTests : IDisposable
         await job.Execute(CreateJobContext());
 
         using var db = new FeirbDbContext(_dbOptions);
+
+        // Queue item should be removed on successful classification
         var queueItem = await db.ClassificationQueueItems
             .AsNoTracking()
-            .FirstAsync(q => q.CachedMessageId == messageId);
-        queueItem.Status.Should().Be(ClassificationQueueItemStatus.Classified);
+            .FirstOrDefaultAsync(q => q.CachedMessageId == messageId);
+        queueItem.Should().BeNull();
 
         var result = await db.ClassificationResults
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.CachedMessageId == messageId);
         result.Should().NotBeNull();
-        result!.Result.Should().Be("noop-classification");
+        result!.Result.Should().Be("""["TestLabel"]""");
         result.ClassifiedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(5));
     }
 
@@ -89,13 +93,11 @@ public class ClassificationJobTests : IDisposable
         await job.Execute(CreateJobContext());
 
         using var db = new FeirbDbContext(_dbOptions);
-        var classified = await db.ClassificationQueueItems
-            .CountAsync(q => q.Status == ClassificationQueueItemStatus.Classified);
-        var pending = await db.ClassificationQueueItems
-            .CountAsync(q => q.Status == ClassificationQueueItemStatus.Pending);
+        var remainingQueueItems = await db.ClassificationQueueItems.CountAsync();
+        var results = await db.ClassificationResults.CountAsync();
 
-        classified.Should().Be(1);
-        pending.Should().Be(1);
+        results.Should().Be(1);
+        remainingQueueItems.Should().Be(1);
     }
 
     [Fact]
@@ -104,7 +106,6 @@ public class ClassificationJobTests : IDisposable
         var messageId = SeedMessageWithQueueItem();
         SeedJobSettings();
 
-        // Replace the classification service with a failing one
         var services = new ServiceCollection();
         services.AddSingleton(_dbOptions);
         services.AddScoped(sp => new FeirbDbContext(sp.GetRequiredService<DbContextOptions<FeirbDbContext>>()));
@@ -127,28 +128,97 @@ public class ClassificationJobTests : IDisposable
         queueItem.Error.Should().NotBeNullOrEmpty();
     }
 
+    [Fact]
+    public async Task Execute_ClassificationSkipped_RevertsItemToPendingAsync()
+    {
+        var messageId = SeedMessageWithQueueItem();
+        SeedJobSettings();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(_dbOptions);
+        services.AddScoped(sp => new FeirbDbContext(sp.GetRequiredService<DbContextOptions<FeirbDbContext>>()));
+        services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
+        services.AddScoped<IClassificationService>(_ => new SkippingClassificationService());
+        services.AddLogging();
+
+        using var skippingProvider = services.BuildServiceProvider();
+        var scopeFactory = skippingProvider.GetRequiredService<IServiceScopeFactory>();
+        var logger = NullLogger<ClassificationJob>.Instance;
+        var job = new ClassificationJob(scopeFactory, logger);
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var queueItem = await db.ClassificationQueueItems
+            .AsNoTracking()
+            .FirstAsync(q => q.CachedMessageId == messageId);
+        queueItem.Status.Should().Be(ClassificationQueueItemStatus.Pending);
+    }
+
+    [Fact]
+    public async Task Execute_EmptyArrayResult_RemovesQueueEntryAsync()
+    {
+        var messageId = SeedMessageWithQueueItem();
+        SeedJobSettings();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(_dbOptions);
+        services.AddScoped(sp => new FeirbDbContext(sp.GetRequiredService<DbContextOptions<FeirbDbContext>>()));
+        services.AddSingleton<IJobSettingsScheduler, NoOpJobSettingsScheduler>();
+        services.AddScoped<IClassificationService>(_ => new EmptyArrayClassificationService());
+        services.AddLogging();
+
+        using var provider = services.BuildServiceProvider();
+        var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
+        var logger = NullLogger<ClassificationJob>.Instance;
+        var job = new ClassificationJob(scopeFactory, logger);
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var queueItem = await db.ClassificationQueueItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.CachedMessageId == messageId);
+        queueItem.Should().BeNull();
+
+        var result = await db.ClassificationResults
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.CachedMessageId == messageId);
+        result.Should().NotBeNull();
+        result!.Result.Should().Be("[]");
+    }
+
+    private void SeedMailbox(FeirbDbContext db)
+    {
+        db.Users.Add(new User
+        {
+            Id = _userId,
+            Username = "testuser",
+            Email = "test@example.com",
+            PasswordHash = "hash",
+            IsAdmin = false,
+        });
+
+        db.Mailboxes.Add(new Mailbox
+        {
+            Id = _mailboxId,
+            UserId = _userId,
+            Name = "Test Mailbox",
+            EmailAddress = "test@example.com",
+            ImapHost = "localhost",
+            ImapPort = 993,
+            ImapUsername = "test",
+            SmtpHost = "localhost",
+            SmtpPort = 587,
+            SmtpUsername = "test",
+        });
+
+        db.SaveChanges();
+    }
+
     private Guid SeedMessageWithQueueItem()
     {
         using var db = new FeirbDbContext(_dbOptions);
-
-        // Ensure mailbox exists
-        if (!db.Mailboxes.Any(m => m.Id == _mailboxId))
-        {
-            db.Mailboxes.Add(new Mailbox
-            {
-                Id = _mailboxId,
-                UserId = Guid.NewGuid(),
-                Name = "Test Mailbox",
-                EmailAddress = "test@example.com",
-                ImapHost = "localhost",
-                ImapPort = 993,
-                ImapUsername = "test",
-                SmtpHost = "localhost",
-                SmtpPort = 587,
-                SmtpUsername = "test",
-            });
-            db.SaveChanges();
-        }
 
         var messageId = Guid.NewGuid();
         var message = new CachedMessage
@@ -212,10 +282,31 @@ public class ClassificationJobTests : IDisposable
         return context;
     }
 
+    private sealed class SuccessClassificationService : IClassificationService
+    {
+        public Task<ClassificationServiceResult> ClassifyAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new ClassificationServiceResult(true, """["TestLabel"]""", null));
+    }
+
     private sealed class FailingClassificationService : IClassificationService
     {
         public Task<ClassificationServiceResult> ClassifyAsync(
             CachedMessage message, CancellationToken cancellationToken = default) =>
-            Task.FromResult(new ClassificationServiceResult(Success: false, Result: null, Error: "Classification failed"));
+            Task.FromResult(new ClassificationServiceResult(false, null, "Classification failed"));
+    }
+
+    private sealed class SkippingClassificationService : IClassificationService
+    {
+        public Task<ClassificationServiceResult> ClassifyAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(ClassificationServiceResult.Skipped);
+    }
+
+    private sealed class EmptyArrayClassificationService : IClassificationService
+    {
+        public Task<ClassificationServiceResult> ClassifyAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new ClassificationServiceResult(true, "[]", null));
     }
 }

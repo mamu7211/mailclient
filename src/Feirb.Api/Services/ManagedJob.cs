@@ -8,7 +8,8 @@ namespace Feirb.Api.Services;
 public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logger) : IJob
 {
     public const string JobNameKey = "ManagedJobName";
-    private const int _consecutiveFailureThreshold = 3;
+    private const int _consecutiveFailureThreshold = 10;
+    private static readonly TimeSpan _staleExecutionCutoff = TimeSpan.FromHours(1);
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -26,6 +27,33 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         if (jobSettings is null)
         {
             logger.LogWarning("JobSettings not found for '{JobName}', skipping execution", jobName);
+            return;
+        }
+
+        var staleCutoff = DateTimeOffset.UtcNow - _staleExecutionCutoff;
+        var alreadyRunning = await db.JobExecutions
+            .AnyAsync(je => je.JobSettingsId == jobSettings.Id
+                && je.FinishedAt == null
+                && je.StartedAt > staleCutoff, context.CancellationToken);
+
+        if (alreadyRunning)
+        {
+            logger.LogDebug("Job '{JobName}' is already running, skipping this execution", jobName);
+
+            var now = DateTimeOffset.UtcNow;
+            db.JobExecutions.Add(new JobExecution
+            {
+                Id = Guid.NewGuid(),
+                JobSettingsId = jobSettings.Id,
+                StartedAt = now,
+                FinishedAt = now,
+                Status = JobExecutionStatus.Skipped,
+            });
+
+            jobSettings.LastRunAt = now;
+            jobSettings.LastStatus = JobExecutionStatus.Skipped;
+
+            await db.SaveChangesAsync(context.CancellationToken);
             return;
         }
 

@@ -21,6 +21,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
 
         var pendingItems = await db.ClassificationQueueItems
             .Include(q => q.CachedMessage)
+                .ThenInclude(m => m.Mailbox)
             .Where(q => q.Status == ClassificationQueueItemStatus.Pending)
             .OrderBy(q => q.Ordinal).ThenBy(q => q.CreatedAt)
             .Take(batchSize)
@@ -47,9 +48,16 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
             {
                 var result = await classificationService.ClassifyAsync(item.CachedMessage, cancellationToken);
 
+                if (result.IsSkipped)
+                {
+                    // No rules or labels configured, or Ollama unavailable — revert to Pending
+                    item.Status = ClassificationQueueItemStatus.Pending;
+                    continue;
+                }
+
                 if (result.Success && result.Result is not null)
                 {
-                    item.Status = ClassificationQueueItemStatus.Classified;
+                    await ApplyLabelsAsync(db, item.CachedMessage, result.Result, cancellationToken);
 
                     db.ClassificationResults.Add(new ClassificationResult
                     {
@@ -58,11 +66,21 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
                         Result = result.Result,
                         ClassifiedAt = DateTimeOffset.UtcNow,
                     });
+
+                    db.ClassificationQueueItems.Remove(item);
                 }
                 else if (result.Success)
                 {
-                    item.Status = ClassificationQueueItemStatus.Failed;
-                    item.Error = "Classification service returned success but no result";
+                    // Empty array — no labels, but still a successful classification
+                    db.ClassificationResults.Add(new ClassificationResult
+                    {
+                        Id = Guid.NewGuid(),
+                        CachedMessageId = item.CachedMessageId,
+                        Result = "[]",
+                        ClassifiedAt = DateTimeOffset.UtcNow,
+                    });
+
+                    db.ClassificationQueueItems.Remove(item);
                 }
                 else
                 {
@@ -78,11 +96,45 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
             }
         }
 
+        var failed = pendingItems.Count(i => i.Status == ClassificationQueueItemStatus.Failed);
+        var skipped = pendingItems.Count(i => i.Status == ClassificationQueueItemStatus.Pending);
+        var classified = pendingItems.Count - failed - skipped;
+
         await db.SaveChangesAsync(cancellationToken);
 
-        var classified = pendingItems.Count(i => i.Status == ClassificationQueueItemStatus.Classified);
-        var failed = pendingItems.Count(i => i.Status == ClassificationQueueItemStatus.Failed);
-        logger.LogInformation("Classification complete: {Classified} classified, {Failed} failed", classified, failed);
+        logger.LogInformation(
+            "Classification complete: {Classified} classified, {Failed} failed, {Skipped} skipped",
+            classified, failed, skipped);
+    }
+
+    private static async Task ApplyLabelsAsync(
+        FeirbDbContext db, CachedMessage message, string resultJson, CancellationToken cancellationToken)
+    {
+        var labelNames = JsonSerializer.Deserialize<string[]>(resultJson);
+        if (labelNames is null || labelNames.Length == 0)
+            return;
+
+        var mailbox = message.Mailbox ?? await db.Mailboxes
+            .AsNoTracking()
+            .FirstAsync(m => m.Id == message.MailboxId, cancellationToken);
+
+        var matchingLabels = await db.Labels
+            .Where(l => l.UserId == mailbox.UserId && labelNames.Contains(l.Name))
+            .ToListAsync(cancellationToken);
+
+        // Ensure the Labels collection is loaded
+        if (!db.Entry(message).Collection(m => m.Labels).IsLoaded)
+        {
+            await db.Entry(message).Collection(m => m.Labels).LoadAsync(cancellationToken);
+        }
+
+        foreach (var label in matchingLabels)
+        {
+            if (!message.Labels.Any(l => l.Id == label.Id))
+            {
+                message.Labels.Add(label);
+            }
+        }
     }
 
     private int GetBatchSize(JobSettings jobSettings)

@@ -83,11 +83,17 @@ builder.Services.AddManagedJobInfrastructure();
 builder.Services.AddManagedJob<ImapSyncJob>("imap-sync");
 builder.Services.AddManagedJob<ClassificationJob>("classification");
 
+// AI / LLM — OllamaSharp via Aspire service discovery
+// Connection string name follows Aspire convention: "{ollama-resource}-{model-name}" (tag stripped)
+// Note: OllamaSharp manages its own HttpClient internally, not via IHttpClientFactory
+builder.AddOllamaApiClient("feirb-ollama-qwen3").AddChatClient();
+
+
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImapSyncService, ImapSyncService>();
-builder.Services.AddScoped<IClassificationService, NoopClassificationService>();
+builder.Services.AddScoped<IClassificationService, ClassificationService>();
 
 var app = builder.Build();
 

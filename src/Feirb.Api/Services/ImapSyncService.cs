@@ -73,6 +73,9 @@ public class ImapSyncService(
 
             logger.LogInformation("Fetching {Count} messages for mailbox {MailboxId}", uids.Count, mailboxId);
 
+            var hasClassificationRules = await db.ClassificationRules
+                .AnyAsync(r => r.UserId == mailbox.UserId, cancellationToken);
+
             var existingMessageIds = await db.CachedMessages
                 .Where(cm => cm.MailboxId == mailboxId)
                 .Select(cm => cm.MessageId)
@@ -91,14 +94,18 @@ public class ImapSyncService(
 
                 var cached = MapToCachedMessage(message, mailboxId, uid);
                 db.CachedMessages.Add(cached);
-                db.ClassificationQueueItems.Add(new CachedMessageClassificationQueueItem
+
+                if (hasClassificationRules)
                 {
-                    Id = Guid.NewGuid(),
-                    CachedMessageId = cached.Id,
-                    Status = ClassificationQueueItemStatus.Pending,
-                    AttemptNumber = 1,
-                    CreatedAt = DateTimeOffset.UtcNow,
-                });
+                    db.ClassificationQueueItems.Add(new CachedMessageClassificationQueueItem
+                    {
+                        Id = Guid.NewGuid(),
+                        CachedMessageId = cached.Id,
+                        Status = ClassificationQueueItemStatus.Pending,
+                        AttemptNumber = 1,
+                        CreatedAt = DateTimeOffset.UtcNow,
+                    });
+                }
                 existingMessageIds.Add(cached.MessageId);
                 pendingCount++;
 

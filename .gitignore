@@ -58,3 +58,5 @@ node_modules/
 tests/playwright/test-results/
 tests/playwright/playwright-report/
 tests/playwright/dist/
+# Local Ollama model data
+.ollama-data/

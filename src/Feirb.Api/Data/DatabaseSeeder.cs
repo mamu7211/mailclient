@@ -54,6 +54,13 @@ internal static class DatabaseSeeder
 
         if (await BackfillImapSyncJobsAsync(db, logger))
             await db.SaveChangesAsync();
+
+        seeded = await SeedLabelsAsync(db, logger, adminUser.user);
+        seeded |= await SeedClassificationRuleAsync(db, logger, adminUser.user);
+        seeded |= await EnableAllJobsAsync(db, logger);
+
+        if (seeded)
+            await db.SaveChangesAsync();
     }
 
     private static async Task<(User user, bool created)> SeedUserAsync(
@@ -103,6 +110,57 @@ internal static class DatabaseSeeder
         }
 
         return mailboxesWithoutJob.Count > 0;
+    }
+
+    private static async Task<bool> SeedLabelsAsync(FeirbDbContext db, ILogger logger, User user)
+    {
+        if (await db.Labels.AnyAsync(l => l.UserId == user.Id))
+            return false;
+
+        var labels = new[]
+        {
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Newsletter", Color = "#4CAF50", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Work", Color = "#2196F3", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Personal", Color = "#FF9800", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+        };
+
+        db.Labels.AddRange(labels);
+        logger.LogInformation("Seeded {Count} labels for {Email}", labels.Length, user.Email);
+        return true;
+    }
+
+    private static async Task<bool> SeedClassificationRuleAsync(FeirbDbContext db, ILogger logger, User user)
+    {
+        if (await db.ClassificationRules.AnyAsync(r => r.UserId == user.Id))
+            return false;
+
+        db.ClassificationRules.Add(new ClassificationRule
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Instruction = "Classify newsletter or mailing list emails as Newsletter. Classify work-related emails as Work. Classify personal emails as Personal.",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+        });
+
+        logger.LogInformation("Seeded classification rule for {Email}", user.Email);
+        return true;
+    }
+
+    private static async Task<bool> EnableAllJobsAsync(FeirbDbContext db, ILogger logger)
+    {
+        var jobs = await db.JobSettings.Where(j => !j.Enabled || j.Cron != "0 * * * * ?").ToListAsync();
+        if (jobs.Count == 0)
+            return false;
+
+        foreach (var job in jobs)
+        {
+            job.Enabled = true;
+            job.Cron = "0 * * * * ?"; // Every minute for dev
+            logger.LogInformation("Enabled job {JobName} with 1-minute interval", job.JobName);
+        }
+
+        return true;
     }
 
     private static async Task<bool> SeedMailboxAsync(

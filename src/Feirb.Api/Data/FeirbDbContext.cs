@@ -144,6 +144,11 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<CachedMessage>()
+            .HasMany(e => e.Labels)
+            .WithMany()
+            .UsingEntity("CachedMessageLabel");
+
         modelBuilder.Entity<JobSettings>(entity =>
         {
             entity.HasKey(e => e.Id);

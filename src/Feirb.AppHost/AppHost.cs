@@ -1,13 +1,20 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var postgres = builder.AddPostgres("feirb-postgres")
+    .WithEndpoint("tcp", endpoint =>
+    {
+        endpoint.Port = 15432;
+        endpoint.TargetPort = 5432;
+        endpoint.IsProxied = false;
+    })
     .WithDataVolume()
     .WithPgAdmin()
     .AddDatabase("mailclientdb");
 
-var ollama = builder.AddOllama("feirb-ollama")
-    .WithDataVolume()
-    .AddModel("qwen3:4b");
+var ollama = builder.AddOllama("feirb-ollama", port: 11434)
+    .WithBindMount("../../.ollama-data", "/root/.ollama");
+
+var qwen = ollama.AddModel("qwen3:0.6b");
 
 var greenmail = builder.AddContainer("feirb-greenmail", "docker.io/greenmail/standalone")
     .WithHttpEndpoint(port: 8080, targetPort: 8080, name: "api")
@@ -37,7 +44,7 @@ var greenmail = builder.AddContainer("feirb-greenmail", "docker.io/greenmail/sta
 
 var api = builder.AddProject<Projects.Feirb_Api>("api")
     .WithReference(postgres)
-    .WithReference(ollama)
+    .WithReference(qwen)
     .WaitFor(postgres)
     .WaitFor(greenmail);
 

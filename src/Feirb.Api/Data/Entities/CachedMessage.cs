@@ -18,4 +18,5 @@ public class CachedMessage
     public DateTimeOffset SyncedAt { get; set; }
 
     public ICollection<CachedAttachment> Attachments { get; set; } = [];
+    public ICollection<Label> Labels { get; set; } = [];
 }
