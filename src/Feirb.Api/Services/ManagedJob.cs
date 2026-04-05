@@ -66,6 +66,10 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         };
         db.JobExecutions.Add(execution);
 
+        // Persist the execution record before running the job so the already-running
+        // check reliably prevents concurrent executions across overlapping triggers.
+        await db.SaveChangesAsync(context.CancellationToken);
+
         try
         {
             await RunAsync(scope.ServiceProvider, jobSettings, context.CancellationToken);

@@ -188,6 +188,29 @@ public class ClassificationJobTests : IDisposable
         result!.Result.Should().Be("[]");
     }
 
+    [Fact]
+    public async Task Execute_StuckProcessingItems_RecoversThenClassifiesAsync()
+    {
+        var messageId = SeedMessageWithQueueItem(ClassificationQueueItemStatus.Processing);
+        SeedJobSettings();
+
+        var job = CreateJob();
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+
+        // Stuck item should have been recovered and then classified
+        var queueItem = await db.ClassificationQueueItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(q => q.CachedMessageId == messageId);
+        queueItem.Should().BeNull();
+
+        var result = await db.ClassificationResults
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.CachedMessageId == messageId);
+        result.Should().NotBeNull();
+    }
+
     private void SeedMailbox(FeirbDbContext db)
     {
         db.Users.Add(new User
@@ -216,7 +239,8 @@ public class ClassificationJobTests : IDisposable
         db.SaveChanges();
     }
 
-    private Guid SeedMessageWithQueueItem()
+    private Guid SeedMessageWithQueueItem(
+        ClassificationQueueItemStatus status = ClassificationQueueItemStatus.Pending)
     {
         using var db = new FeirbDbContext(_dbOptions);
 
@@ -238,7 +262,7 @@ public class ClassificationJobTests : IDisposable
         {
             Id = Guid.NewGuid(),
             CachedMessageId = messageId,
-            Status = ClassificationQueueItemStatus.Pending,
+            Status = status,
             AttemptNumber = 1,
             CreatedAt = DateTimeOffset.UtcNow,
         });

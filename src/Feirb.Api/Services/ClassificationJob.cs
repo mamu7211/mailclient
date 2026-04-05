@@ -19,6 +19,26 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         var db = serviceProvider.GetRequiredService<FeirbDbContext>();
         var classificationService = serviceProvider.GetRequiredService<IClassificationService>();
 
+        // Recover items stuck in Processing from a previous failed/crashed run.
+        // ManagedJob persists the JobExecution record before calling RunAsync, so the
+        // already-running check reliably prevents concurrent execution. Any Processing
+        // items at this point are from a prior run that didn't complete.
+        var stuckItems = await db.ClassificationQueueItems
+            .Where(q => q.Status == ClassificationQueueItemStatus.Processing)
+            .ToListAsync(cancellationToken);
+
+        if (stuckItems.Count > 0)
+        {
+            logger.LogWarning(
+                "Recovered {Count} classification queue items stuck in Processing status", stuckItems.Count);
+            foreach (var item in stuckItems)
+            {
+                item.Status = ClassificationQueueItemStatus.Pending;
+            }
+
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
         var pendingItems = await db.ClassificationQueueItems
             .Include(q => q.CachedMessage)
                 .ThenInclude(m => m.Mailbox)
