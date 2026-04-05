@@ -7,6 +7,8 @@
 @inject IJSRuntime Js
 @inject IStringLocalizer<SharedResources> L
 @inject NotificationService Notifications
+@inject ToolbarStateService ToolbarState
+@implements IDisposable
 
 <PageTitle>@L["ComposePageTitle"]</PageTitle>
 
@@ -134,6 +136,9 @@ else
                     border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
                 }
                 .ql-editor { min-height: 250px; }
+                .ql-snow .ql-stroke { stroke: var(--bs-body-color) !important; }
+                .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: var(--bs-body-color) !important; }
+                .ql-snow .ql-picker { color: var(--bs-body-color) !important; }
             </style>
 
             @* Markdown editor *@
@@ -151,25 +156,6 @@ else
             {
                 <div class="text-danger small mt-1">@GetError("body")</div>
             }
-
-            @* Send button *@
-            <div class="mt-4 d-flex justify-content-end">
-                <Button Variant="ButtonVariant.Primary"
-                        OnClick="SendAsync"
-                        Disabled="_isSending"
-                        data-testid="compose-send">
-                    @if (_isSending)
-                    {
-                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-                        @L["ComposeButtonSending"]
-                    }
-                    else
-                    {
-                        <Icon Name="send-fill" />
-                        <span class="ms-1">@L["ComposeButtonSend"]</span>
-                    }
-                </Button>
-            </div>
         </ContentSection>
     </div>
 }
@@ -194,6 +180,8 @@ else
 
     private Dictionary<string, string> _errors = [];
 
+    private ToolbarAction[] _toolbarActions = [];
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -210,7 +198,15 @@ else
         {
             _isLoading = false;
         }
+
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ComposeButtonSend"], ButtonVariant.Primary, SendAsync, "send-fill")
+        ];
+        ToolbarState.AddActions(_toolbarActions);
     }
+
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
