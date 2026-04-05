@@ -123,7 +123,16 @@ else
             </div>
 
             <style>
-                .ql-container { flex: 1; min-height: 250px; }
+                .ql-toolbar {
+                    border-color: var(--bs-border-color) !important;
+                    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+                }
+                .ql-container {
+                    flex: 1;
+                    min-height: 250px;
+                    border-color: var(--bs-border-color) !important;
+                    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+                }
                 .ql-editor { min-height: 250px; }
             </style>
 
