@@ -1515,4 +1515,88 @@
   <data name="ButtonBackToInbox" xml:space="preserve">
     <value>Retour à la boîte de réception</value>
   </data>
+  <data name="ComposePageTitle" xml:space="preserve">
+    <value>Rédiger - Feirb</value>
+  </data>
+  <data name="ComposeHeading" xml:space="preserve">
+    <value>Rédiger</value>
+  </data>
+  <data name="ComposeSubtitle" xml:space="preserve">
+    <value>Écrire et envoyer un nouvel e-mail</value>
+  </data>
+  <data name="ComposeFrom" xml:space="preserve">
+    <value>De</value>
+  </data>
+  <data name="ComposeTo" xml:space="preserve">
+    <value>À</value>
+  </data>
+  <data name="ComposeCc" xml:space="preserve">
+    <value>CC</value>
+  </data>
+  <data name="ComposeBcc" xml:space="preserve">
+    <value>BCC</value>
+  </data>
+  <data name="ComposeSubject" xml:space="preserve">
+    <value>Objet</value>
+  </data>
+  <data name="ComposeBody" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="ComposePlaceholderTo" xml:space="preserve">
+    <value>destinataire@exemple.fr, autre@exemple.fr</value>
+  </data>
+  <data name="ComposePlaceholderCc" xml:space="preserve">
+    <value>cc@exemple.fr</value>
+  </data>
+  <data name="ComposePlaceholderBcc" xml:space="preserve">
+    <value>bcc@exemple.fr</value>
+  </data>
+  <data name="ComposePlaceholderSubject" xml:space="preserve">
+    <value>Saisir l'objet</value>
+  </data>
+  <data name="ComposeShowCcBcc" xml:space="preserve">
+    <value>CC / CCI</value>
+  </data>
+  <data name="ComposeModeRichText" xml:space="preserve">
+    <value>Texte enrichi</value>
+  </data>
+  <data name="ComposeModeMarkdown" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
+  <data name="ComposeSendFormatted" xml:space="preserve">
+    <value>Envoyer formaté</value>
+  </data>
+  <data name="ComposeButtonSend" xml:space="preserve">
+    <value>Envoyer</value>
+  </data>
+  <data name="ComposeButtonSending" xml:space="preserve">
+    <value>Envoi en cours...</value>
+  </data>
+  <data name="ComposeSendSuccess" xml:space="preserve">
+    <value>E-mail envoyé avec succès.</value>
+  </data>
+  <data name="ComposeSendFailed" xml:space="preserve">
+    <value>Échec de l'envoi de l'e-mail. Veuillez réessayer.</value>
+  </data>
+  <data name="ComposeValidationTo" xml:space="preserve">
+    <value>Au moins un destinataire est requis.</value>
+  </data>
+  <data name="ComposeValidationSubject" xml:space="preserve">
+    <value>L'objet est requis.</value>
+  </data>
+  <data name="ComposeValidationBody" xml:space="preserve">
+    <value>Le corps du message est requis.</value>
+  </data>
+  <data name="ComposeValidationEmail" xml:space="preserve">
+    <value>Adresse e-mail invalide : {0}</value>
+  </data>
+  <data name="ComposeValidationMailbox" xml:space="preserve">
+    <value>Veuillez sélectionner une boîte mail.</value>
+  </data>
+  <data name="ComposeLoadMailboxesFailed" xml:space="preserve">
+    <value>Échec du chargement des boîtes mail.</value>
+  </data>
+  <data name="ComposeNoMailboxes" xml:space="preserve">
+    <value>Aucune boîte mail configurée. Veuillez d'abord ajouter une boîte mail dans les paramètres.</value>
+  </data>
 </root>

@@ -168,4 +168,10 @@
   <data name="ClassificationOllamaUnavailable" xml:space="preserve">
     <value>Ollama-Dienst ist nicht verfügbar, Klassifizierung übersprungen.</value>
   </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>Ungültiges E-Mail-Adressformat.</value>
+  </data>
+  <data name="SendMailFailed" xml:space="preserve">
+    <value>E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.</value>
+  </data>
 </root>
