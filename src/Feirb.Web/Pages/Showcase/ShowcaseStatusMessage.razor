@@ -19,6 +19,7 @@
             <TableRow><TableCell><code>Message</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Descriptive message below the heading</TableCell></TableRow>
             <TableRow><TableCell><code>ButtonText</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Optional button label</TableCell></TableRow>
             <TableRow><TableCell><code>ButtonHref</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Optional button navigation target</TableCell></TableRow>
+            <TableRow><TableCell><code>IsFullPage</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Renders heading as h1 for full-page error display</TableCell></TableRow>
         </TableBody>
     </Table>
 </Card>
@@ -83,6 +84,7 @@
     private string _customTitle = "Custom Status";
     private string _customMessage = "This is a custom status message.";
     private ElementReference _codeElement;
+    private string? _lastHighlightedCode;
 
     private string CurrentIcon => _preset switch
     {
@@ -118,7 +120,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        var code = CurrentCode;
+        if (code == _lastHighlightedCode) return;
+        _lastHighlightedCode = code;
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, code); }
         catch (JSException) { }
     }
 

@@ -2,8 +2,15 @@
 
 @* Centered status message with icon, heading, description, and optional action button. *@
 <div class="text-center py-5">
-    <i class="bi bi-@Icon display-1 text-muted mb-3 d-block"></i>
-    <h2 class="fw-bold">@Title</h2>
+    <Icon Name="@Icon" Class="display-1 text-muted mb-3 d-block" />
+    @if (IsFullPage)
+    {
+        <h1 class="fw-bold">@Title</h1>
+    }
+    else
+    {
+        <h2 class="fw-bold">@Title</h2>
+    }
     <p class="text-muted mb-4">@Message</p>
     @if (!string.IsNullOrEmpty(ButtonText) && !string.IsNullOrEmpty(ButtonHref))
     {
@@ -31,4 +38,8 @@
     /// <summary>Optional button navigation target.</summary>
     [Parameter]
     public string? ButtonHref { get; set; }
+
+    /// <summary>When true, renders heading as h1 (for full-page error display). Defaults to false (h2).</summary>
+    [Parameter]
+    public bool IsFullPage { get; set; }
 }
