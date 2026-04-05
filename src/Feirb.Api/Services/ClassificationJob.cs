@@ -20,8 +20,9 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         var classificationService = serviceProvider.GetRequiredService<IClassificationService>();
 
         // Recover items stuck in Processing from a previous failed/crashed run.
-        // The already-running check in ManagedJob prevents concurrent execution,
-        // so any Processing items at this point are from a prior run that didn't complete.
+        // ManagedJob persists the JobExecution record before calling RunAsync, so the
+        // already-running check reliably prevents concurrent execution. Any Processing
+        // items at this point are from a prior run that didn't complete.
         var stuckItems = await db.ClassificationQueueItems
             .Where(q => q.Status == ClassificationQueueItemStatus.Processing)
             .ToListAsync(cancellationToken);
@@ -29,7 +30,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         if (stuckItems.Count > 0)
         {
             logger.LogWarning(
-                "Recovering {Count} classification queue items stuck in Processing status", stuckItems.Count);
+                "Recovered {Count} classification queue items stuck in Processing status", stuckItems.Count);
             foreach (var item in stuckItems)
             {
                 item.Status = ClassificationQueueItemStatus.Pending;

@@ -189,7 +189,7 @@ public class ClassificationJobTests : IDisposable
     }
 
     [Fact]
-    public async Task Execute_StuckProcessingItems_RecoversToThenClassifiesAsync()
+    public async Task Execute_StuckProcessingItems_RecoversThenClassifiesAsync()
     {
         var messageId = SeedMessageWithQueueItem(ClassificationQueueItemStatus.Processing);
         SeedJobSettings();
