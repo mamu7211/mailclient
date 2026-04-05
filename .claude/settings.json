@@ -111,7 +111,10 @@
       "mcp__browser-use__browser_select",
       "mcp__browser-use__browser_upload",
       "mcp__browser-use__browser_wait",
-      "mcp__browser-use__browser_eval"
+      "mcp__browser-use__browser_eval",
+      "mcp__postgres__query",
+      "mcp__postgres__list_tables",
+      "mcp__postgres__describe_table"
     ],
     "deny": [
       "Bash(git push --force:*)",
