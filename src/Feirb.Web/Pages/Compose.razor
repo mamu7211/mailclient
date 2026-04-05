@@ -125,6 +125,10 @@ else
             </div>
 
             <style>
+                [data-testid="compose-form"] ::selection {
+                    background-color: var(--bs-primary);
+                    color: white;
+                }
                 .ql-toolbar {
                     border-color: var(--bs-border-color) !important;
                     border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
@@ -146,6 +150,12 @@ else
                 .ql-snow .ql-picker.ql-expanded .ql-picker-label {
                     border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 !important;
                     border-bottom-color: var(--bs-border-color) !important;
+                }
+                .ql-snow .ql-picker-label.ql-active,
+                .ql-snow .ql-picker-label:hover,
+                .ql-snow .ql-picker-item.ql-selected,
+                .ql-snow .ql-picker-item:hover {
+                    color: var(--bs-primary) !important;
                 }
                 .ql-snow .ql-picker-options {
                     border-color: var(--bs-border-color) !important;
