@@ -139,6 +139,19 @@ else
                 .ql-snow .ql-stroke { stroke: var(--bs-body-color) !important; }
                 .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: var(--bs-body-color) !important; }
                 .ql-snow .ql-picker { color: var(--bs-body-color) !important; }
+                .ql-snow .ql-picker-label {
+                    border-color: var(--bs-border-color) !important;
+                    border-radius: var(--bs-border-radius) !important;
+                }
+                .ql-snow .ql-picker.ql-expanded .ql-picker-label {
+                    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 !important;
+                    border-bottom-color: var(--bs-border-color) !important;
+                }
+                .ql-snow .ql-picker-options {
+                    border-color: var(--bs-border-color) !important;
+                    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) var(--bs-border-radius) !important;
+                    min-width: 100%;
+                }
             </style>
 
             @* Markdown editor *@
