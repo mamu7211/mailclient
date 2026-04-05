@@ -1,7 +1,6 @@
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
 using Feirb.Api.Services;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -54,10 +53,15 @@ public class JobSettingsSchedulerTests : IDisposable
         SeedJobSettings("job-b", "classification", enabled: true);
         SeedJobSettings("job-c", "classification", enabled: false);
 
-        var sut = CreateScheduler(withClassificationJob: true);
+        var callCount = 0;
+        var completed = new TaskCompletionSource();
+        _quartzScheduler.ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>(), Arg.Any<CancellationToken>())
+            .ReturnsForAnyArgs(DateTimeOffset.UtcNow)
+            .AndDoes(_ => { if (Interlocked.Increment(ref callCount) >= 2) completed.TrySetResult(); });
 
+        var sut = CreateScheduler(withClassificationJob: true);
         await sut.StartAsync(CancellationToken.None);
-        await Task.Delay(200);
+        await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
         await sut.StopAsync(CancellationToken.None);
 
         await _quartzScheduler.Received(2).ScheduleJob(
@@ -69,10 +73,17 @@ public class JobSettingsSchedulerTests : IDisposable
     {
         SeedJobSettings("job-unknown", "unknown-type", enabled: true);
 
-        var sut = CreateScheduler(withClassificationJob: true);
+        // Signal when GetScheduler is called — ExecuteAsync queries the DB after this
+        var schedulerRequested = new TaskCompletionSource();
+        _schedulerFactory.GetScheduler(Arg.Any<CancellationToken>())
+            .Returns(_quartzScheduler)
+            .AndDoes(_ => schedulerRequested.TrySetResult());
 
+        var sut = CreateScheduler(withClassificationJob: true);
         await sut.StartAsync(CancellationToken.None);
-        await Task.Delay(200);
+        await schedulerRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        // Give ExecuteAsync time to process the DB query after GetScheduler returns
+        await Task.Yield();
         await sut.StopAsync(CancellationToken.None);
 
         await _quartzScheduler.DidNotReceive().ScheduleJob(
