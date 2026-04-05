@@ -102,20 +102,10 @@ else
             @* Editor mode toggle *@
             <div class="mb-2 d-flex align-items-center gap-2">
                 <label class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
-                <div class="btn-group btn-group-sm ms-auto" role="group">
-                    <button type="button"
-                            class="btn @(_editorMode == EditorMode.RichText ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="SwitchToRichTextAsync"
-                            data-testid="compose-mode-rich">
-                        @L["ComposeModeRichText"]
-                    </button>
-                    <button type="button"
-                            class="btn @(_editorMode == EditorMode.Markdown ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="SwitchToMarkdownAsync"
-                            data-testid="compose-mode-markdown">
-                        @L["ComposeModeMarkdown"]
-                    </button>
-                </div>
+                <ToggleButtonGroup Items="_editorModeItems"
+                                   SelectedId="@_editorMode.ToString()"
+                                   SelectedIdChanged="OnEditorModeChangedAsync"
+                                   Class="ms-auto" />
             </div>
 
             @* Rich text editor (Quill) *@
@@ -158,6 +148,7 @@ else
                     color: var(--bs-primary) !important;
                 }
                 .ql-snow .ql-picker-options {
+                    background-color: var(--feirb-surface) !important;
                     border-color: var(--bs-border-color) !important;
                     border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) var(--bs-border-radius) !important;
                     min-width: 100%;
@@ -168,7 +159,7 @@ else
             <div style="@(_editorMode == EditorMode.Markdown ? "" : "display:none")">
                 <textarea class="form-control font-monospace @(HasError("body") ? "is-invalid" : "")"
                           rows="12" @bind="_markdownBody" data-testid="compose-editor-markdown"></textarea>
-                <div class="form-check mt-2">
+                <div class="form-check form-switch mt-2">
                     <input type="checkbox" class="form-check-input" id="sendFormatted"
                            @bind="_sendFormatted" data-testid="compose-send-formatted" />
                     <label class="form-check-label" for="sendFormatted">@L["ComposeSendFormatted"]</label>
@@ -203,10 +194,18 @@ else
 
     private Dictionary<string, string> _errors = [];
 
+    private ToggleButtonItem[] _editorModeItems = [];
+
     private ToolbarAction[] _toolbarActions = [];
 
     protected override async Task OnInitializedAsync()
     {
+        _editorModeItems =
+        [
+            new(nameof(EditorMode.RichText), L["ComposeModeRichText"]),
+            new(nameof(EditorMode.Markdown), L["ComposeModeMarkdown"])
+        ];
+
         try
         {
             _mailboxes = await Http.GetFromJsonAsync<List<MailboxListResponse>>("/api/settings/mailboxes");
@@ -230,6 +229,14 @@ else
     }
 
     public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
+
+    private async Task OnEditorModeChangedAsync(string id)
+    {
+        if (id == nameof(EditorMode.RichText))
+            await SwitchToRichTextAsync();
+        else
+            await SwitchToMarkdownAsync();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
