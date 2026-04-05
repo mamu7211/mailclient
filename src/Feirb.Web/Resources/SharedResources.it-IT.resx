@@ -1524,6 +1524,12 @@
   <data name="ComposeSubtitle" xml:space="preserve">
     <value>Scrivi e invia una nuova e-mail</value>
   </data>
+  <data name="ComposeCorrespondentsHeading" xml:space="preserve">
+    <value>Corrispondenti</value>
+  </data>
+  <data name="ComposeMessageHeading" xml:space="preserve">
+    <value>Messaggio</value>
+  </data>
   <data name="ComposeFrom" xml:space="preserve">
     <value>Da</value>
   </data>

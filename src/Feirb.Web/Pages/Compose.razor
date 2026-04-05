@@ -10,8 +10,6 @@
 
 <PageTitle>@L["ComposePageTitle"]</PageTitle>
 
-<InfoHeader Title="@L["ComposeHeading"]" Icon="pencil-fill" Subtitle="@L["ComposeSubtitle"]" />
-
 @if (_isLoading)
 {
     <div class="text-center py-5">
@@ -26,19 +24,13 @@ else if (_mailboxes is null || _mailboxes.Count == 0)
 }
 else
 {
-    <div class="card" data-testid="compose-form">
-        <div class="card-body">
-            @* Mailbox selector *@
-            <div class="mb-3">
-                <label class="form-label fw-semibold" for="mailbox">@L["ComposeFrom"]</label>
+    <div data-testid="compose-form">
+        <ContentSection Icon="people" Title="@L["ComposeCorrespondentsHeading"]">
+            @* Sender *@
+            <div class="mb-3" data-testid="compose-from-single">
                 @if (_mailboxes.Count == 1)
                 {
-                    <div class="form-control-plaintext" data-testid="compose-from-single">
-                        <span class="badge me-2" style="background-color: @(_mailboxes[0].BadgeColor ?? "#6c757d")">
-                            @_mailboxes[0].Name
-                        </span>
-                        @_mailboxes[0].EmailAddress
-                    </div>
+                    <PersonChip Name="@_mailboxes[0].Name" Email="@_mailboxes[0].EmailAddress" />
                 }
                 else
                 {
@@ -51,26 +43,23 @@ else
                 }
             </div>
 
-            @* To *@
+            @* To + CC/BCC toggle *@
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="to">@L["ComposeTo"]</label>
-                <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
-                       @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                <div class="d-flex align-items-center gap-2">
+                    <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
+                           @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                    <div class="form-check form-switch mb-0 flex-shrink-0">
+                        <input type="checkbox" id="ccBccToggle" class="form-check-input"
+                               checked="@_showCcBcc" @onchange="(e) => _showCcBcc = (bool)e.Value!"
+                               data-testid="compose-show-cc-bcc" />
+                        <label for="ccBccToggle" class="form-check-label">@L["ComposeShowCcBcc"]</label>
+                    </div>
+                </div>
                 @if (HasError("to"))
                 {
-                    <div class="invalid-feedback">@GetError("to")</div>
+                    <div class="invalid-feedback d-block">@GetError("to")</div>
                 }
-            </div>
-
-            @* CC / BCC toggle *@
-            <div class="mb-3">
-                <button type="button"
-                        class="btn btn-sm @(_showCcBcc ? "btn-outline-secondary" : "btn-outline-primary")"
-                        @onclick="() => _showCcBcc = !_showCcBcc"
-                        data-testid="compose-show-cc-bcc">
-                    <Icon Name="@(_showCcBcc ? "chevron-up" : "chevron-down")" />
-                    @L["ComposeShowCcBcc"]
-                </button>
             </div>
 
             @if (_showCcBcc)
@@ -94,7 +83,9 @@ else
                     }
                 </div>
             }
+        </ContentSection>
 
+        <ContentSection Icon="pencil" Title="@L["ComposeMessageHeading"]" Class="mt-3">
             @* Subject *@
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="subject">@L["ComposeSubject"]</label>
@@ -170,7 +161,7 @@ else
                     }
                 </Button>
             </div>
-        </div>
+        </ContentSection>
     </div>
 }
 
