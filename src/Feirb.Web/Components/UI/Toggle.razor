@@ -1,12 +1,12 @@
 @namespace Feirb.Web.Components.UI
 
-@* Switch toggle with label that appears strikethrough when deactivated. *@
+@* Switch toggle with optional separate label for the deactivated state. *@
 <div class="form-check form-switch mb-0 @Class">
     <input type="checkbox" id="@_id" class="form-check-input"
            @bind="Value" @bind:after="OnToggleAsync"
            @attributes="AdditionalAttributes" />
-    <label for="@_id" class="form-check-label @(Value ? "" : "text-decoration-line-through text-muted")">
-        @Text
+    <label for="@_id" class="form-check-label @(Value ? "" : DisabledText is null ? "text-decoration-line-through text-muted" : "text-muted")">
+        @(Value ? Text : DisabledText ?? Text)
     </label>
 </div>
 
@@ -19,9 +19,13 @@
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
 
-    /// <summary>Label text displayed next to the toggle.</summary>
+    /// <summary>Label text displayed when the toggle is on.</summary>
     [Parameter, EditorRequired]
     public string Text { get; set; } = default!;
+
+    /// <summary>Optional label text displayed when the toggle is off. Falls back to Text if not set.</summary>
+    [Parameter]
+    public string? DisabledText { get; set; }
 
     /// <summary>Additional CSS classes.</summary>
     [Parameter]
