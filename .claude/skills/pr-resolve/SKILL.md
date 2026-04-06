@@ -71,13 +71,14 @@ Group related comments (e.g., multiple comments about the same pattern) and fix 
 
 | # | File:Line | Category | Reviewer | Action | Description |
 |---|-----------|----------|----------|--------|-------------|
-| 1 | `path:line` | Trivial/Non-trivial | user | Fix / Skip / Discuss | One-line summary |
+| 1 | `path:line` | Trivial/Non-trivial | user | Fix / Skip / Discuss / Issue | One-line summary |
 
 For non-trivial items, add a brief note on the architectural, security, or data consistency implication.
 
 **Wait for the user to approve** before proceeding. The user may:
 - Approve all — proceed with all fixes
 - Skip specific items — exclude them from the fix commit, reply explaining why
+- Skip → Issue — valid concern but out of scope; create a GitHub issue to track the follow-up, then reply to the thread referencing the issue number
 - Request discussion — talk through a specific item before deciding
 
 ### Phase 4: Apply Fixes
@@ -108,11 +109,18 @@ Push to the PR branch.
 
 For each unresolved thread:
 
-1. **Reply** with a short message referencing the fix commit:
-   ```bash
-   gh api repos/{owner}/{repo}/pulls/{pr_number}/comments/{comment_id}/replies \
-     -f body="Fixed in {commit_sha} — {brief description of what changed}."
-   ```
+1. **Reply** with a short message depending on the action taken:
+   - **Fixed:** reference the commit:
+     ```bash
+     gh api repos/{owner}/{repo}/pulls/{pr_number}/comments/{comment_id}/replies \
+       -f body="Fixed in {commit_sha} — {brief description of what changed}."
+     ```
+   - **Issue created:** reference the issue:
+     ```bash
+     gh api repos/{owner}/{repo}/pulls/{pr_number}/comments/{comment_id}/replies \
+       -f body="Valid concern. Created #{issue_number} to track this — out of scope for this PR."
+     ```
+   - **Clarification:** explain why no change is needed.
 
 2. **Resolve the thread** via GraphQL:
    ```bash
