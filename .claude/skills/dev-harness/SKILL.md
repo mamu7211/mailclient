@@ -49,6 +49,24 @@ MCP tools are read-only (except resource commands). These always require scripts
 
 ---
 
+## Checking if the app needs a restart
+
+Before testing, always verify the app is running **current code**. A health check alone is not enough — containers may be stale.
+
+```bash
+# Check container uptime and creation time
+podman ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null || \
+docker ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null
+```
+
+If code was changed since the containers were created, restart:
+```bash
+.claude/skills/dev-harness/stop.sh
+.claude/skills/dev-harness/start.sh
+```
+
+---
+
 ## Scripts
 
 ### Lifecycle

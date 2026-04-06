@@ -30,15 +30,25 @@ When called from `/implement-feature`: use acceptance criteria from the GitHub i
 
 ## Procedure
 
-### 1. Ensure the app is running
+### 1. Ensure the app is running with current code
 
-Check if the API is healthy:
+Check containers and API health:
 
 ```bash
+# Check container status — shows names, uptime, and creation time
+podman ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null || \
+docker ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null
+
+# Check API health
 curl -sk https://localhost:7272/health
 ```
 
-- **If healthy:** proceed to step 2
+- **If healthy AND containers are recent** (started after latest code change): proceed to step 2
+- **If healthy BUT containers are stale** (code changed since they started): restart:
+  ```bash
+  .claude/skills/dev-harness/stop.sh
+  .claude/skills/dev-harness/start.sh
+  ```
 - **If not running:** start with seeding (default):
   ```bash
   .claude/skills/dev-harness/start.sh
