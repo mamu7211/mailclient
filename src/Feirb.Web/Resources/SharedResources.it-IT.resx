@@ -246,6 +246,12 @@
   <data name="LabelSmtpRequiresAuth" xml:space="preserve">
     <value>Autenticazione richiesta</value>
   </data>
+  <data name="LabelSmtpUseTlsOff" xml:space="preserve">
+    <value>Crittografia TLS disattivata</value>
+  </data>
+  <data name="LabelSmtpRequiresAuthOff" xml:space="preserve">
+    <value>Nessuna autenticazione</value>
+  </data>
   <data name="PlaceholderSmtpHost" xml:space="preserve">
     <value>smtp.esempio.com</value>
   </data>
@@ -1569,8 +1575,14 @@
   <data name="ComposeModeMarkdown" xml:space="preserve">
     <value>Markdown</value>
   </data>
-  <data name="ComposeSendFormatted" xml:space="preserve">
-    <value>Invia formattato</value>
+  <data name="ComposeSendFormattedOn" xml:space="preserve">
+    <value>Invia come HTML formattato</value>
+  </data>
+  <data name="ComposeSendFormattedOff" xml:space="preserve">
+    <value>Invia come testo normale</value>
+  </data>
+  <data name="ComposeShowCcBccOff" xml:space="preserve">
+    <value>Nessuna copia</value>
   </data>
   <data name="ComposeButtonSend" xml:space="preserve">
     <value>Invia</value>

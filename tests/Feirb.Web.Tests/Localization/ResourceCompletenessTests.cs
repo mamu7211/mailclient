@@ -109,6 +109,11 @@ public class ResourceCompletenessTests
         "NoBodyContent",
         "ConnectionLost",
         "ServerError",
+        "ComposeSendFormattedOn",
+        "ComposeSendFormattedOff",
+        "ComposeShowCcBccOff",
+        "LabelSmtpUseTlsOff",
+        "LabelSmtpRequiresAuthOff",
     ];
 
     /// <summary>Keys that may be identical across languages (brand names, universal terms).</summary>

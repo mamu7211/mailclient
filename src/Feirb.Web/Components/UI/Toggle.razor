@@ -1,4 +1,6 @@
 @namespace Feirb.Web.Components.UI
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Forms
 
 @* Switch toggle with optional separate label for the deactivated state. *@
 <div class="form-check form-switch mb-0 @Class">
@@ -27,6 +29,10 @@
     [Parameter]
     public string? DisabledText { get; set; }
 
+    /// <summary>Optional model field expression for EditContext change tracking.</summary>
+    [Parameter]
+    public Expression<Func<bool>>? For { get; set; }
+
     /// <summary>Additional CSS classes.</summary>
     [Parameter]
     public string? Class { get; set; }
@@ -35,8 +41,18 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
     private readonly string _id = $"toggle-{Guid.NewGuid():N}";
 
-    private async Task OnToggleAsync() =>
+    private async Task OnToggleAsync()
+    {
         await ValueChanged.InvokeAsync(Value);
+
+        if (EditContext is not null && For is not null)
+        {
+            EditContext.NotifyFieldChanged(FieldIdentifier.Create(For));
+        }
+    }
 }
