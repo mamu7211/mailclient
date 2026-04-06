@@ -3,6 +3,7 @@ using Feirb.Shared.Mail;
 using MailKit;
 using MailKit.Net.Imap;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
@@ -71,7 +72,8 @@ public class MailSendingService(
     private async Task SendViaSmtpAsync(Data.Entities.Mailbox mailbox, MimeMessage message, CancellationToken cancellationToken)
     {
         using var client = new SmtpClient();
-        await client.ConnectAsync(mailbox.SmtpHost, mailbox.SmtpPort, mailbox.SmtpUseTls, cancellationToken);
+        var smtpOptions = GetSecureSocketOptions(mailbox.SmtpUseTls, mailbox.SmtpPort);
+        await client.ConnectAsync(mailbox.SmtpHost, mailbox.SmtpPort, smtpOptions, cancellationToken);
 
         if (mailbox.SmtpRequiresAuth && !string.IsNullOrEmpty(mailbox.SmtpEncryptedPassword))
         {
@@ -95,7 +97,8 @@ public class MailSendingService(
         try
         {
             using var client = new ImapClient();
-            await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, mailbox.ImapUseTls, cancellationToken);
+            var imapOptions = GetSecureSocketOptions(mailbox.ImapUseTls, mailbox.ImapPort);
+            await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, imapOptions, cancellationToken);
 
             var protector = dataProtection.CreateProtector(_imapPasswordPurpose);
             var password = protector.Unprotect(mailbox.ImapEncryptedPassword);
@@ -123,4 +126,9 @@ public class MailSendingService(
             logger.LogWarning(ex, "Failed to append message to Sent folder for mailbox {MailboxId}", mailbox.Id);
         }
     }
+
+    private static SecureSocketOptions GetSecureSocketOptions(bool useTls, int port) =>
+        useTls
+            ? port is 465 or 993 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls
+            : SecureSocketOptions.None;
 }

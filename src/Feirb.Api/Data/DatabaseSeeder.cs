@@ -18,10 +18,10 @@ internal static class DatabaseSeeder
 
         var seeded = false;
 
-        var adminUser = await SeedUserAsync(db, logger, "admin", "admin@feirb.local", "admin@feirb.local", isAdmin: true);
+        var adminUser = await SeedUserAsync(db, logger, "admin", "admin@feirb.local", "password", isAdmin: true);
         seeded |= adminUser.created;
 
-        var aliceUser = await SeedUserAsync(db, logger, "alice", "alice@feirb.local", "alice@feirb.local", isAdmin: false);
+        var aliceUser = await SeedUserAsync(db, logger, "alice", "alice@feirb.local", "password", isAdmin: false);
         seeded |= aliceUser.created;
 
         var mailHost = configuration["GREENMAIL_HOST"] ?? "localhost";

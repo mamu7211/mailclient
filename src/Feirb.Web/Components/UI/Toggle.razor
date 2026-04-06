@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 @* Switch toggle with optional separate label for the deactivated state. *@
-<div class="form-check form-switch mb-0 @Class">
+<div class="form-check form-switch @Class">
     <input type="checkbox" id="@_id" class="form-check-input"
            @bind="Value" @bind:after="OnToggleAsync"
            @attributes="AdditionalAttributes" />

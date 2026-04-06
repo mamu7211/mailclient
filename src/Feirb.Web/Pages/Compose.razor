@@ -32,6 +32,7 @@ else
         <ContentSection Icon="people" Title="@L["ComposeCorrespondentsHeading"]">
             @* Sender *@
             <div class="mb-3" data-testid="compose-from-single">
+                <label class="form-label fw-semibold" for="mailbox">@L["ComposeFrom"]</label>
                 @if (_mailboxes.Count == 1)
                 {
                     <PersonChip Name="@_mailboxes[0].Name" Email="@_mailboxes[0].EmailAddress" />
@@ -102,7 +103,7 @@ else
 
             @* Editor mode toggle *@
             <div class="mb-2 d-flex align-items-center gap-2">
-                <label class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
+                <label id="compose-body-label" class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
                 <ToggleButtonGroup Items="_editorModeItems"
                                    SelectedId="@_editorMode.ToString()"
                                    SelectedIdChanged="OnEditorModeChangedAsync"
@@ -112,49 +113,9 @@ else
             @* Rich text editor (Quill) *@
             <div style="@(_editorMode == EditorMode.RichText ? "" : "display:none")">
                 <div @ref="_quillEditorRef" data-testid="compose-editor-rich"
+                     aria-labelledby="compose-body-label" role="textbox" aria-multiline="true"
                      style="min-height: 300px; display: flex; flex-direction: column;"></div>
             </div>
-
-            <style>
-                [data-testid="compose-form"] ::selection {
-                    background-color: var(--bs-primary);
-                    color: white;
-                }
-                .ql-toolbar {
-                    border-color: var(--bs-border-color) !important;
-                    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
-                }
-                .ql-container {
-                    flex: 1;
-                    min-height: 250px;
-                    border-color: var(--bs-border-color) !important;
-                    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
-                }
-                .ql-editor { min-height: 250px; }
-                .ql-snow .ql-stroke { stroke: var(--bs-body-color) !important; }
-                .ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: var(--bs-body-color) !important; }
-                .ql-snow .ql-picker { color: var(--bs-body-color) !important; }
-                .ql-snow .ql-picker-label {
-                    border-color: var(--bs-border-color) !important;
-                    border-radius: var(--bs-border-radius) !important;
-                }
-                .ql-snow .ql-picker.ql-expanded .ql-picker-label {
-                    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 !important;
-                    border-bottom-color: var(--bs-border-color) !important;
-                }
-                .ql-snow .ql-picker-label.ql-active,
-                .ql-snow .ql-picker-label:hover,
-                .ql-snow .ql-picker-item.ql-selected,
-                .ql-snow .ql-picker-item:hover {
-                    color: var(--bs-primary) !important;
-                }
-                .ql-snow .ql-picker-options {
-                    background-color: var(--feirb-surface) !important;
-                    border-color: var(--bs-border-color) !important;
-                    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) var(--bs-border-radius) !important;
-                    min-width: 100%;
-                }
-            </style>
 
             @* Markdown editor *@
             <div style="@(_editorMode == EditorMode.Markdown ? "" : "display:none")">
@@ -192,6 +153,7 @@ else
     private EditorMode _editorMode = EditorMode.RichText;
     private ElementReference _quillEditorRef;
     private bool _quillInitialized;
+    private string? _pendingQuillHtml;
 
     private Dictionary<string, string> _errors = [];
 
@@ -262,23 +224,21 @@ else
             await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
             _quillInitialized = true;
         }
+
+        if (_pendingQuillHtml is not null && _quillInitialized)
+        {
+            await Js.InvokeVoidAsync("quillInterop.setHtml", _pendingQuillHtml);
+            _pendingQuillHtml = null;
+        }
     }
 
     private async Task SwitchToRichTextAsync()
     {
         if (_editorMode == EditorMode.RichText) return;
 
-        // Convert markdown to HTML and load into Quill
-        var html = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
+        // Convert markdown to HTML — Quill init and setHtml happen in OnAfterRenderAsync
+        _pendingQuillHtml = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
         _editorMode = EditorMode.RichText;
-        StateHasChanged();
-        await Task.Delay(50); // Wait for Quill container to be visible
-        if (!_quillInitialized)
-        {
-            await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
-            _quillInitialized = true;
-        }
-        await Js.InvokeVoidAsync("quillInterop.setHtml", html);
     }
 
     private async Task SwitchToMarkdownAsync()

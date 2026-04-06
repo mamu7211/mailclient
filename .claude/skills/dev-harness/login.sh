@@ -1,11 +1,11 @@
 #!/bin/bash
 # Authenticate with the Feirb API and store JWT tokens
 # Usage: login.sh [username] [password]
-#   Defaults to admin / admin@feirb.local
+#   Defaults to admin / password
 set -euo pipefail
 
 USERNAME="${1:-admin}"
-PASSWORD="${2:-admin@feirb.local}"
+PASSWORD="${2:-password}"
 
 curl -sk -X POST https://localhost:7272/api/auth/login \
     -H "Content-Type: application/json" \
