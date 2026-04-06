@@ -151,7 +151,8 @@ public class ResourceCompletenessTests
         "AppName", "PageTitleHome", "NavHome", "LabelPassword",
         "LabelMailboxName", "LabelImapPassword", "LabelSmtpPasswordMailbox",
         "LabelCc", "ColumnDate", "LabelDate", "PageTitleMessageDetail",
-        "ComposeCc", "ComposeMessageHeading",
+        "ComposeCc", "ComposeBcc", "ComposeMessageHeading",
+        "ComposeModeMarkdown", "ComposeShowCcBcc",
     ];
 
     private static readonly ResourceManager _resourceManager = new(
