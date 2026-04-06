@@ -8,14 +8,16 @@
 @inject IStringLocalizer<SharedResources> L
 @inject NotificationService Notifications
 @inject ToolbarStateService ToolbarState
-@implements IDisposable
+@implements IAsyncDisposable
 
 <PageTitle>@L["ComposePageTitle"]</PageTitle>
 
 @if (_isLoading)
 {
     <div class="text-center py-5">
-        <div class="spinner-border" role="status"></div>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["Loading"]</span>
+        </div>
     </div>
 }
 else if (_mailboxes is null || _mailboxes.Count == 0)
@@ -227,7 +229,23 @@ else
         ToolbarState.AddActions(_toolbarActions);
     }
 
-    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
+    public async ValueTask DisposeAsync()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+
+        if (_quillInitialized)
+        {
+            try
+            {
+                await Js.InvokeVoidAsync("quillInterop.destroy");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignored during disposal
+            }
+            _quillInitialized = false;
+        }
+    }
 
     private async Task OnEditorModeChangedAsync(string id)
     {
@@ -331,7 +349,6 @@ else
                 return;
             }
 
-            var error = await response.Content.ReadAsStringAsync();
             Notifications.Add(L["ComposeSendFailed"], NotificationSeverity.Error);
         }
         catch

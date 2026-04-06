@@ -1,8 +1,10 @@
 window.quillInterop = {
     _instance: null,
+    _container: null,
 
     init: function (editorElement) {
         this.destroy();
+        this._container = editorElement;
         this._instance = new Quill(editorElement, {
             theme: 'snow',
             modules: {
@@ -23,7 +25,20 @@ window.quillInterop = {
 
     destroy: function () {
         if (this._instance) {
+            var toolbar = this._container
+                ? this._container.previousElementSibling
+                : null;
+            if (toolbar && toolbar.classList.contains('ql-toolbar')) {
+                toolbar.remove();
+            }
+            if (this._container) {
+                this._container.innerHTML = '';
+                this._container.className = this._container.className
+                    .replace(/\bql-\S+/g, '')
+                    .trim();
+            }
             this._instance = null;
+            this._container = null;
         }
     },
 
@@ -34,7 +49,8 @@ window.quillInterop = {
 
     setHtml: function (html) {
         if (!this._instance) return;
-        this._instance.root.innerHTML = html;
+        var delta = this._instance.clipboard.convert({ html: html || '' });
+        this._instance.setContents(delta);
     },
 
     getText: function () {
@@ -52,7 +68,7 @@ window.quillInterop = {
 window.markedInterop = {
     toHtml: function (markdown) {
         if (typeof marked === 'undefined') return markdown;
-        return marked.parse(markdown);
+        return marked.parse(markdown, { async: false });
     },
 
     toMarkdown: function (html) {
