@@ -1,8 +1,369 @@
 @page "/compose"
 @attribute [Authorize]
+@using Feirb.Shared.Mail
+@using Feirb.Shared.Settings
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime Js
 @inject IStringLocalizer<SharedResources> L
+@inject NotificationService Notifications
 
-<PageTitle>@L["NavCompose"]</PageTitle>
+<PageTitle>@L["ComposePageTitle"]</PageTitle>
 
-<h1>@L["NavCompose"]</h1>
-<p class="text-muted">@L["StubComingSoon"]</p>
+<InfoHeader Title="@L["ComposeHeading"]" Icon="pencil-fill" Subtitle="@L["ComposeSubtitle"]" />
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else if (_mailboxes is null || _mailboxes.Count == 0)
+{
+    <div class="alert alert-warning" data-testid="compose-no-mailboxes">
+        @L["ComposeNoMailboxes"]
+    </div>
+}
+else
+{
+    <div class="card" data-testid="compose-form">
+        <div class="card-body">
+            @* Mailbox selector *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="mailbox">@L["ComposeFrom"]</label>
+                @if (_mailboxes.Count == 1)
+                {
+                    <div class="form-control-plaintext" data-testid="compose-from-single">
+                        <span class="badge me-2" style="background-color: @(_mailboxes[0].BadgeColor ?? "#6c757d")">
+                            @_mailboxes[0].Name
+                        </span>
+                        @_mailboxes[0].EmailAddress
+                    </div>
+                }
+                else
+                {
+                    <select id="mailbox" class="form-select" @bind="_selectedMailboxId" data-testid="compose-from-select">
+                        @foreach (var mb in _mailboxes)
+                        {
+                            <option value="@mb.Id">@mb.Name (@mb.EmailAddress)</option>
+                        }
+                    </select>
+                }
+            </div>
+
+            @* To *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="to">@L["ComposeTo"]</label>
+                <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
+                       @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                @if (HasError("to"))
+                {
+                    <div class="invalid-feedback">@GetError("to")</div>
+                }
+            </div>
+
+            @* CC / BCC toggle *@
+            <div class="mb-3">
+                <button type="button"
+                        class="btn btn-sm @(_showCcBcc ? "btn-outline-secondary" : "btn-outline-primary")"
+                        @onclick="() => _showCcBcc = !_showCcBcc"
+                        data-testid="compose-show-cc-bcc">
+                    <Icon Name="@(_showCcBcc ? "chevron-up" : "chevron-down")" />
+                    @L["ComposeShowCcBcc"]
+                </button>
+            </div>
+
+            @if (_showCcBcc)
+            {
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="cc">@L["ComposeCc"]</label>
+                    <input id="cc" type="text" class="form-control @(HasError("cc") ? "is-invalid" : "")"
+                           @bind="_cc" placeholder="@L["ComposePlaceholderCc"]" data-testid="compose-cc" />
+                    @if (HasError("cc"))
+                    {
+                        <div class="invalid-feedback">@GetError("cc")</div>
+                    }
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="bcc">@L["ComposeBcc"]</label>
+                    <input id="bcc" type="text" class="form-control @(HasError("bcc") ? "is-invalid" : "")"
+                           @bind="_bcc" placeholder="@L["ComposePlaceholderBcc"]" data-testid="compose-bcc" />
+                    @if (HasError("bcc"))
+                    {
+                        <div class="invalid-feedback">@GetError("bcc")</div>
+                    }
+                </div>
+            }
+
+            @* Subject *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="subject">@L["ComposeSubject"]</label>
+                <input id="subject" type="text" class="form-control @(HasError("subject") ? "is-invalid" : "")"
+                       @bind="_subject" placeholder="@L["ComposePlaceholderSubject"]" data-testid="compose-subject" />
+                @if (HasError("subject"))
+                {
+                    <div class="invalid-feedback">@GetError("subject")</div>
+                }
+            </div>
+
+            @* Editor mode toggle *@
+            <div class="mb-2 d-flex align-items-center gap-2">
+                <label class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
+                <div class="btn-group btn-group-sm ms-auto" role="group">
+                    <button type="button"
+                            class="btn @(_editorMode == EditorMode.RichText ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="SwitchToRichTextAsync"
+                            data-testid="compose-mode-rich">
+                        @L["ComposeModeRichText"]
+                    </button>
+                    <button type="button"
+                            class="btn @(_editorMode == EditorMode.Markdown ? "btn-primary" : "btn-outline-primary")"
+                            @onclick="SwitchToMarkdownAsync"
+                            data-testid="compose-mode-markdown">
+                        @L["ComposeModeMarkdown"]
+                    </button>
+                </div>
+            </div>
+
+            @* Rich text editor (Quill) *@
+            <div style="@(_editorMode == EditorMode.RichText ? "" : "display:none")">
+                <div @ref="_quillEditorRef" data-testid="compose-editor-rich"
+                     style="min-height: 300px; display: flex; flex-direction: column;"></div>
+            </div>
+
+            <style>
+                .ql-container { flex: 1; min-height: 250px; }
+                .ql-editor { min-height: 250px; }
+            </style>
+
+            @* Markdown editor *@
+            <div style="@(_editorMode == EditorMode.Markdown ? "" : "display:none")">
+                <textarea class="form-control font-monospace @(HasError("body") ? "is-invalid" : "")"
+                          rows="12" @bind="_markdownBody" data-testid="compose-editor-markdown"></textarea>
+                <div class="form-check mt-2">
+                    <input type="checkbox" class="form-check-input" id="sendFormatted"
+                           @bind="_sendFormatted" data-testid="compose-send-formatted" />
+                    <label class="form-check-label" for="sendFormatted">@L["ComposeSendFormatted"]</label>
+                </div>
+            </div>
+
+            @if (HasError("body"))
+            {
+                <div class="text-danger small mt-1">@GetError("body")</div>
+            }
+
+            @* Send button *@
+            <div class="mt-4 d-flex justify-content-end">
+                <Button Variant="ButtonVariant.Primary"
+                        OnClick="SendAsync"
+                        Disabled="_isSending"
+                        data-testid="compose-send">
+                    @if (_isSending)
+                    {
+                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                        @L["ComposeButtonSending"]
+                    }
+                    else
+                    {
+                        <Icon Name="send-fill" />
+                        <span class="ms-1">@L["ComposeButtonSend"]</span>
+                    }
+                </Button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<MailboxListResponse>? _mailboxes;
+    private Guid _selectedMailboxId;
+    private bool _isLoading = true;
+    private bool _isSending;
+    private bool _showCcBcc;
+
+    private string _to = "";
+    private string _cc = "";
+    private string _bcc = "";
+    private string _subject = "";
+    private string _markdownBody = "";
+    private bool _sendFormatted = true;
+
+    private EditorMode _editorMode = EditorMode.RichText;
+    private ElementReference _quillEditorRef;
+    private bool _quillInitialized;
+
+    private Dictionary<string, string> _errors = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _mailboxes = await Http.GetFromJsonAsync<List<MailboxListResponse>>("/api/settings/mailboxes");
+            if (_mailboxes is { Count: > 0 })
+                _selectedMailboxId = _mailboxes[0].Id;
+        }
+        catch
+        {
+            Notifications.Add(L["ComposeLoadMailboxesFailed"], NotificationSeverity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_quillInitialized && _mailboxes is { Count: > 0 } && _editorMode == EditorMode.RichText)
+        {
+            await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
+            _quillInitialized = true;
+        }
+    }
+
+    private async Task SwitchToRichTextAsync()
+    {
+        if (_editorMode == EditorMode.RichText) return;
+
+        // Convert markdown to HTML and load into Quill
+        var html = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
+        _editorMode = EditorMode.RichText;
+        StateHasChanged();
+        await Task.Delay(50); // Wait for Quill container to be visible
+        if (!_quillInitialized)
+        {
+            await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
+            _quillInitialized = true;
+        }
+        await Js.InvokeVoidAsync("quillInterop.setHtml", html);
+    }
+
+    private async Task SwitchToMarkdownAsync()
+    {
+        if (_editorMode == EditorMode.Markdown) return;
+
+        // Convert HTML from Quill to Markdown via Turndown
+        var html = await Js.InvokeAsync<string>("quillInterop.getHtml");
+        _markdownBody = await Js.InvokeAsync<string>("markedInterop.toMarkdown", html);
+        _editorMode = EditorMode.Markdown;
+    }
+
+    private async Task SendAsync()
+    {
+        if (_isSending) return;
+
+        _errors.Clear();
+        var (body, contentType) = await GetBodyAndContentTypeAsync();
+
+        // Validate
+        var toAddresses = ParseEmails(_to);
+        var ccAddresses = ParseEmails(_cc);
+        var bccAddresses = ParseEmails(_bcc);
+
+        if (toAddresses.Length == 0)
+            _errors["to"] = L["ComposeValidationTo"];
+
+        foreach (var email in toAddresses.Concat(ccAddresses).Concat(bccAddresses))
+        {
+            if (!IsValidEmail(email))
+            {
+                var field = toAddresses.Contains(email) ? "to" : ccAddresses.Contains(email) ? "cc" : "bcc";
+                _errors.TryAdd(field, string.Format(L["ComposeValidationEmail"], email));
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(_subject))
+            _errors["subject"] = L["ComposeValidationSubject"];
+
+        if (string.IsNullOrWhiteSpace(body))
+            _errors["body"] = L["ComposeValidationBody"];
+
+        if (_errors.Count > 0)
+        {
+            StateHasChanged();
+            return;
+        }
+
+        _isSending = true;
+
+        try
+        {
+            var request = new SendMailRequest(
+                _selectedMailboxId,
+                toAddresses,
+                ccAddresses.Length > 0 ? ccAddresses : null,
+                bccAddresses.Length > 0 ? bccAddresses : null,
+                _subject,
+                body!,
+                contentType);
+
+            var response = await Http.PostAsJsonAsync("/api/mail/send", request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["ComposeSendSuccess"], NotificationSeverity.Success);
+                Navigation.NavigateTo("/mail/inbox");
+                return;
+            }
+
+            var error = await response.Content.ReadAsStringAsync();
+            Notifications.Add(L["ComposeSendFailed"], NotificationSeverity.Error);
+        }
+        catch
+        {
+            Notifications.Add(L["ComposeSendFailed"], NotificationSeverity.Error);
+        }
+        finally
+        {
+            _isSending = false;
+        }
+    }
+
+    private async Task<(string? Body, string ContentType)> GetBodyAndContentTypeAsync()
+    {
+        if (_editorMode == EditorMode.RichText)
+        {
+            var isEmpty = await Js.InvokeAsync<bool>("quillInterop.isEmpty");
+            if (isEmpty) return (null, "html");
+            var html = await Js.InvokeAsync<string>("quillInterop.getHtml");
+            return (html, "html");
+        }
+
+        // Markdown mode
+        if (string.IsNullOrWhiteSpace(_markdownBody))
+            return (null, "plain");
+
+        if (_sendFormatted)
+        {
+            var html = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
+            return (html, "html");
+        }
+
+        return (_markdownBody, "plain");
+    }
+
+    private static string[] ParseEmails(string input) =>
+        string.IsNullOrWhiteSpace(input)
+            ? []
+            : input.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                   .Where(e => !string.IsNullOrWhiteSpace(e))
+                   .ToArray();
+
+    private static bool IsValidEmail(string email)
+    {
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private bool HasError(string field) => _errors.ContainsKey(field);
+    private string GetError(string field) => _errors.GetValueOrDefault(field, "");
+
+    private enum EditorMode { RichText, Markdown }
+}

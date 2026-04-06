@@ -94,6 +94,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImapSyncService, ImapSyncService>();
 builder.Services.AddScoped<IClassificationService, ClassificationService>();
+builder.Services.AddScoped<IMailSendingService, MailSendingService>();
 
 var app = builder.Build();
 
@@ -174,6 +175,7 @@ var mailGroup = apiGroup.MapGroup("/mail");
 mailGroup.MapMailTestEndpoints();
 mailGroup.MapMessageEndpoints();
 mailGroup.MapMailStatsEndpoints();
+mailGroup.MapComposeEndpoints();
 
 // Avatar endpoints (GET is public, PUT/DELETE require JWT)
 apiGroup.MapAvatarEndpoints();
