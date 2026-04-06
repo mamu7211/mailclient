@@ -58,6 +58,9 @@ node_modules/
 tests/playwright/test-results/
 tests/playwright/playwright-report/
 tests/playwright/dist/
+# Playwright MCP
+.playwright-mcp/
+
 # Local Ollama model data
 .ollama-data/
 .playwright-mcp/
