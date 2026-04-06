@@ -73,10 +73,10 @@ If code was changed since the containers were created, restart:
 
 | Script | Usage | What it does |
 |--------|-------|-------------|
-| `start.sh` | `./start.sh` | Start Aspire with `FEIRB_SEED_DATA=true`, wait for API health, store PID |
+| `start.sh` | `./start.sh [--seeding]` | Start Aspire, wait for API health, store PID. Use `--seeding` to seed test data |
 | `stop.sh` | `./stop.sh` | Stop Aspire via PID file |
 | `cleanup.sh` | `./cleanup.sh` | Stop Aspire + remove Postgres container + prune volumes (full reset) |
-| `login.sh` | `./login.sh` | Auth as admin, store JWT to `/tmp/feirb-token.txt` |
+| `login.sh` | `./login.sh [user] [pass]` | Auth (default: admin), store access + refresh tokens |
 | `status.sh` | `./status.sh` | Check Aspire, API, token, GreenMail, Ollama |
 
 ### Inspect

@@ -51,13 +51,12 @@ curl -sk https://localhost:7272/health
   ```
 - **If not running:** start with seeding (default):
   ```bash
-  .claude/skills/dev-harness/start.sh
+  .claude/skills/dev-harness/start.sh --seeding
   ```
   If the test requires a fresh environment (e.g. testing the setup wizard), start without seeding:
   ```bash
-  .claude/skills/dev-harness/start.sh --no-seeding
+  .claude/skills/dev-harness/start.sh
   ```
-  (Note: `start.sh` needs to be updated to support `--seeding` flag per design decision)
 - **If running but wrong mode needed:** ask the user how to proceed
 
 ### 2. Authenticate
