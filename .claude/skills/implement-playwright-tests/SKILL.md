@@ -26,7 +26,14 @@ Create and run Playwright end-to-end tests for Blazor pages and features.
    - **Component/showcase test** — target is a UI component that has a showcase page at `/components-showcase/{section}`. No auth needed. Prefer this for testing component rendering, sizes, variants, and interactive behavior.
    - **Page test** — target is an app page (e.g., `/settings/labels`). Requires auth flow.
 
-### Phase 2: Understand the UI Components
+### Phase 2: Explore the UI with `/test-ui`
+
+Before writing tests, use `/test-ui <path> explore the page` to interactively explore the target page in the browser. This helps you:
+- See how components actually render (DOM structure, classes, attributes)
+- Discover the right selectors by inspecting the accessibility tree (`browser_snapshot`)
+- Understand interaction flows (what happens when you click, toggle, fill)
+
+### Phase 3: Understand the UI Components
 
 Before writing selectors, check how the UI components actually render. The shared component library (`src/Feirb.Web/Components/UI/`) uses custom elements, not native HTML:
 

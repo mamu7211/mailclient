@@ -142,10 +142,11 @@ public partial class {ComponentName} : ComponentBase
    - Test new or changed pages/routes for correct rendering and interaction
    - If new primitives were created, add them to the component showcase and test them there
 
-3. **Manual verification** using `/dev-harness`:
-   - Start the app and visually verify the UI changes
+3. **Browser verification** using `/test-ui`:
+   - Verify the UI changes visually (screenshots) and interactively (click, fill, toggle)
    - Check responsive behavior at different breakpoints
-   - Verify accessibility (keyboard navigation, screen reader)
+   - Assert DOM content via accessibility tree
+   - Verify backend state after interactions (API, DB)
 
 ## After Implementation
 

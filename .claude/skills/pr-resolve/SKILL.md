@@ -94,6 +94,8 @@ dotnet test Feirb.sln --verbosity normal
 dotnet format Feirb.sln --verify-no-changes
 ```
 
+If the PR fixes touch UI code (`.razor`, `.razor.css`), use `/test-ui` to visually verify the fixes in the browser.
+
 ### Phase 6: Commit and Push
 
 Commit all fixes in a single commit referencing the issue:
