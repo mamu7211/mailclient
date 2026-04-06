@@ -300,6 +300,10 @@ a:hover, .btn-link:hover {
     box-shadow: var(--feirb-focus-shadow);
 }
 
+.form-check-input:focus {
+    border-color: var(--bs-primary);
+}
+
 .form-check-input:checked {
     background-color: var(--bs-primary);
     border-color: var(--bs-primary);
