@@ -42,12 +42,12 @@ public class DatabaseSeederTests
         users[0].Email.Should().Be("admin@feirb.local");
         users[0].Username.Should().Be("admin");
         users[0].IsAdmin.Should().BeTrue();
-        BCrypt.Net.BCrypt.Verify("admin@feirb.local", users[0].PasswordHash).Should().BeTrue();
+        BCrypt.Net.BCrypt.Verify("password", users[0].PasswordHash).Should().BeTrue();
 
         users[1].Email.Should().Be("alice@feirb.local");
         users[1].Username.Should().Be("alice");
         users[1].IsAdmin.Should().BeFalse();
-        BCrypt.Net.BCrypt.Verify("alice@feirb.local", users[1].PasswordHash).Should().BeTrue();
+        BCrypt.Net.BCrypt.Verify("password", users[1].PasswordHash).Should().BeTrue();
 
         var mailboxes = await db.Mailboxes.OrderBy(m => m.Name).ToListAsync();
         mailboxes.Should().HaveCount(2);

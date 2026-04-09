@@ -1,0 +1,67 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="Toggle" Icon="toggle-on" Subtitle="Switch toggle with optional disabled text" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>A Bootstrap form-switch toggle with an optional separate label for the off state. When <code>DisabledText</code> is set, the label changes between the two texts. When not set, the same text is shown in both states (muted when off). Supports two-way binding via <code>@@bind-Value</code>.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Value</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Current toggle state</TableCell></TableRow>
+            <TableRow><TableCell><code>ValueChanged</code></TableCell><TableCell><code>EventCallback&lt;bool&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Fires when state changes</TableCell></TableRow>
+            <TableRow><TableCell><code>Text</code></TableCell><TableCell><code>string</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Label text when on (required)</TableCell></TableRow>
+            <TableRow><TableCell><code>DisabledText</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Label text when off (falls back to Text)</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <div class="showcase-preview-area d-flex flex-column gap-3">
+        <p class="text-muted mb-0">With DisabledText:</p>
+        <Toggle Text="Enabled" DisabledText="Disabled" @bind-Value="_toggle1" />
+        <Toggle Text="Notifications on" DisabledText="Notifications off" @bind-Value="_toggle2" />
+        <p class="text-muted mb-0 mt-2">Without DisabledText (muted when off):</p>
+        <Toggle Text="Send formatted" @bind-Value="_toggle3" />
+        <Toggle Text="Auto-save drafts" @bind-Value="_toggle4" />
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private bool _toggle1 = true;
+    private bool _toggle2;
+    private bool _toggle3 = true;
+    private bool _toggle4;
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<!-- With separate disabled text -->\n" +
+        "<Toggle Text=\"Enabled\" DisabledText=\"Disabled\" @bind-Value=\"_on\" />\n" +
+        "\n" +
+        "<!-- Without disabled text (muted when off) -->\n" +
+        "<Toggle Text=\"Send formatted\" @bind-Value=\"_formatted\" />\n" +
+        "\n" +
+        "@code {\n" +
+        "    private bool _on = true;\n" +
+        "    private bool _formatted = true;\n" +
+        "}";
+}

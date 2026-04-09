@@ -246,6 +246,12 @@
   <data name="LabelSmtpRequiresAuth" xml:space="preserve">
     <value>Authentifizierung erforderlich</value>
   </data>
+  <data name="LabelSmtpUseTlsOff" xml:space="preserve">
+    <value>TLS-Verschlüsselung aus</value>
+  </data>
+  <data name="LabelSmtpRequiresAuthOff" xml:space="preserve">
+    <value>Keine Authentifizierung</value>
+  </data>
   <data name="PlaceholderSmtpHost" xml:space="preserve">
     <value>smtp.beispiel.de</value>
   </data>
@@ -1524,6 +1530,12 @@
   <data name="ComposeSubtitle" xml:space="preserve">
     <value>Neue E-Mail schreiben und senden</value>
   </data>
+  <data name="ComposeCorrespondentsHeading" xml:space="preserve">
+    <value>Korrespondenten</value>
+  </data>
+  <data name="ComposeMessageHeading" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
   <data name="ComposeFrom" xml:space="preserve">
     <value>Von</value>
   </data>
@@ -1563,8 +1575,14 @@
   <data name="ComposeModeMarkdown" xml:space="preserve">
     <value>Markdown</value>
   </data>
-  <data name="ComposeSendFormatted" xml:space="preserve">
-    <value>Formatiert senden</value>
+  <data name="ComposeSendFormattedOn" xml:space="preserve">
+    <value>Als formatiertes HTML senden</value>
+  </data>
+  <data name="ComposeSendFormattedOff" xml:space="preserve">
+    <value>Als reinen Text senden</value>
+  </data>
+  <data name="ComposeShowCcBccOff" xml:space="preserve">
+    <value>Keine Kopien</value>
   </data>
   <data name="ComposeButtonSend" xml:space="preserve">
     <value>Senden</value>

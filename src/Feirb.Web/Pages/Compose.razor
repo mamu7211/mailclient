@@ -7,15 +7,17 @@
 @inject IJSRuntime Js
 @inject IStringLocalizer<SharedResources> L
 @inject NotificationService Notifications
+@inject ToolbarStateService ToolbarState
+@implements IAsyncDisposable
 
 <PageTitle>@L["ComposePageTitle"]</PageTitle>
-
-<InfoHeader Title="@L["ComposeHeading"]" Icon="pencil-fill" Subtitle="@L["ComposeSubtitle"]" />
 
 @if (_isLoading)
 {
     <div class="text-center py-5">
-        <div class="spinner-border" role="status"></div>
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">@L["Loading"]</span>
+        </div>
     </div>
 }
 else if (_mailboxes is null || _mailboxes.Count == 0)
@@ -26,19 +28,14 @@ else if (_mailboxes is null || _mailboxes.Count == 0)
 }
 else
 {
-    <div class="card" data-testid="compose-form">
-        <div class="card-body">
-            @* Mailbox selector *@
-            <div class="mb-3">
+    <div data-testid="compose-form">
+        <ContentSection Icon="people" Title="@L["ComposeCorrespondentsHeading"]">
+            @* Sender *@
+            <div class="mb-3" data-testid="compose-from-single">
                 <label class="form-label fw-semibold" for="mailbox">@L["ComposeFrom"]</label>
                 @if (_mailboxes.Count == 1)
                 {
-                    <div class="form-control-plaintext" data-testid="compose-from-single">
-                        <span class="badge me-2" style="background-color: @(_mailboxes[0].BadgeColor ?? "#6c757d")">
-                            @_mailboxes[0].Name
-                        </span>
-                        @_mailboxes[0].EmailAddress
-                    </div>
+                    <PersonChip Name="@_mailboxes[0].Name" Email="@_mailboxes[0].EmailAddress" />
                 }
                 else
                 {
@@ -51,26 +48,22 @@ else
                 }
             </div>
 
-            @* To *@
+            @* To + CC/BCC toggle *@
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="to">@L["ComposeTo"]</label>
-                <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
-                       @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                <div class="d-flex align-items-center gap-2">
+                    <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
+                           @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                    <Toggle Text="@L["ComposeShowCcBcc"]"
+                            DisabledText="@L["ComposeShowCcBccOff"]"
+                            @bind-Value="_showCcBcc"
+                            Class="flex-shrink-0"
+                            data-testid="compose-show-cc-bcc" />
+                </div>
                 @if (HasError("to"))
                 {
-                    <div class="invalid-feedback">@GetError("to")</div>
+                    <div class="invalid-feedback d-block">@GetError("to")</div>
                 }
-            </div>
-
-            @* CC / BCC toggle *@
-            <div class="mb-3">
-                <button type="button"
-                        class="btn btn-sm @(_showCcBcc ? "btn-outline-secondary" : "btn-outline-primary")"
-                        @onclick="() => _showCcBcc = !_showCcBcc"
-                        data-testid="compose-show-cc-bcc">
-                    <Icon Name="@(_showCcBcc ? "chevron-up" : "chevron-down")" />
-                    @L["ComposeShowCcBcc"]
-                </button>
             </div>
 
             @if (_showCcBcc)
@@ -94,7 +87,9 @@ else
                     }
                 </div>
             }
+        </ContentSection>
 
+        <ContentSection Icon="pencil" Title="@L["ComposeMessageHeading"]" Class="mt-3">
             @* Subject *@
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="subject">@L["ComposeSubject"]</label>
@@ -108,69 +103,36 @@ else
 
             @* Editor mode toggle *@
             <div class="mb-2 d-flex align-items-center gap-2">
-                <label class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
-                <div class="btn-group btn-group-sm ms-auto" role="group">
-                    <button type="button"
-                            class="btn @(_editorMode == EditorMode.RichText ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="SwitchToRichTextAsync"
-                            data-testid="compose-mode-rich">
-                        @L["ComposeModeRichText"]
-                    </button>
-                    <button type="button"
-                            class="btn @(_editorMode == EditorMode.Markdown ? "btn-primary" : "btn-outline-primary")"
-                            @onclick="SwitchToMarkdownAsync"
-                            data-testid="compose-mode-markdown">
-                        @L["ComposeModeMarkdown"]
-                    </button>
-                </div>
+                <label id="compose-body-label" class="form-label fw-semibold mb-0">@L["ComposeBody"]</label>
+                <ToggleButtonGroup Items="_editorModeItems"
+                                   SelectedId="@_editorMode.ToString()"
+                                   SelectedIdChanged="OnEditorModeChangedAsync"
+                                   Class="ms-auto" />
             </div>
 
             @* Rich text editor (Quill) *@
             <div style="@(_editorMode == EditorMode.RichText ? "" : "display:none")">
                 <div @ref="_quillEditorRef" data-testid="compose-editor-rich"
+                     aria-labelledby="compose-body-label" role="textbox" aria-multiline="true"
                      style="min-height: 300px; display: flex; flex-direction: column;"></div>
             </div>
-
-            <style>
-                .ql-container { flex: 1; min-height: 250px; }
-                .ql-editor { min-height: 250px; }
-            </style>
 
             @* Markdown editor *@
             <div style="@(_editorMode == EditorMode.Markdown ? "" : "display:none")">
                 <textarea class="form-control font-monospace @(HasError("body") ? "is-invalid" : "")"
                           rows="12" @bind="_markdownBody" data-testid="compose-editor-markdown"></textarea>
-                <div class="form-check mt-2">
-                    <input type="checkbox" class="form-check-input" id="sendFormatted"
-                           @bind="_sendFormatted" data-testid="compose-send-formatted" />
-                    <label class="form-check-label" for="sendFormatted">@L["ComposeSendFormatted"]</label>
-                </div>
+                <Toggle Text="@L["ComposeSendFormattedOn"]"
+                        DisabledText="@L["ComposeSendFormattedOff"]"
+                        @bind-Value="_sendFormatted"
+                        Class="mt-2"
+                        data-testid="compose-send-formatted" />
             </div>
 
             @if (HasError("body"))
             {
                 <div class="text-danger small mt-1">@GetError("body")</div>
             }
-
-            @* Send button *@
-            <div class="mt-4 d-flex justify-content-end">
-                <Button Variant="ButtonVariant.Primary"
-                        OnClick="SendAsync"
-                        Disabled="_isSending"
-                        data-testid="compose-send">
-                    @if (_isSending)
-                    {
-                        <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-                        @L["ComposeButtonSending"]
-                    }
-                    else
-                    {
-                        <Icon Name="send-fill" />
-                        <span class="ms-1">@L["ComposeButtonSend"]</span>
-                    }
-                </Button>
-            </div>
-        </div>
+        </ContentSection>
     </div>
 }
 
@@ -191,11 +153,22 @@ else
     private EditorMode _editorMode = EditorMode.RichText;
     private ElementReference _quillEditorRef;
     private bool _quillInitialized;
+    private string? _pendingQuillHtml;
 
     private Dictionary<string, string> _errors = [];
 
+    private ToggleButtonItem[] _editorModeItems = [];
+
+    private ToolbarAction[] _toolbarActions = [];
+
     protected override async Task OnInitializedAsync()
     {
+        _editorModeItems =
+        [
+            new(nameof(EditorMode.RichText), L["ComposeModeRichText"]),
+            new(nameof(EditorMode.Markdown), L["ComposeModeMarkdown"])
+        ];
+
         try
         {
             _mailboxes = await Http.GetFromJsonAsync<List<MailboxListResponse>>("/api/settings/mailboxes");
@@ -210,6 +183,38 @@ else
         {
             _isLoading = false;
         }
+
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ComposeButtonSend"], ButtonVariant.Primary, SendAsync, "send-fill")
+        ];
+        ToolbarState.AddActions(_toolbarActions);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+
+        if (_quillInitialized)
+        {
+            try
+            {
+                await Js.InvokeVoidAsync("quillInterop.destroy");
+            }
+            catch (JSDisconnectedException)
+            {
+                // Ignored during disposal
+            }
+            _quillInitialized = false;
+        }
+    }
+
+    private async Task OnEditorModeChangedAsync(string id)
+    {
+        if (id == nameof(EditorMode.RichText))
+            await SwitchToRichTextAsync();
+        else
+            await SwitchToMarkdownAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -219,23 +224,21 @@ else
             await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
             _quillInitialized = true;
         }
+
+        if (_pendingQuillHtml is not null && _quillInitialized)
+        {
+            await Js.InvokeVoidAsync("quillInterop.setHtml", _pendingQuillHtml);
+            _pendingQuillHtml = null;
+        }
     }
 
     private async Task SwitchToRichTextAsync()
     {
         if (_editorMode == EditorMode.RichText) return;
 
-        // Convert markdown to HTML and load into Quill
-        var html = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
+        // Convert markdown to HTML — Quill init and setHtml happen in OnAfterRenderAsync
+        _pendingQuillHtml = await Js.InvokeAsync<string>("markedInterop.toHtml", _markdownBody);
         _editorMode = EditorMode.RichText;
-        StateHasChanged();
-        await Task.Delay(50); // Wait for Quill container to be visible
-        if (!_quillInitialized)
-        {
-            await Js.InvokeVoidAsync("quillInterop.init", _quillEditorRef);
-            _quillInitialized = true;
-        }
-        await Js.InvokeVoidAsync("quillInterop.setHtml", html);
     }
 
     private async Task SwitchToMarkdownAsync()
@@ -306,7 +309,6 @@ else
                 return;
             }
 
-            var error = await response.Content.ReadAsStringAsync();
             Notifications.Add(L["ComposeSendFailed"], NotificationSeverity.Error);
         }
         catch

@@ -1,12 +1,23 @@
 #!/bin/bash
-# Authenticate with the Feirb API and store JWT token
+# Authenticate with the Feirb API and store JWT tokens
+# Usage: login.sh [username] [password]
+#   Defaults to admin / password
 set -euo pipefail
+
+USERNAME="${1:-admin}"
+PASSWORD="${2:-password}"
 
 curl -sk -X POST https://localhost:7272/api/auth/login \
     -H "Content-Type: application/json" \
-    -d '{"username":"admin","password":"admin@feirb.local"}' \
+    -d "{\"username\":\"$USERNAME\",\"password\":\"$PASSWORD\"}" \
     > /tmp/feirb-auth.json
 
-TOKEN=$(python3 -c "import sys,json; print(json.load(sys.stdin)['accessToken'])" < /tmp/feirb-auth.json)
-echo "$TOKEN" > /tmp/feirb-token.txt
-echo "Login OK, token stored in /tmp/feirb-token.txt"
+python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+with open('/tmp/feirb-token.txt', 'w') as f:
+    f.write(d['accessToken'])
+with open('/tmp/feirb-refresh-token.txt', 'w') as f:
+    f.write(d['refreshToken'])
+print('Login OK (' + '$USERNAME' + '), tokens stored')
+" < /tmp/feirb-auth.json

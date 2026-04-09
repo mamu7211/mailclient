@@ -174,4 +174,19 @@
   <data name="SendMailFailed" xml:space="preserve">
     <value>Échec de l'envoi de l'e-mail. Veuillez réessayer.</value>
   </data>
+  <data name="RecipientRequired" xml:space="preserve">
+    <value>Au moins un destinataire est requis.</value>
+  </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>L'objet est requis.</value>
+  </data>
+  <data name="BodyRequired" xml:space="preserve">
+    <value>Le corps du message est requis.</value>
+  </data>
+  <data name="InvalidContentType" xml:space="preserve">
+    <value>Le type de contenu doit être 'html' ou 'plain'.</value>
+  </data>
+  <data name="BodyTooLarge" xml:space="preserve">
+    <value>Le corps du message dépasse la taille maximale autorisée.</value>
+  </data>
 </root>

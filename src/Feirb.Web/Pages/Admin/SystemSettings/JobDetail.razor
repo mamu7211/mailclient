@@ -50,12 +50,10 @@ else if (_model is not null)
                                For="() => _model.Cron" />
                 </div>
             }
-            <div class="form-check form-switch">
-                <InputCheckbox id="jobEnabled" class="form-check-input" @bind-Value="_model.Enabled" />
-                <label for="jobEnabled" class="form-check-label">
-                    @(_model.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
-                </label>
-            </div>
+            <Toggle Text="@L["JobsEnabled"]"
+                    DisabledText="@L["JobsDisabled"]"
+                    @bind-Value="_model.Enabled"
+                    For="() => _model.Enabled" />
         </ContentSection>
     </TrackedEditForm>
 

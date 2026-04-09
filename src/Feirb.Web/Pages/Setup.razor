@@ -84,15 +84,17 @@
                         <ValidationMessage For="() => _smtpModel.Port" />
                     </div>
 
-                    <div class="mb-3 form-check form-switch">
-                        <InputCheckbox id="smtpUseTls" class="form-check-input" @bind-Value="_smtpModel.UseTls" />
-                        <label for="smtpUseTls" class="form-check-label">@L["LabelSmtpUseTls"]</label>
-                    </div>
+                    <Toggle Text="@L["LabelSmtpUseTls"]"
+                            DisabledText="@L["LabelSmtpUseTlsOff"]"
+                            @bind-Value="_smtpModel.UseTls"
+                            For="() => _smtpModel.UseTls"
+                            Class="mb-3" />
 
-                    <div class="mb-3 form-check form-switch">
-                        <InputCheckbox id="smtpRequiresAuth" class="form-check-input" @bind-Value="_smtpModel.RequiresAuth" />
-                        <label for="smtpRequiresAuth" class="form-check-label">@L["LabelSmtpRequiresAuth"]</label>
-                    </div>
+                    <Toggle Text="@L["LabelSmtpRequiresAuth"]"
+                            DisabledText="@L["LabelSmtpRequiresAuthOff"]"
+                            @bind-Value="_smtpModel.RequiresAuth"
+                            For="() => _smtpModel.RequiresAuth"
+                            Class="mb-3" />
 
                     @if (_smtpModel.RequiresAuth)
                     {
