@@ -1,0 +1,131 @@
+/* RecipientInput — tokenizing input with chips and autocomplete */
+.feirb-recipient-input {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.5rem;
+    min-height: 2.75rem;
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-outline-variant);
+    border-radius: var(--feirb-radius-input);
+    cursor: text;
+    position: relative;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feirb-recipient-input.focused {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+}
+
+/* Token (chip + remove button) */
+.feirb-recipient-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    background-color: var(--feirb-surface-container);
+    border: 1px solid var(--feirb-outline-variant);
+    border-radius: var(--feirb-radius-input);
+    padding: 0.125rem 0.25rem 0.125rem 0.375rem;
+    max-width: 100%;
+    animation: recipientTokenIn 0.15s ease-out;
+}
+
+@keyframes recipientTokenIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.feirb-recipient-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--feirb-on-surface-variant);
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.feirb-recipient-remove:hover {
+    background-color: var(--bs-danger);
+    color: #fff;
+}
+
+/* Inline text input */
+.feirb-recipient-text-input {
+    flex: 1 1 8rem;
+    min-width: 8rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--bs-body-color);
+    font-size: 0.875rem;
+    padding: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.feirb-recipient-text-input::placeholder {
+    color: var(--feirb-on-surface-variant);
+    opacity: 0.7;
+}
+
+/* Autocomplete dropdown */
+.feirb-recipient-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    margin-top: 0.25rem;
+    background-color: var(--feirb-surface-container);
+    border: 1px solid var(--feirb-outline-variant);
+    border-radius: var(--feirb-radius-input);
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
+    max-height: 16rem;
+    overflow-y: auto;
+    animation: recipientDropdownIn 0.12s ease-out;
+}
+
+@keyframes recipientDropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feirb-recipient-suggestion {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.1s ease;
+}
+
+.feirb-recipient-suggestion:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+}
+
+.feirb-recipient-suggestion:not(:last-child) {
+    border-bottom: 1px solid var(--feirb-outline-variant);
+}

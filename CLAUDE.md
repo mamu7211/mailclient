@@ -145,7 +145,8 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 
 - Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`
 - Scopes: `(api)`, `(web)`, `(apphost)`, `(shared)`, `(design)`
-- Branch naming: `feature/`, `fix/`, `docs/`, `chore/`
+- Branch naming: `feature/<issue#>-slug`, `fix/<issue#>-slug`, `docs/<issue#>-slug`, `chore/<issue#>-slug`
+- **Before starting work on an issue:** check the current branch (`git branch --show-current`). If it doesn't match the issue, create or switch to the correct branch from `main` (e.g., `feature/200-recipient-autocomplete` for issue #200). Never commit work for one issue onto another issue's branch.
 - Target branch: `main`
 
 ### Issues

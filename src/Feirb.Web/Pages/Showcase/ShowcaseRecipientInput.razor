@@ -1,0 +1,121 @@
+@using Feirb.Web.Components.UI
+@using static Feirb.Web.Components.UI.RecipientInput
+@inject IJSRuntime JS
+
+<InfoHeader Title="RecipientInput" Icon="person-plus" Subtitle="Tokenizing email input with autocomplete" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>A Gmail-style tokenizing input for email recipients. Type to search contacts, press <kbd>Enter</kbd>, <kbd>Tab</kbd>, or <kbd>,</kbd> to confirm. <kbd>Backspace</kbd> on empty input removes the last chip. Paste comma/semicolon-separated addresses to add multiple at once.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Recipients</code></TableCell><TableCell><code>List&lt;RecipientEntry&gt;</code></TableCell><TableCell>empty</TableCell><TableCell>Current recipient list (two-way bindable)</TableCell></TableRow>
+            <TableRow><TableCell><code>Contacts</code></TableCell><TableCell><code>IReadOnlyList&lt;RecipientEntry&gt;</code></TableCell><TableCell>empty</TableCell><TableCell>Available contacts for autocomplete</TableCell></TableRow>
+            <TableRow><TableCell><code>Placeholder</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Placeholder when no recipients added</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Additional CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview — To field</Heading>
+    <p class="text-muted small mb-2">Try typing "alice", "bob", or "newsletter". Press Enter/Tab/Comma to confirm, Backspace to remove.</p>
+    <div class="showcase-preview-area">
+        <RecipientInput @bind-Recipients="_toRecipients"
+                        Contacts="_fakeContacts"
+                        Placeholder="Add recipients..."
+                        DataTestId="showcase-recipient-to" />
+    </div>
+    <div class="mt-2 small text-muted">
+        Recipients: @(_toRecipients.Count == 0 ? "none" : string.Join(", ", _toRecipients.Select(r => r.Email)))
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview — CC field (pre-populated)</Heading>
+    <p class="text-muted small mb-2">Starts with two recipients. Remove them or add more.</p>
+    <div class="showcase-preview-area">
+        <RecipientInput @bind-Recipients="_ccRecipients"
+                        Contacts="_fakeContacts"
+                        Placeholder="Add CC..."
+                        DataTestId="showcase-recipient-cc" />
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview — Paste test</Heading>
+    <p class="text-muted small mb-2">Paste a comma-separated list like: <code>one@example.com, two@example.com, three@example.com</code></p>
+    <div class="showcase-preview-area">
+        <RecipientInput @bind-Recipients="_pasteRecipients"
+                        Contacts="_fakeContacts"
+                        Placeholder="Paste addresses here..."
+                        DataTestId="showcase-recipient-paste" />
+    </div>
+    <div class="mt-2 small text-muted">
+        Count: @_pasteRecipients.Count
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private List<RecipientEntry> _toRecipients = [];
+
+    private List<RecipientEntry> _ccRecipients =
+    [
+        new("Alice Johnson", "alice@company.com"),
+        new("Bob Smith", "bob.smith@example.org")
+    ];
+
+    private List<RecipientEntry> _pasteRecipients = [];
+
+    private static readonly IReadOnlyList<RecipientEntry> _fakeContacts =
+    [
+        new("Alice Johnson", "alice@company.com"),
+        new("Alice Cooper", "alice.cooper@rock.net"),
+        new("Bob Smith", "bob.smith@example.org"),
+        new("Bob Martin", "bob.martin@dev.io"),
+        new("Carol Williams", "carol@widgets.co"),
+        new("Dave Newsletter", "newsletter@updates.com"),
+        new("Newsletter Digest", "digest@newsletter.io"),
+        new("Tech Newsletter", "tech@newsletter.dev"),
+        new("Emma Davis", "emma.davis@example.com"),
+        new("Frank Miller", "frank@office.net"),
+        new("Grace Lee", "grace.lee@startup.io"),
+        new("Henry Wilson", "henry@design.co"),
+        new("Iris Chen", "iris.chen@research.edu"),
+        new("Jack Thompson", "jack@marketing.biz"),
+    ];
+
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        "<RecipientInput @bind-Recipients=\"_recipients\"\n" +
+        "                Contacts=\"_contacts\"\n" +
+        "                Placeholder=\"Add recipients...\" />\n" +
+        "\n" +
+        "@code {\n" +
+        "    private List<RecipientEntry> _recipients = [];\n" +
+        "\n" +
+        "    private static readonly IReadOnlyList<RecipientEntry> _contacts =\n" +
+        "    [\n" +
+        "        new(\"Alice Johnson\", \"alice@company.com\"),\n" +
+        "        new(\"Bob Smith\", \"bob.smith@example.org\"),\n" +
+        "    ];\n" +
+        "}";
+}
