@@ -174,4 +174,19 @@
   <data name="SendMailFailed" xml:space="preserve">
     <value>Invio dell'e-mail non riuscito. Riprova.</value>
   </data>
+  <data name="RecipientRequired" xml:space="preserve">
+    <value>È richiesto almeno un destinatario.</value>
+  </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>L'oggetto è obbligatorio.</value>
+  </data>
+  <data name="BodyRequired" xml:space="preserve">
+    <value>Il corpo del messaggio è obbligatorio.</value>
+  </data>
+  <data name="InvalidContentType" xml:space="preserve">
+    <value>Il tipo di contenuto deve essere 'html' o 'plain'.</value>
+  </data>
+  <data name="BodyTooLarge" xml:space="preserve">
+    <value>Il corpo del messaggio supera la dimensione massima consentita.</value>
+  </data>
 </root>

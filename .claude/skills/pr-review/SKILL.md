@@ -56,7 +56,10 @@ Perform a thorough code review on a given pull request, covering correctness, co
    dotnet format Feirb.sln --verify-no-changes
    ```
 
-5. **Report build/test/format results** alongside code review findings.
+5. **Browser verify UI changes** (if the PR touches `.razor`, `.razor.css`, or frontend code):
+   Use `/test-ui` to visually verify changed pages — take screenshots, check interactions work.
+
+6. **Report build/test/format results** alongside code review findings.
 
 ### Phase 3: Output
 

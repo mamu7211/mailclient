@@ -51,7 +51,7 @@ tests/
 dotnet build Feirb.sln
 
 # 2. Start the app with dev-harness (seeds data, waits for health)
-.claude/skills/dev-harness/start.sh
+.claude/skills/dev-harness/start.sh --seeding
 
 # 3. Authenticate
 .claude/skills/dev-harness/login.sh
@@ -89,9 +89,9 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 
 | Script | Purpose |
 |--------|---------|
-| `start.sh` | Start Aspire with seed data, wait for health |
+| `start.sh [--seeding]` | Start Aspire (bare by default), `--seeding` to seed test data |
 | `stop.sh` / `cleanup.sh` | Stop Aspire / full reset (removes containers + volumes) |
-| `login.sh` | Authenticate as admin, store JWT |
+| `login.sh [user] [pass]` | Authenticate (default: admin), store access + refresh tokens |
 | `status.sh` | Check all services (API, GreenMail, Ollama, token) |
 | `check.sh /api/...` | GET any API endpoint with stored token |
 | `query.sh 'SELECT ...'` | Run SQL against PostgreSQL via local psql |
@@ -113,7 +113,7 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 
 ## Seeded Dev Data (`FEIRB_SEED_DATA=true`)
 
-- **Users:** `admin` / `admin@feirb.local` (admin), `alice` / `alice@feirb.local` (user)
+- **Users:** `admin` / `admin@feirb.local` / password: `admin@feirb.local` (admin), `alice` / `alice@feirb.local` / password: `alice@feirb.local` (user)
 - **Mailboxes:** One per user, connected to GreenMail
 - **Labels:** Newsletter, Work, Personal (admin)
 - **Classification rule:** Basic newsletter/work/personal rule (admin)
@@ -136,6 +136,7 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 
 ### Testing
 
+- **Browser testing:** Playwright MCP for interactive UI verification (`/test-ui` skill)
 - xUnit as test framework, FluentAssertions for assertions
 - Test naming: `MethodName_Scenario_ExpectedResult`
 - Unit tests mirror `src/` project structure in `tests/`
@@ -182,6 +183,16 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 - **Culture detection:** localStorage (`BlazorCulture`) → browser culture → `en-US` fallback
 - **Adding a new locale:** Create `.{locale}.resx` files in both `Resources/` directories, add culture code to `supportedCultures` in `Feirb.Api/Program.cs`, add option to `LanguageSwitcher.razor`
 - **Adding a new string:** Add key to all `.resx` files (default + all locales), use `L["Key"]` in components or `localizer["Key"]` in API endpoints
+
+## Browser Testing (Playwright MCP)
+
+Use `/test-ui <path> <what to test>` to verify UI features via browser. The skill:
+- Checks app health and container freshness before testing
+- Authenticates via JWT injection into browser localStorage
+- Uses Playwright MCP tools for navigation, form filling, clicking, screenshots, and assertions
+- Verifies backend state via dev-harness scripts (API, DB, logs)
+
+MCP server configured in `.mcp.json` with `--ignore-https-errors` for self-signed dev certs.
 
 ## Future Plans
 

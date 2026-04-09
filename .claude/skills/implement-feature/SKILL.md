@@ -67,7 +67,7 @@ Start working on a feature tracked by a GitHub issue.
    dotnet test Feirb.sln --verbosity normal
    dotnet format Feirb.sln --verify-no-changes
    ```
-   Then use `/dev-harness` to start the app and verify the feature works end-to-end.
+   Then use `/test-ui` to verify the feature works in the browser (visual checks, interaction, assertions). For API-only features, use `/dev-harness` to verify via API calls and database queries.
 
 9. **Commit with conventional commits** referencing the issue:
     ```

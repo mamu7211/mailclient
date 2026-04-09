@@ -67,13 +67,10 @@ else
                 }
 
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="form-check form-switch">
-                        <input type="checkbox" id="@($"job-enabled-{job.Id}")" class="form-check-input"
-                               checked="@job.Enabled" @onchange="(e) => ToggleEnabledAsync(job, (bool)e.Value!)" />
-                        <label for="@($"job-enabled-{job.Id}")" class="form-check-label">
-                            @(job.Enabled ? L["JobsEnabled"] : L["JobsDisabled"])
-                        </label>
-                    </div>
+                    <Toggle Text="@L["JobsEnabled"]"
+                            DisabledText="@L["JobsDisabled"]"
+                            Value="job.Enabled"
+                            ValueChanged="(enabled) => ToggleEnabledAsync(job, enabled)" />
                     <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small"
                             Icon="play-fill" OnClick="() => RunNowAsync(job)" Disabled="_isSaving">
                         @L["ButtonRunNow"]

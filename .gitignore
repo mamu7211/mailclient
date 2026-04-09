@@ -63,3 +63,4 @@ tests/playwright/dist/
 
 # Local Ollama model data
 .ollama-data/
+.playwright-mcp/

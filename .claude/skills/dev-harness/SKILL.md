@@ -49,16 +49,34 @@ MCP tools are read-only (except resource commands). These always require scripts
 
 ---
 
+## Checking if the app needs a restart
+
+Before testing, always verify the app is running **current code**. A health check alone is not enough — containers may be stale.
+
+```bash
+# Check container uptime and creation time
+podman ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null || \
+docker ps --format "{{.Names}}\t{{.Status}}\t{{.Created}}" 2>/dev/null
+```
+
+If code was changed since the containers were created, restart:
+```bash
+.claude/skills/dev-harness/stop.sh
+.claude/skills/dev-harness/start.sh
+```
+
+---
+
 ## Scripts
 
 ### Lifecycle
 
 | Script | Usage | What it does |
 |--------|-------|-------------|
-| `start.sh` | `./start.sh` | Start Aspire with `FEIRB_SEED_DATA=true`, wait for API health, store PID |
+| `start.sh` | `./start.sh [--seeding]` | Start Aspire, wait for API health, store PID. Use `--seeding` to seed test data |
 | `stop.sh` | `./stop.sh` | Stop Aspire via PID file |
 | `cleanup.sh` | `./cleanup.sh` | Stop Aspire + remove Postgres container + prune volumes (full reset) |
-| `login.sh` | `./login.sh` | Auth as admin, store JWT to `/tmp/feirb-token.txt` |
+| `login.sh` | `./login.sh [user] [pass]` | Auth (default: admin), store access + refresh tokens |
 | `status.sh` | `./status.sh` | Check Aspire, API, token, GreenMail, Ollama |
 
 ### Inspect

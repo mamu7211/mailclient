@@ -67,6 +67,10 @@ npx playwright test
 
 Set `BASE_URL` environment variable if the API is not on the default port.
 
+### 5. Interactive browser verification (against running local API)
+
+Use `/test-ui <path> <what to verify>` for manual browser verification via Playwright MCP — visual checks, form interaction, and DOM assertions. Useful for debugging test failures or verifying features not covered by automated tests.
+
 ## Reporting Results
 
 - Report number of tests passed, failed, skipped per layer

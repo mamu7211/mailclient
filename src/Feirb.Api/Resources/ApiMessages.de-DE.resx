@@ -174,4 +174,19 @@
   <data name="SendMailFailed" xml:space="preserve">
     <value>E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es erneut.</value>
   </data>
+  <data name="RecipientRequired" xml:space="preserve">
+    <value>Mindestens ein Empfänger ist erforderlich.</value>
+  </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>Betreff ist erforderlich.</value>
+  </data>
+  <data name="BodyRequired" xml:space="preserve">
+    <value>Nachrichtentext ist erforderlich.</value>
+  </data>
+  <data name="InvalidContentType" xml:space="preserve">
+    <value>Inhaltstyp muss 'html' oder 'plain' sein.</value>
+  </data>
+  <data name="BodyTooLarge" xml:space="preserve">
+    <value>Nachrichtentext überschreitet die maximal zulässige Größe.</value>
+  </data>
 </root>
