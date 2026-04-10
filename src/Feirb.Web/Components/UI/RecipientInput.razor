@@ -7,7 +7,8 @@
      @onclick="FocusInputAsync">
     @foreach (var recipient in Recipients)
     {
-        <div class="feirb-recipient-token">
+        var key = $"{recipient.Email}-{GetFlashKey(recipient.Email)}";
+        <div @key="key" class="feirb-recipient-token @(_flashingEmails.Contains(recipient.Email) ? "feirb-recipient-flash" : "")">
             <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Size="PersonChipSize.Mini" />
             <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipient(recipient)"
                     @onclick:stopPropagation="true" aria-label="Remove @(recipient.Name ?? recipient.Email)">
@@ -71,6 +72,8 @@
     private bool _showDropdown;
     private bool _initialized;
     private string _currentQuery = "";
+    private HashSet<string> _flashingEmails = new(StringComparer.OrdinalIgnoreCase);
+    private int _flashCounter;
     private List<RecipientEntry> _suggestions = [];
     private System.Timers.Timer? _debounceTimer;
 
@@ -82,6 +85,9 @@
             await Js.InvokeVoidAsync("recipientInterop.init", _inputRef, _dotNetRef, _instanceId);
             _initialized = true;
         }
+
+        if (_flashingEmails.Count > 0)
+            _flashingEmails.Clear();
     }
 
     [JSInvokable]
@@ -166,8 +172,12 @@
 
         var entry = match ?? new RecipientEntry(null, value.Trim());
 
-        // Avoid duplicates
-        if (!Recipients.Any(r => r.Email.Equals(entry.Email, StringComparison.OrdinalIgnoreCase)))
+        // Avoid duplicates — flash existing chip instead
+        if (Recipients.Any(r => r.Email.Equals(entry.Email, StringComparison.OrdinalIgnoreCase)))
+        {
+            FlashRecipient(entry.Email);
+        }
+        else
         {
             Recipients.Add(entry);
             await RecipientsChanged.InvokeAsync(Recipients);
@@ -190,6 +200,15 @@
         Recipients.Remove(recipient);
         _ = RecipientsChanged.InvokeAsync(Recipients);
     }
+
+    private void FlashRecipient(string email)
+    {
+        _flashingEmails.Add(email);
+        _flashCounter++;
+    }
+
+    private int GetFlashKey(string email) =>
+        _flashingEmails.Contains(email) ? _flashCounter : 0;
 
     private async Task FocusInputAsync()
     {

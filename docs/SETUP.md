@@ -57,9 +57,10 @@ Once running, these services are available:
 
 | Script | Purpose |
 |--------|---------|
-| `./run.sh` | Start Feirb with database seeding (admin + alice users, mailboxes, GreenMail SMTP) |
-| `./run.sh --no-seeding` | Start Feirb without seeding |
-| `./stop-aspire-containers.sh` | Stop and remove Aspire containers and orphaned volumes |
+| `.claude/skills/dev-harness/start.sh` | Start Aspire (bare, no seed data) |
+| `.claude/skills/dev-harness/start.sh --seeding` | Start Aspire with database seeding (admin + alice users, mailboxes, GreenMail SMTP) |
+| `.claude/skills/dev-harness/stop.sh` | Stop Aspire gracefully |
+| `.claude/skills/dev-harness/cleanup.sh` | Stop Aspire and remove containers + volumes for fresh start |
 
 ### Database Seeding
 

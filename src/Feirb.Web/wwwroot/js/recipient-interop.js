@@ -6,7 +6,7 @@ window.recipientInterop = {
             dotNetRef: dotNetRef,
             inputElement: inputElement,
             onKeyDown: function (e) {
-                if (e.key === 'Enter' || e.key === 'Tab' || e.key === ',') {
+                if (e.key === 'Enter' || e.key === 'Tab' || e.key === ',' || e.key === ' ') {
                     var val = inputElement.value.trim();
                     if (val.length > 0) {
                         e.preventDefault();
