@@ -31,7 +31,7 @@ public class AvatarEndpointsTests : IDisposable
     // --- GET Tests ---
 
     [Fact]
-    public async Task GetAvatar_NotFound_Returns404Async()
+    public async Task GetAvatar_NotFound_Returns204Async()
     {
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
@@ -39,7 +39,7 @@ public class AvatarEndpointsTests : IDisposable
         var hash = AvatarHashHelper.ComputeEmailHash("nobody@example.com");
         var response = await _client.GetAsync($"/api/avatars/{hash}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -61,12 +61,12 @@ public class AvatarEndpointsTests : IDisposable
     }
 
     [Fact]
-    public async Task GetAvatar_Unauthenticated_ReturnsNotFoundAsync()
+    public async Task GetAvatar_Unauthenticated_ReturnsNoContentAsync()
     {
         var hash = AvatarHashHelper.ComputeEmailHash("admin@example.com");
         var response = await _client.GetAsync($"/api/avatars/{hash}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     // --- PUT Tests ---
@@ -192,7 +192,7 @@ public class AvatarEndpointsTests : IDisposable
 
         // Verify it's gone
         var getResponse = await _client.GetAsync($"/api/avatars/{hash}");
-        getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        getResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]

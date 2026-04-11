@@ -8,7 +8,7 @@
         @if (_avatarUrl is not null)
         {
             <img src="@_avatarUrl" alt="" class="feirb-person-chip-avatar-img"
-                 onload="this.parentElement.style.borderStyle='solid'"
+                 onload="if (this.naturalWidth === 0) { this.style.display='none'; } else { this.parentElement.style.borderStyle='solid'; }"
                  onerror="this.style.display='none'" />
         }
     </div>

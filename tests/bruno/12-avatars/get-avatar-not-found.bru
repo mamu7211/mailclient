@@ -1,5 +1,5 @@
 meta {
-  name: Get Avatar Not Found
+  name: Get Avatar No Content
   type: http
   seq: 2
 }
@@ -15,7 +15,7 @@ auth:bearer {
 }
 
 tests {
-  test("should return 404", function() {
-    expect(res.status).to.equal(404);
+  test("should return 204", function() {
+    expect(res.status).to.equal(204);
   });
 }
