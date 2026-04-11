@@ -1,4 +1,5 @@
 @namespace Feirb.Web.Components.UI
+@using Feirb.Shared.Mail
 @inject IJSRuntime Js
 @implements IAsyncDisposable
 
@@ -10,13 +11,14 @@
         var key = $"{recipient.Email}-{GetFlashKey(recipient.Email)}";
         <div @key="key" class="feirb-recipient-token @(_flashingEmails.Contains(recipient.Email) ? "feirb-recipient-flash" : "")">
             <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Size="PersonChipSize.Mini" />
-            <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipient(recipient)"
+            <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipientAsync(recipient)"
                     @onclick:stopPropagation="true" aria-label="Remove @(recipient.Name ?? recipient.Email)">
                 <Icon Name="x" Size="IconSize.Small" />
             </button>
         </div>
     }
     <input @ref="_inputRef"
+           id="@Id"
            type="text"
            class="feirb-recipient-text-input"
            placeholder="@(Recipients.Count == 0 ? Placeholder : "")"
@@ -31,7 +33,7 @@
             @foreach (var suggestion in _suggestions)
             {
                 <button type="button" class="feirb-recipient-suggestion"
-                        @onmousedown="() => SelectSuggestion(suggestion)"
+                        @onmousedown="() => SelectSuggestionAsync(suggestion)"
                         @onmousedown:preventDefault="true">
                     <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Size="PersonChipSize.Mini" />
                 </button>
@@ -60,6 +62,10 @@
     /// <summary>Additional CSS classes.</summary>
     [Parameter]
     public string? Class { get; set; }
+
+    /// <summary>HTML id for the internal text input (enables label[for] association).</summary>
+    [Parameter]
+    public string? Id { get; set; }
 
     /// <summary>Test ID for the text input.</summary>
     [Parameter]
@@ -189,16 +195,16 @@
         StateHasChanged();
     }
 
-    private void SelectSuggestion(RecipientEntry suggestion)
+    private async Task SelectSuggestionAsync(RecipientEntry suggestion)
     {
-        _ = ConfirmTokenAsync(suggestion.Email);
-        _ = Js.InvokeVoidAsync("recipientInterop.clearInput", _inputRef);
+        await Js.InvokeVoidAsync("recipientInterop.clearInput", _inputRef);
+        await ConfirmTokenAsync(suggestion.Email);
     }
 
-    private void RemoveRecipient(RecipientEntry recipient)
+    private async Task RemoveRecipientAsync(RecipientEntry recipient)
     {
         Recipients.Remove(recipient);
-        _ = RecipientsChanged.InvokeAsync(Recipients);
+        await RecipientsChanged.InvokeAsync(Recipients);
     }
 
     private void FlashRecipient(string email)
@@ -249,7 +255,4 @@
 
         _dotNetRef?.Dispose();
     }
-
-    /// <summary>A recipient entry with optional display name and email.</summary>
-    public record RecipientEntry(string? Name, string Email);
 }

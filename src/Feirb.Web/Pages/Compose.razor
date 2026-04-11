@@ -2,7 +2,6 @@
 @attribute [Authorize]
 @using Feirb.Shared.Mail
 @using Feirb.Shared.Settings
-@using static Feirb.Web.Components.UI.RecipientInput
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IJSRuntime Js
@@ -51,9 +50,10 @@ else
 
             @* To + CC/BCC toggle *@
             <div class="mb-3">
-                <label class="form-label fw-semibold">@L["ComposeTo"]</label>
+                <label class="form-label fw-semibold" for="compose-to">@L["ComposeTo"]</label>
                 <div class="d-flex align-items-center gap-2">
                     <RecipientInput @bind-Recipients="_to"
+                                    Id="compose-to"
                                     Placeholder="@L["ComposePlaceholderTo"]"
                                     DataTestId="compose-to"
                                     Class="@(HasError("to") ? "is-invalid" : "")" />
@@ -72,8 +72,9 @@ else
             @if (_showCcBcc)
             {
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">@L["ComposeCc"]</label>
+                    <label class="form-label fw-semibold" for="compose-cc">@L["ComposeCc"]</label>
                     <RecipientInput @bind-Recipients="_cc"
+                                    Id="compose-cc"
                                     Placeholder="@L["ComposePlaceholderCc"]"
                                     DataTestId="compose-cc"
                                     Class="@(HasError("cc") ? "is-invalid" : "")" />
@@ -83,8 +84,9 @@ else
                     }
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">@L["ComposeBcc"]</label>
+                    <label class="form-label fw-semibold" for="compose-bcc">@L["ComposeBcc"]</label>
                     <RecipientInput @bind-Recipients="_bcc"
+                                    Id="compose-bcc"
                                     Placeholder="@L["ComposePlaceholderBcc"]"
                                     DataTestId="compose-bcc"
                                     Class="@(HasError("bcc") ? "is-invalid" : "")" />

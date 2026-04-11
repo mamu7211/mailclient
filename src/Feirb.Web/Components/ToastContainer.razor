@@ -1,6 +1,6 @@
 @inject NotificationService NotificationService
 @inject IJSRuntime Js
-@implements IDisposable
+@implements IAsyncDisposable
 
 <div class="toast-container" role="alert" aria-live="polite">
     @foreach (var notification in NotificationService.Notifications)
@@ -63,9 +63,16 @@
 
     private void OnNotificationChange() => InvokeAsync(StateHasChanged);
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         NotificationService.OnChange -= OnNotificationChange;
+
+        try
+        {
+            await Js.InvokeVoidAsync("toastInterop.clearRef");
+        }
+        catch (JSDisconnectedException) { }
+
         _dotNetRef?.Dispose();
     }
 

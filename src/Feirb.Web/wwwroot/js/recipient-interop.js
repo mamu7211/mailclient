@@ -62,7 +62,6 @@ window.recipientInterop = {
             handler.inputElement.removeEventListener('keydown', handler.onKeyDown);
             handler.inputElement.removeEventListener('paste', handler.onPaste);
             handler.inputElement.removeEventListener('input', handler.onInput);
-            handler.dotNetRef.dispose();
             this._instances.delete(instanceId);
         }
     }

@@ -27,10 +27,10 @@ dotnet workload install aspire
 dotnet restore Feirb.sln
 
 # Start with database seeding (recommended for development)
-./run.sh
+.claude/skills/dev-harness/start.sh --seeding
 ```
 
-The `run.sh` script starts Aspire with database seeding enabled by default, creating a preconfigured admin user and SMTP settings so you can skip the setup wizard. Use `./run.sh --no-seeding` to start without seeding.
+The dev-harness `start.sh --seeding` script starts Aspire with database seeding enabled, creating a preconfigured admin user and SMTP settings so you can skip the setup wizard. Use `start.sh` (without `--seeding`) to start bare.
 
 On first run, Aspire will:
 1. Start a PostgreSQL container for the database
@@ -64,7 +64,7 @@ Once running, these services are available:
 
 ### Database Seeding
 
-When started via `./run.sh` (or with `FEIRB_SEED_DATA=true`), the following data is seeded:
+When started via `.claude/skills/dev-harness/start.sh --seeding` (or with `FEIRB_SEED_DATA=true`), the following data is seeded:
 
 | Data | Value |
 |------|-------|
