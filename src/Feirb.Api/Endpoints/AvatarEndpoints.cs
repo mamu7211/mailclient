@@ -27,7 +27,7 @@ public static class AvatarEndpoints
     {
         var avatar = await db.Avatars.FirstOrDefaultAsync(a => a.EmailHash == md5hash);
         if (avatar is null)
-            return Results.NotFound();
+            return Results.NoContent();
 
         return Results.Bytes(
             avatar.ImageData,
