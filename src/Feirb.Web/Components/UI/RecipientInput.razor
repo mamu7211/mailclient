@@ -51,9 +51,13 @@
     [Parameter]
     public EventCallback<List<RecipientEntry>> RecipientsChanged { get; set; }
 
-    /// <summary>Available contacts for autocomplete suggestions.</summary>
+    /// <summary>Available contacts for autocomplete suggestions (static list).</summary>
     [Parameter]
     public IReadOnlyList<RecipientEntry> Contacts { get; set; } = [];
+
+    /// <summary>Async contacts provider — when set, takes precedence over the static Contacts list.</summary>
+    [Parameter]
+    public Func<string, Task<IReadOnlyList<RecipientEntry>>>? ContactsProvider { get; set; }
 
     /// <summary>Placeholder text when no recipients are added.</summary>
     [Parameter]
@@ -137,9 +141,9 @@
         _debounceTimer.Elapsed += (_, _) =>
         {
             _debounceTimer?.Stop();
-            InvokeAsync(() =>
+            InvokeAsync(async () =>
             {
-                UpdateSuggestions(_currentQuery);
+                await UpdateSuggestionsAsync(_currentQuery);
                 StateHasChanged();
             });
         };
@@ -147,7 +151,7 @@
         _debounceTimer.Start();
     }
 
-    private void UpdateSuggestions(string query)
+    private async Task UpdateSuggestionsAsync(string query)
     {
         if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
         {
@@ -157,14 +161,32 @@
         }
 
         var existingEmails = Recipients.Select(r => r.Email).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var q = query.ToLowerInvariant();
 
-        _suggestions = Contacts
-            .Where(c => !existingEmails.Contains(c.Email)
-                && (c.Email.Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || (c.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)))
-            .Take(8)
-            .ToList();
+        if (ContactsProvider is not null)
+        {
+            try
+            {
+                var fetched = await ContactsProvider(query);
+                _suggestions = fetched
+                    .Where(c => !existingEmails.Contains(c.Email))
+                    .Take(8)
+                    .ToList();
+            }
+            catch
+            {
+                _suggestions.Clear();
+            }
+        }
+        else
+        {
+            var q = query.ToLowerInvariant();
+            _suggestions = Contacts
+                .Where(c => !existingEmails.Contains(c.Email)
+                    && (c.Email.Contains(q, StringComparison.OrdinalIgnoreCase)
+                        || (c.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)))
+                .Take(8)
+                .ToList();
+        }
 
         _showDropdown = _suggestions.Count > 0;
     }

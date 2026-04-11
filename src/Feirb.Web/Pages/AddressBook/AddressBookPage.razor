@@ -1,0 +1,206 @@
+@page "/address-book"
+@using Feirb.Shared.AddressBook
+@using Feirb.Web.Components.UI
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Navigation
+
+<PageTitle>@L["AddressBookPageTitle"]</PageTitle>
+
+<InfoHeader Title="@L["AddressBookPageTitle"]" Icon="person-lines-fill" Subtitle="@L["AddressBookPageSubtitle"]" />
+
+<ContentSection Icon="people-fill" Title="@L["AddressBookContactsHeading"]" Subtitle="@L["AddressBookContactsSubtitle"]">
+    @if (_contactsLoading)
+    {
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+        </div>
+    }
+    else if (_contacts is null || _contacts.Items.Count == 0)
+    {
+        <p class="text-muted mb-0">@L["AddressBookNoContacts"]</p>
+    }
+    else
+    {
+        <Table Hover>
+            <TableHeader>
+                <TableColumn>@L["AddressBookColumnName"]</TableColumn>
+                <TableColumn>@L["AddressBookColumnEmail"]</TableColumn>
+                <TableColumn Width="6rem">@L["AddressBookColumnAddresses"]</TableColumn>
+                <TableColumn Width="8rem">@L["AddressBookColumnStatus"]</TableColumn>
+            </TableHeader>
+            <TableBody>
+                @foreach (var contact in _contacts.Items)
+                {
+                    <TableRow OnClick="() => NavigateToContact(contact.Id)" data-testid="contact-row">
+                        <TableCell>
+                            <PersonChip Name="@contact.DisplayName"
+                                        Email="@contact.PrimaryEmail"
+                                        Size="PersonChipSize.Small"
+                                        Status="@(contact.IsImportant ? RecipientStatus.Important : RecipientStatus.Known)" />
+                        </TableCell>
+                        <TableCell>@(contact.PrimaryEmail ?? string.Empty)</TableCell>
+                        <TableCell>@contact.AddressCount</TableCell>
+                        <TableCell>
+                            @if (contact.IsImportant)
+                            {
+                                <span class="badge bg-warning text-dark">@L["AddressBookStatusImportant"]</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@L["AddressBookStatusKnown"]</span>
+                            }
+                        </TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        <Pagination CurrentPage="_contactsPage"
+                    TotalPages="_contacts.TotalPages"
+                    CurrentPageChanged="OnContactsPageChangedAsync"
+                    PreviousLabel="@L["PaginationPrevious"]"
+                    NextLabel="@L["PaginationNext"]" />
+    }
+</ContentSection>
+
+<ContentSection Icon="at" Title="@L["AddressBookAddressesHeading"]" Subtitle="@L["AddressBookAddressesSubtitle"]">
+    @if (_addressesLoading)
+    {
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+        </div>
+    }
+    else if (_addresses is null || _addresses.Items.Count == 0)
+    {
+        <p class="text-muted mb-0">@L["AddressBookNoAddresses"]</p>
+    }
+    else
+    {
+        <Table Hover>
+            <TableHeader>
+                <TableColumn>@L["AddressBookColumnEmail"]</TableColumn>
+                <TableColumn>@L["AddressBookColumnContact"]</TableColumn>
+                <TableColumn Width="8rem">@L["AddressBookColumnStatus"]</TableColumn>
+                <TableColumn Width="6rem">@L["AddressBookColumnSeenCount"]</TableColumn>
+                <TableColumn Width="10rem">@L["AddressBookColumnLastSeen"]</TableColumn>
+            </TableHeader>
+            <TableBody>
+                @foreach (var addr in _addresses.Items)
+                {
+                    <TableRow OnClick="() => NavigateToAddress(addr.Id)" data-testid="address-row">
+                        <TableCell>
+                            <PersonChip Name="@addr.DisplayName"
+                                        Email="@addr.NormalizedEmail"
+                                        Size="PersonChipSize.Mini"
+                                        Status="@StatusForAddress(addr)" />
+                        </TableCell>
+                        <TableCell>
+                            @if (addr.ContactDisplayName is not null)
+                            {
+                                <span>@addr.ContactDisplayName</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">@L["AddressDetailNoContact"]</span>
+                            }
+                        </TableCell>
+                        <TableCell>@StatusLabel(addr)</TableCell>
+                        <TableCell>@addr.SeenCount</TableCell>
+                        <TableCell>@addr.LastSeenAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</TableCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        <Pagination CurrentPage="_addressesPage"
+                    TotalPages="_addresses.TotalPages"
+                    CurrentPageChanged="OnAddressesPageChangedAsync"
+                    PreviousLabel="@L["PaginationPrevious"]"
+                    NextLabel="@L["PaginationNext"]" />
+    }
+</ContentSection>
+
+@code {
+    private const int _pageSize = 25;
+
+    private PagedResult<ContactListItem>? _contacts;
+    private PagedResult<AddressResponse>? _addresses;
+    private bool _contactsLoading = true;
+    private bool _addressesLoading = true;
+    private int _contactsPage = 1;
+    private int _addressesPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.WhenAll(LoadContactsAsync(), LoadAddressesAsync());
+    }
+
+    private async Task LoadContactsAsync()
+    {
+        _contactsLoading = true;
+        try
+        {
+            _contacts = await Http.GetFromJsonAsync<PagedResult<ContactListItem>>(
+                $"/api/address-book/contacts?page={_contactsPage}&pageSize={_pageSize}");
+        }
+        catch
+        {
+            _contacts = null;
+        }
+        finally
+        {
+            _contactsLoading = false;
+        }
+    }
+
+    private async Task LoadAddressesAsync()
+    {
+        _addressesLoading = true;
+        try
+        {
+            _addresses = await Http.GetFromJsonAsync<PagedResult<AddressResponse>>(
+                $"/api/address-book/addresses?page={_addressesPage}&pageSize={_pageSize}");
+        }
+        catch
+        {
+            _addresses = null;
+        }
+        finally
+        {
+            _addressesLoading = false;
+        }
+    }
+
+    private async Task OnContactsPageChangedAsync(int page)
+    {
+        _contactsPage = page;
+        await LoadContactsAsync();
+    }
+
+    private async Task OnAddressesPageChangedAsync(int page)
+    {
+        _addressesPage = page;
+        await LoadAddressesAsync();
+    }
+
+    private void NavigateToContact(Guid id) =>
+        Navigation.NavigateTo($"/address-book/contacts/{id}");
+
+    private void NavigateToAddress(Guid id) =>
+        Navigation.NavigateTo($"/address-book/addresses/{id}");
+
+    private RecipientStatus StatusForAddress(AddressResponse a)
+    {
+        if (a.IsBlocked) return RecipientStatus.Blocked;
+        if (a.IsImportant) return RecipientStatus.Important;
+        if (a.IsUnknown) return RecipientStatus.Unknown;
+        return RecipientStatus.Known;
+    }
+
+    private string StatusLabel(AddressResponse a) => StatusForAddress(a) switch
+    {
+        RecipientStatus.Blocked => L["AddressBookStatusBlocked"],
+        RecipientStatus.Important => L["AddressBookStatusImportant"],
+        RecipientStatus.Unknown => L["AddressBookStatusUnknown"],
+        _ => L["AddressBookStatusKnown"]
+    };
+}

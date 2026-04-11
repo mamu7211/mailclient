@@ -91,6 +91,9 @@
             "mail/trash" => L["BreadcrumbTrash"],
             "mail/archive" => L["BreadcrumbArchive"],
             "compose" => L["BreadcrumbCompose"],
+            "address-book" => L["AddressBookNavLabel"],
+            "address-book/contacts" => L["AddressBookContactsHeading"],
+            "address-book/addresses" => L["AddressBookAddressesHeading"],
             _ => segment
         };
 
@@ -98,6 +101,8 @@
         fullPath switch
         {
             "mail" => "/mail/inbox",
+            "address-book/contacts" => "/address-book",
+            "address-book/addresses" => "/address-book",
             _ => $"/{fullPath}"
         };
 

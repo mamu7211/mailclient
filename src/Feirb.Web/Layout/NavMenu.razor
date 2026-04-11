@@ -57,6 +57,7 @@
 
         _bottomItems =
         [
+            new("person-lines-fill", L["AddressBookNavLabel"], Href: "address-book", TestId: "nav-address-book"),
             new("gear", L["NavSettings"], Href: "settings", TestId: "nav-settings"),
             new("shield-lock", L["NavAdmin"], Href: "admin", Visible: () => _isAdmin, TestId: "nav-admin"),
             new("box-arrow-right", L["NavLogout"], OnClick: LogoutAsync, TestId: "nav-logout")

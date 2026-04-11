@@ -13,7 +13,8 @@ namespace Feirb.Api.Services;
 public class ImapSyncService(
     IServiceScopeFactory scopeFactory,
     ILogger<ImapSyncService> logger,
-    IOptions<ImapSyncSettings> syncSettings) : IImapSyncService
+    IOptions<ImapSyncSettings> syncSettings,
+    IAddressExtractor addressExtractor) : IImapSyncService
 {
     private const string _imapPasswordPurpose = "MailboxImapPassword";
     private readonly int _saveBatchSize = syncSettings.Value.SaveBatchSize;
@@ -94,6 +95,13 @@ public class ImapSyncService(
 
                 var cached = MapToCachedMessage(message, mailboxId, uid);
                 db.CachedMessages.Add(cached);
+
+                await addressExtractor.CaptureAsync(
+                    db,
+                    mailbox.UserId,
+                    [message.From, message.ReplyTo, message.To, message.Cc],
+                    markAsKnown: false,
+                    cancellationToken);
 
                 if (hasClassificationRules)
                 {

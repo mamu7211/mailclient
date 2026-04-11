@@ -1,0 +1,233 @@
+@page "/address-book/addresses/{Id:guid}"
+@using Feirb.Shared.AddressBook
+@using Feirb.Web.Components.UI
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Navigation
+@inject NotificationService Notifications
+@inject BreadcrumbOverrideService BreadcrumbOverride
+@inject ToolbarStateService ToolbarState
+@inject UnsavedChangesService UnsavedChanges
+@implements IDisposable
+
+<PageTitle>@(_address?.NormalizedEmail ?? L["AddressDetailPageTitle"])</PageTitle>
+
+<InfoHeader Title="@(_address?.NormalizedEmail ?? L["AddressDetailPageTitle"])"
+            Icon="at"
+            Subtitle="@L["AddressDetailPageTitle"]" />
+
+@if (_loading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else if (_address is null)
+{
+    <p class="text-muted">@L["AddressDetailPageTitle"]</p>
+}
+else
+{
+    <ContentSection Icon="at" Title="@L["AddressDetailPageTitle"]" Subtitle="@_address.NormalizedEmail">
+        <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
+            <DataAnnotationsValidator />
+            <div class="mb-3">
+                <label for="addressDisplayName" class="form-label">@L["AddressDetailDisplayName"]</label>
+                <InputText id="addressDisplayName" class="form-control" @bind-Value="_model.DisplayName" data-testid="address-display-name" />
+                <ValidationMessage For="() => _model.DisplayName" />
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox id="addressIsBlocked" class="form-check-input" @bind-Value="_model.IsBlocked" data-testid="address-is-blocked" />
+                <label for="addressIsBlocked" class="form-check-label">@L["AddressDetailIsBlocked"]</label>
+            </div>
+        </TrackedEditForm>
+    </ContentSection>
+
+    <ContentSection Icon="person" Title="@L["AddressDetailLinkedContact"]">
+        @if (_address.ContactId is not null)
+        {
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <a href="@($"/address-book/contacts/{_address.ContactId}")" class="link-primary">
+                    @_address.ContactDisplayName
+                </a>
+                <Button Variant="ButtonVariant.Secondary" OnClick="HandleUnlinkAsync" Icon="link-45deg" data-testid="address-unlink">
+                    @L["AddressDetailUnlink"]
+                </Button>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">@L["AddressDetailNoContact"]</p>
+        }
+    </ContentSection>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private AddressResponse? _address;
+    private bool _loading = true;
+    private FormModel _model = new();
+    private ToolbarAction[] _toolbarActions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        try
+        {
+            _address = await Http.GetFromJsonAsync<AddressResponse>($"/api/address-book/addresses/{Id}");
+            if (_address is not null)
+            {
+                _model = new FormModel
+                {
+                    DisplayName = _address.DisplayName,
+                    IsBlocked = _address.IsBlocked,
+                };
+                BreadcrumbOverride.SetLastSegmentLabel(_address.NormalizedEmail);
+            }
+        }
+        catch
+        {
+            _address = null;
+        }
+        finally
+        {
+            _loading = false;
+            RebuildToolbar();
+        }
+    }
+
+    private void RebuildToolbar()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+
+        var actions = new List<ToolbarAction>
+        {
+            new(L["ButtonCancel"], ButtonVariant.Warning,
+                () => { Navigation.NavigateTo("/address-book"); return Task.CompletedTask; }, "x-lg"),
+            new(L["ButtonSave"], ButtonVariant.Primary,
+                async () => { await UnsavedChanges.SaveAllAsync(); }, "check-lg"),
+        };
+
+        if (_address is not null && _address.ContactId is null)
+        {
+            actions.Add(new ToolbarAction(L["AddressDetailPromote"], ButtonVariant.Secondary,
+                HandlePromoteAsync, "person-plus"));
+        }
+
+        actions.Add(new ToolbarAction(L["ButtonDelete"], ButtonVariant.Danger,
+            HandleDeleteAsync, "trash"));
+
+        _toolbarActions = [.. actions];
+        ToolbarState.AddActions(_toolbarActions);
+    }
+
+    private async Task<bool> HandleSaveAsync()
+    {
+        try
+        {
+            var request = new UpdateAddressRequest(_model.DisplayName!, _model.IsBlocked);
+            var response = await Http.PutAsJsonAsync($"/api/address-book/addresses/{Id}", request);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["ButtonSave"], NotificationSeverity.Success);
+                await LoadAsync();
+                return true;
+            }
+
+            Notifications.Add("Failed to save address.", NotificationSeverity.Error);
+            return false;
+        }
+        catch
+        {
+            Notifications.Add("Failed to save address.", NotificationSeverity.Error);
+            return false;
+        }
+    }
+
+    private async Task HandleDeleteAsync()
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"/api/address-book/addresses/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["ButtonDelete"], NotificationSeverity.Success);
+                Navigation.NavigateTo("/address-book");
+            }
+            else
+            {
+                Notifications.Add("Failed to delete address.", NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add("Failed to delete address.", NotificationSeverity.Error);
+        }
+    }
+
+    private async Task HandlePromoteAsync()
+    {
+        if (_address is null) return;
+        try
+        {
+            var request = new PromoteAddressRequest(_address.DisplayName, null, false);
+            var response = await Http.PostAsJsonAsync($"/api/address-book/addresses/{Id}/promote", request);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["AddressDetailPromote"], NotificationSeverity.Success);
+                await LoadAsync();
+            }
+            else
+            {
+                Notifications.Add("Failed to add to contacts.", NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add("Failed to add to contacts.", NotificationSeverity.Error);
+        }
+    }
+
+    private async Task HandleUnlinkAsync()
+    {
+        try
+        {
+            var response = await Http.PostAsync($"/api/address-book/addresses/{Id}/unlink", null);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["AddressDetailUnlink"], NotificationSeverity.Success);
+                await LoadAsync();
+            }
+            else
+            {
+                Notifications.Add("Failed to unlink address.", NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add("Failed to unlink address.", NotificationSeverity.Error);
+        }
+    }
+
+    public void Dispose()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+        BreadcrumbOverride.Clear();
+    }
+
+    private sealed class FormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? DisplayName { get; set; }
+
+        public bool IsBlocked { get; set; }
+    }
+}

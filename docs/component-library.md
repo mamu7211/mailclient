@@ -1,7 +1,11 @@
 # Feirb Component Library
 
-Shared UI primitives in `src/Feirb.Web/Components/UI/`.
+Shared UI primitives in `src/Feirb.Web/Components/UI/` and higher-level layout components in `src/Feirb.Web/Components/`.
 Global styles in `src/Feirb.Web/wwwroot/css/app.css` (prefixed `feirb-`).
+
+**Every component listed here has a matching showcase page** at `/components-showcase/<name>` — use it to see the component rendered with interactive parameter controls.
+
+**If you need a component and it's not in this file**, grep `src/Feirb.Web/Components/` before concluding it doesn't exist. The registry is authoritative for documented primitives but may lag behind new additions. If you find an undocumented component, add it here as part of your change.
 
 ## Icon
 
@@ -327,6 +331,386 @@ Card component for displaying mail items across different layout contexts. Whole
 | `Color` | `string?` | Hex color for background (falls back to black) |
 
 **Primitives used:** `Card` (implicit via styling), `Icon` (avatar, read indicator), `LabelPill` (labels)
+
+## Table
+
+Grid-based table with ARIA semantics. Children: `TableHeader` + `TableBody`. Columns defined via `TableColumn`; row cells via `TableCell`. Column widths cascade to the grid via `TableColumn.Width`.
+
+```razor
+<Table Hover>
+    <TableHeader>
+        <TableColumn>Name</TableColumn>
+        <TableColumn>Email</TableColumn>
+        <TableColumn Width="8rem">Created</TableColumn>
+        <TableColumn Width="6rem">Actions</TableColumn>
+    </TableHeader>
+    <TableBody>
+        @foreach (var user in _users)
+        {
+            <TableRow OnClick="() => NavigateToDetail(user.Id)" data-testid="user-row">
+                <TableCell>@user.Name</TableCell>
+                <TableCell>@user.Email</TableCell>
+                <TableCell>@user.CreatedAt.ToString("yyyy-MM-dd")</TableCell>
+                <TableCell>
+                    <Button Variant="ButtonVariant.Danger" Size="ButtonSize.Small" Icon="trash" OnClick="() => Delete(user)" />
+                </TableCell>
+            </TableRow>
+        }
+    </TableBody>
+</Table>
+```
+
+### Table Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment` (required) | — | `TableHeader` + `TableBody` |
+| `Size` | `TableSize` | `Default` | `Default` or `Small` |
+| `Hover` | `bool` | `false` | Highlight row on hover |
+| `Striped` | `bool` | `false` | Alternating row background |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+### TableColumn Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment` | — | Column header text |
+| `Width` | `string` | `"1fr"` | CSS grid column width (e.g. `"8rem"`, `"2fr"`) |
+
+### TableRow Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment` (required) | — | `TableCell` elements |
+| `OnClick` | `EventCallback<MouseEventArgs>` | — | When set, row gets `clickable` class and cursor; use for row-level navigation |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+**Clickable rows:** If `OnClick` is set, the row automatically becomes keyboard-focusable and the `clickable` class is applied. Don't add explicit `Clickable` parameter — it doesn't exist.
+
+## Pagination
+
+Theme-aware previous/next pager with page indicator and optional page size selector.
+
+```razor
+<Pagination CurrentPage="_page"
+            TotalPages="_totalPages"
+            CurrentPageChanged="OnPageChangedAsync"
+            PreviousLabel="@L["PaginationPrevious"]"
+            NextLabel="@L["PaginationNext"]" />
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `CurrentPage` | `int` (required) | — | 1-based current page |
+| `TotalPages` | `int` (required) | — | Total number of pages |
+| `CurrentPageChanged` | `EventCallback<int>` (required) | — | Fires when page changes |
+| `PageSize` | `int` | `5` | Current page size |
+| `PageSizeChanged` | `EventCallback<int>` | — | When set, page size selector is shown |
+| `PageSizeOptions` | `int[]` | `[5, 10, 25, 50, 100]` | Sizes offered in the selector |
+| `PreviousLabel` | `string` | `"Previous"` | Always pass the localized `L["PaginationPrevious"]` |
+| `NextLabel` | `string` | `"Next"` | Always pass the localized `L["PaginationNext"]` |
+| `PerPageLabel` | `string` | `"per page"` | Label shown next to size selector |
+| `Sticky` | `bool` | `false` | Stick to bottom of viewport |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+The component renders nothing if `TotalPages <= 1` and no size selector is requested.
+
+## PersonChip
+
+Compact person display with avatar, name, optional email, and optional status badge. Located in `src/Feirb.Web/Components/UI/`.
+
+```razor
+<PersonChip Name="Alice Johnson" Email="alice@example.com" />
+<PersonChip Name="Bob Smith" Email="bob@example.com" Size="PersonChipSize.Small" Status="RecipientStatus.Important" />
+<PersonChip Name="Unknown Sender" Email="someone@external.com" Size="PersonChipSize.Mini" Status="RecipientStatus.Unknown" />
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Name` | `string` (required) | — | Display name |
+| `Email` | `string?` | `null` | Email address (hidden in Mini size) |
+| `Size` | `PersonChipSize` | `Default` | `Default`, `Small`, `Mini` |
+| `Status` | `RecipientStatus` | `None` | `None` (no badge), `Known`, `Unknown`, `Important`, `Blocked` |
+| `StatusTitle` | `string?` | `null` | Tooltip for the status badge |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+**Avatar lookup:** If `Email` is set, the component fetches `/api/avatars/{hash}` automatically. The endpoint returns `204` when no avatar exists — the component falls back to a dashed placeholder icon.
+
+**Status badge colors:** `Known` → primary, `Unknown` → secondary, `Important` → warning, `Blocked` → danger. `None` renders no badge (use for chips outside address-book context like Compose recipient tokens).
+
+## Toggle
+
+Switch-style boolean input with optional separate label for the off state.
+
+```razor
+<Toggle Text="@L["CcBccVisible"]" DisabledText="@L["CcBccHidden"]" @bind-Value="_showCcBcc" />
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `bool` | `false` | Current state |
+| `ValueChanged` | `EventCallback<bool>` | — | Use `@bind-Value` |
+| `Text` | `string` (required) | — | Label when on (also used when off unless `DisabledText` is set) |
+| `DisabledText` | `string?` | `null` | Label when off; if null, `Text` is shown strikethrough |
+| `For` | `Expression<Func<bool>>?` | `null` | For EditContext integration in forms |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+## StatusMessage
+
+Centered empty/error state display with icon, title, message, and optional action link.
+
+```razor
+<StatusMessage Icon="inbox"
+               Title="@L["NoMessages"]"
+               Message="@L["NoMessagesDescription"]"
+               ButtonText="@L["ComposeNew"]"
+               ButtonHref="/compose" />
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Icon` | `string` (required) | — | Bootstrap Icon name without `bi-` prefix |
+| `Title` | `string` (required) | — | Heading text |
+| `Message` | `string` (required) | — | Descriptive message below the heading |
+| `ButtonText` | `string?` | `null` | Optional action button label |
+| `ButtonHref` | `string?` | `null` | Action button target (required if `ButtonText` is set) |
+| `IsFullPage` | `bool` | `false` | Render title as `h1` (for full-page errors like 404) |
+
+Use for empty lists, 404 pages, and loading failures. For inline errors inside forms, use Bootstrap alert classes or `ValidationMessage`.
+
+## RecipientInput
+
+Tokenizing input for email recipients with PersonChip tokens, paste-splitting, and autocomplete. Used in Compose.
+
+```razor
+<RecipientInput @bind-Recipients="_to"
+                Id="compose-to"
+                Placeholder="@L["ComposePlaceholderTo"]"
+                DataTestId="compose-to"
+                ContactsProvider="SearchRecipientsAsync" />
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Recipients` | `List<RecipientEntry>` (required) | `[]` | Current tokenized recipients; use `@bind-Recipients` |
+| `RecipientsChanged` | `EventCallback<List<RecipientEntry>>` | — | Use `@bind-Recipients` |
+| `Contacts` | `IReadOnlyList<RecipientEntry>` | `[]` | Static suggestion list (fallback if no provider) |
+| `ContactsProvider` | `Func<string, Task<IReadOnlyList<RecipientEntry>>>?` | `null` | Async query→results provider; takes precedence over `Contacts` |
+| `Placeholder` | `string?` | `null` | Placeholder when no recipients |
+| `Id` | `string?` | `null` | HTML id (enables `<label for=...>`) |
+| `DataTestId` | `string?` | `null` | Test ID on the inner input |
+| `Class` | `string?` | `null` | Extra CSS classes (use `is-invalid` for error state) |
+
+**Confirmation triggers:** Enter, Tab, comma, semicolon, space, or blur. Paste splits on comma/semicolon/newline. Duplicates flash the existing chip.
+
+## Breadcrumb
+
+Auto-segmented navigation trail based on the current URL. Rendered by the layout, **do not include it manually on pages**. Located in `src/Feirb.Web/Components/`.
+
+### Label map
+
+Path segments are resolved to labels via a `switch` in `Breadcrumb.razor` (`ResolveLabel` method). **When you add a new page**, add a case for every intermediate URL segment:
+
+```csharp
+private string ResolveLabel(string fullPath, string segment) =>
+    fullPath switch
+    {
+        "address-book" => L["AddressBookNavLabel"],
+        "address-book/contacts" => L["AddressBookContactsHeading"],
+        "address-book/addresses" => L["AddressBookAddressesHeading"],
+        // ...
+        _ => segment
+    };
+```
+
+### Href map
+
+Intermediate segments without their own landing page must point somewhere valid. Override in `ResolveHref`:
+
+```csharp
+private static string ResolveHref(string fullPath) =>
+    fullPath switch
+    {
+        "address-book/contacts" => "/address-book",   // no listing page at /address-book/contacts
+        "address-book/addresses" => "/address-book",
+        _ => $"/{fullPath}"
+    };
+```
+
+Otherwise the breadcrumb link will 404 when clicked.
+
+### BreadcrumbOverrideService
+
+For detail pages, the last URL segment is typically a GUID. Inject `BreadcrumbOverrideService` and set a human-readable label in `OnInitializedAsync` / after data loads:
+
+```csharp
+@inject BreadcrumbOverrideService BreadcrumbOverride
+@implements IDisposable
+
+protected override async Task OnInitializedAsync()
+{
+    var entity = await Http.GetFromJsonAsync<Entity>($"/api/entities/{Id}");
+    BreadcrumbOverride.SetLastSegmentLabel(entity.DisplayName);
+}
+
+public void Dispose() => BreadcrumbOverride.Clear();
+```
+
+Always clear the override in `Dispose` so it doesn't leak to the next page.
+
+## Toolbar
+
+Page-level action bar rendered by the layout (`src/Feirb.Web/Components/Toolbar.razor`). Pages don't render the Toolbar themselves — they register actions via `ToolbarStateService`, and the layout renders them.
+
+### ToolbarStateService
+
+Scoped service. Inject in any page that needs toolbar actions:
+
+```csharp
+@inject ToolbarStateService ToolbarState
+@implements IDisposable
+
+@code {
+    private ToolbarAction[] _toolbarActions = [];
+
+    protected override void OnInitialized()
+    {
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning,
+                () => { Navigation.NavigateTo("/listing"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary,
+                async () => { await UnsavedChanges.SaveAllAsync(); }, "check-lg"),
+            new ToolbarAction(L["ButtonDelete"], ButtonVariant.Danger, HandleDeleteAsync, "trash"),
+        ];
+        ToolbarState.AddActions(_toolbarActions);
+    }
+
+    public void Dispose() => ToolbarState.RemoveActions(_toolbarActions);
+}
+```
+
+### ToolbarAction
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `Label` | `string` | Button label (always localized) |
+| `Variant` | `ButtonVariant` | Visual variant — see conventions below |
+| `OnClickAsync` | `Func<Task>` | Async click handler |
+| `Icon` | `string?` | Bootstrap Icon name without `bi-` prefix |
+
+### Variant conventions on detail pages
+
+| Action | Variant | Icon |
+|--------|---------|------|
+| **Cancel** | `Warning` | `x-lg` |
+| **Save** | `Primary` | `check-lg` |
+| **Delete** | `Danger` | `trash` |
+| **Create/Add** | `Primary` | `plus-lg` |
+| **Secondary actions** (e.g. "Add to contacts") | `Secondary` | context-specific |
+
+**Never use a plain "Back" button in the toolbar on form pages** — the breadcrumb already provides navigation, and Cancel carries the additional "discard unsaved edits" semantic.
+
+### Conditional actions
+
+If an action depends on entity state, rebuild the array at the end of your data-load method:
+
+```csharp
+private void RebuildToolbar()
+{
+    ToolbarState.RemoveActions(_toolbarActions);
+    var actions = new List<ToolbarAction> { /* always-present actions */ };
+    if (_entity.NeedsExtraAction)
+        actions.Add(new ToolbarAction(...));
+    _toolbarActions = [.. actions];
+    ToolbarState.AddActions(_toolbarActions);
+}
+```
+
+## TrackedEditForm
+
+Form wrapper that integrates with `UnsavedChangesService` for dirty tracking and toolbar-driven save. Use this **instead of raw `<EditForm>`** on any detail/edit page. Located in `src/Feirb.Web/Components/`.
+
+```razor
+@inject UnsavedChangesService UnsavedChanges
+
+<ContentSection Icon="person-gear" Title="@L["ContactDetailPageTitle"]">
+    <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label for="displayName" class="form-label">@L["DisplayName"]</label>
+            <InputText id="displayName" class="form-control" @bind-Value="_model.DisplayName" />
+            <ValidationMessage For="() => _model.DisplayName" />
+        </div>
+    </TrackedEditForm>
+</ContentSection>
+
+@code {
+    private async Task<bool> HandleSaveAsync()
+    {
+        var response = await Http.PutAsJsonAsync($"/api/entities/{Id}", _model);
+        if (response.IsSuccessStatusCode)
+        {
+            Notifications.Add(L["ButtonSave"], NotificationSeverity.Success);
+            return true;   // marks form clean
+        }
+        Notifications.Add("Save failed", NotificationSeverity.Error);
+        return false;
+    }
+}
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Model` | `object` (required) | — | The form model to bind to |
+| `ChildContent` | `RenderFragment?` | — | Form fields + validator |
+| `OnSave` | `Func<Task<bool>>` (required) | — | Save handler; return `true` to mark clean |
+
+**How it works:**
+- Registers with `UnsavedChangesService` on init
+- Tracks `EditContext.OnFieldChanged` to flip the dirty bit
+- `SubmitAsync()` (called internally by `UnsavedChanges.SaveAllAsync()`) validates then invokes `OnSave`
+- Clean state is restored automatically when `OnSave` returns `true`
+
+### UnsavedChangesService
+
+The service is scoped and auto-registers on the layout. You only interact with it from toolbar actions:
+
+```csharp
+new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary,
+    async () => { await UnsavedChanges.SaveAllAsync(); }, "check-lg"),
+```
+
+`SaveAllAsync()` calls `SubmitAsync()` on every registered `TrackedEditForm` — almost always exactly one per page.
+
+## NotificationService
+
+Scoped service for user-facing toast notifications. Four severities with auto-dismiss timings.
+
+```csharp
+@inject NotificationService Notifications
+
+Notifications.Add(L["SuccessSaved"], NotificationSeverity.Success);
+Notifications.Add("Failed to save", NotificationSeverity.Error);
+```
+
+| Severity | Auto-dismiss | Usage |
+|----------|-------------|-------|
+| `Success` | 10s | Successful mutation (save, create, delete) |
+| `Info` | 10s | Neutral info ("Sync started") |
+| `Warning` | 30s | Recoverable problem ("Retry suggested") |
+| `Error` | never | Failed mutation or unexpected error — user must dismiss |
+
+The layout renders active notifications via `ToastContainer`. Don't render toasts yourself.
+
+**When to use:**
+- CRUD mutation outcome (success + failure both get a toast)
+- Long-running background task completion
+- Network failures on page load
+
+**When NOT to use:**
+- Form validation errors → use `<ValidationMessage>` inline
+- Page state changes triggered directly by user click (click usually provides its own feedback)
 
 ## Enums
 

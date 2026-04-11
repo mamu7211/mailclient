@@ -1617,4 +1617,112 @@
   <data name="ComposeNoMailboxes" xml:space="preserve">
     <value>Keine Postfächer konfiguriert. Bitte fügen Sie zuerst ein Postfach in den Einstellungen hinzu.</value>
   </data>
+  <data name="AddressBookNavLabel" xml:space="preserve">
+    <value>Adressbuch</value>
+  </data>
+  <data name="AddressBookPageTitle" xml:space="preserve">
+    <value>Adressbuch</value>
+  </data>
+  <data name="AddressBookPageSubtitle" xml:space="preserve">
+    <value>Kontakte und erfasste Adressen</value>
+  </data>
+  <data name="AddressBookContactsHeading" xml:space="preserve">
+    <value>Kontakte</value>
+  </data>
+  <data name="AddressBookContactsSubtitle" xml:space="preserve">
+    <value>Gepflegte Personen</value>
+  </data>
+  <data name="AddressBookAddressesHeading" xml:space="preserve">
+    <value>Adressen</value>
+  </data>
+  <data name="AddressBookAddressesSubtitle" xml:space="preserve">
+    <value>Alle E-Mail-Adressen aus ein- und ausgehender Post</value>
+  </data>
+  <data name="AddressBookNewContact" xml:space="preserve">
+    <value>Neuer Kontakt</value>
+  </data>
+  <data name="AddressBookColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="AddressBookColumnEmail" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="AddressBookColumnAddresses" xml:space="preserve">
+    <value>Adressen</value>
+  </data>
+  <data name="AddressBookColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AddressBookColumnLastSeen" xml:space="preserve">
+    <value>Zuletzt gesehen</value>
+  </data>
+  <data name="AddressBookColumnContact" xml:space="preserve">
+    <value>Kontakt</value>
+  </data>
+  <data name="AddressBookColumnSeenCount" xml:space="preserve">
+    <value>Gesehen</value>
+  </data>
+  <data name="AddressBookStatusKnown" xml:space="preserve">
+    <value>Bekannt</value>
+  </data>
+  <data name="AddressBookStatusUnknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="AddressBookStatusImportant" xml:space="preserve">
+    <value>Wichtig</value>
+  </data>
+  <data name="AddressBookStatusBlocked" xml:space="preserve">
+    <value>Blockiert</value>
+  </data>
+  <data name="AddressBookNoContacts" xml:space="preserve">
+    <value>Noch keine Kontakte. Aus ein- und ausgehenden Mails erfasste Adressen erscheinen im Bereich „Adressen".</value>
+  </data>
+  <data name="AddressBookNoAddresses" xml:space="preserve">
+    <value>Noch keine Adressen erfasst. Adressen werden beim Empfangen und Senden von Mails automatisch hinzugefügt.</value>
+  </data>
+  <data name="ContactDetailPageTitle" xml:space="preserve">
+    <value>Kontakt</value>
+  </data>
+  <data name="ContactDetailDisplayName" xml:space="preserve">
+    <value>Anzeigename</value>
+  </data>
+  <data name="ContactDetailNotes" xml:space="preserve">
+    <value>Notizen</value>
+  </data>
+  <data name="ContactDetailIsImportant" xml:space="preserve">
+    <value>Wichtiger Kontakt</value>
+  </data>
+  <data name="ContactDetailLinkedAddresses" xml:space="preserve">
+    <value>Verknüpfte Adressen</value>
+  </data>
+  <data name="AddressDetailPageTitle" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="AddressDetailDisplayName" xml:space="preserve">
+    <value>Anzeigename</value>
+  </data>
+  <data name="AddressDetailIsBlocked" xml:space="preserve">
+    <value>Diese Adresse blockieren</value>
+  </data>
+  <data name="AddressDetailLinkedContact" xml:space="preserve">
+    <value>Verknüpfter Kontakt</value>
+  </data>
+  <data name="AddressDetailPromote" xml:space="preserve">
+    <value>Zu Kontakten hinzufügen</value>
+  </data>
+  <data name="AddressDetailUnlink" xml:space="preserve">
+    <value>Verknüpfung aufheben</value>
+  </data>
+  <data name="AddressDetailNoContact" xml:space="preserve">
+    <value>Mit keinem Kontakt verknüpft</value>
+  </data>
+  <data name="AddressBookActionSave" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="AddressBookActionDelete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="AddressBookActionBack" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
 </root>

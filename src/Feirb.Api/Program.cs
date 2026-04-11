@@ -95,6 +95,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IImapSyncService, ImapSyncService>();
 builder.Services.AddScoped<IClassificationService, ClassificationService>();
 builder.Services.AddScoped<IMailSendingService, MailSendingService>();
+builder.Services.AddScoped<IAddressExtractor, AddressExtractor>();
 
 var app = builder.Build();
 
@@ -176,6 +177,11 @@ mailGroup.MapMailTestEndpoints();
 mailGroup.MapMessageEndpoints();
 mailGroup.MapMailStatsEndpoints();
 mailGroup.MapComposeEndpoints();
+mailGroup.MapRecipientSearch();
+
+// Address book endpoints (per-user, JWT required)
+var addressBookGroup = apiGroup.MapGroup("/address-book");
+addressBookGroup.MapAddressBookEndpoints();
 
 // Avatar endpoints (GET is public, PUT/DELETE require JWT)
 apiGroup.MapAvatarEndpoints();

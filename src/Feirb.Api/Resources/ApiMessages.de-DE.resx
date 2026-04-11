@@ -189,4 +189,25 @@
   <data name="BodyTooLarge" xml:space="preserve">
     <value>Nachrichtentext überschreitet die maximal zulässige Größe.</value>
   </data>
+  <data name="ContactNotFound" xml:space="preserve">
+    <value>Kontakt nicht gefunden.</value>
+  </data>
+  <data name="ContactDeleted" xml:space="preserve">
+    <value>Kontakt erfolgreich gelöscht.</value>
+  </data>
+  <data name="ContactDisplayNameRequired" xml:space="preserve">
+    <value>Anzeigename des Kontakts ist erforderlich.</value>
+  </data>
+  <data name="AddressNotFound" xml:space="preserve">
+    <value>Adresse nicht gefunden.</value>
+  </data>
+  <data name="AddressDeleted" xml:space="preserve">
+    <value>Adresse erfolgreich gelöscht.</value>
+  </data>
+  <data name="AddressLinkedCannotDelete" xml:space="preserve">
+    <value>Adresse ist mit einem Kontakt verknüpft. Vor dem Löschen zuerst trennen.</value>
+  </data>
+  <data name="AddressAlreadyLinked" xml:space="preserve">
+    <value>Adresse ist bereits mit einem Kontakt verknüpft.</value>
+  </data>
 </root>
