@@ -219,6 +219,15 @@
     {
         // Small delay to allow click events on suggestions to fire first
         await Task.Delay(150);
+
+        // Confirm any pending text in the input
+        var pending = await Js.InvokeAsync<string>("recipientInterop.getValue", _inputRef);
+        if (!string.IsNullOrWhiteSpace(pending))
+        {
+            await Js.InvokeVoidAsync("recipientInterop.clearInput", _inputRef);
+            await ConfirmTokenAsync(pending);
+        }
+
         _isFocused = false;
         _showDropdown = false;
         StateHasChanged();

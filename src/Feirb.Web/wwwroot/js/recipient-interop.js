@@ -48,6 +48,10 @@ window.recipientInterop = {
         if (inputElement) inputElement.focus();
     },
 
+    getValue: function (inputElement) {
+        return inputElement ? inputElement.value.trim() : '';
+    },
+
     clearInput: function (inputElement) {
         if (inputElement) inputElement.value = '';
     },
