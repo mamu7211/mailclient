@@ -2,6 +2,7 @@
 @inherits LayoutComponentBase
 @inject IJSRuntime Js
 
+<Feirb.Web.Components.ToastContainer />
 <div class="showcase-container">
     <aside class="showcase-sidebar" role="complementary">
         <div class="showcase-sidebar-header">
@@ -102,7 +103,8 @@
         new(
         [
             new("toggles", "ToggleButtonGroup", Href: "components-showcase/toggle-button-group"),
-            new("toggle-on", "Toggle", Href: "components-showcase/toggle")
+            new("toggle-on", "Toggle", Href: "components-showcase/toggle"),
+            new("person-plus", "RecipientInput", Href: "components-showcase/recipient-input")
         ], Label: "Inputs"),
         new(
         [

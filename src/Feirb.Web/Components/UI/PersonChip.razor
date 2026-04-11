@@ -14,7 +14,7 @@
     </div>
     <div class="feirb-person-chip-info">
         <span class="feirb-person-chip-name">@Name</span>
-        @if (Size != PersonChipSize.Mini && !string.IsNullOrEmpty(Email))
+        @if (!string.IsNullOrEmpty(Email))
         {
             <span class="feirb-person-chip-email">@Email</span>
         }

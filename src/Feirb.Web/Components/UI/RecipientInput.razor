@@ -1,0 +1,258 @@
+@namespace Feirb.Web.Components.UI
+@using Feirb.Shared.Mail
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@* Tokenizing recipient input with PersonChip tokens and autocomplete dropdown. *@
+<div class="feirb-recipient-input @(_isFocused ? "focused" : "") @Class"
+     @onclick="FocusInputAsync">
+    @foreach (var recipient in Recipients)
+    {
+        var key = $"{recipient.Email}-{GetFlashKey(recipient.Email)}";
+        <div @key="key" class="feirb-recipient-token @(_flashingEmails.Contains(recipient.Email) ? "feirb-recipient-flash" : "")">
+            <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Size="PersonChipSize.Mini" />
+            <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipientAsync(recipient)"
+                    @onclick:stopPropagation="true" aria-label="Remove @(recipient.Name ?? recipient.Email)">
+                <Icon Name="x" Size="IconSize.Small" />
+            </button>
+        </div>
+    }
+    <input @ref="_inputRef"
+           id="@Id"
+           type="text"
+           class="feirb-recipient-text-input"
+           placeholder="@(Recipients.Count == 0 ? Placeholder : "")"
+           @onfocus="() => _isFocused = true"
+           @onblur="OnBlurAsync"
+           autocomplete="off"
+           data-testid="@DataTestId" />
+
+    @if (_suggestions.Count > 0 && _showDropdown)
+    {
+        <div class="feirb-recipient-dropdown">
+            @foreach (var suggestion in _suggestions)
+            {
+                <button type="button" class="feirb-recipient-suggestion"
+                        @onmousedown="() => SelectSuggestionAsync(suggestion)"
+                        @onmousedown:preventDefault="true">
+                    <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Size="PersonChipSize.Mini" />
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Current list of recipients.</summary>
+    [Parameter]
+    public List<RecipientEntry> Recipients { get; set; } = [];
+
+    /// <summary>Fires when the recipients list changes.</summary>
+    [Parameter]
+    public EventCallback<List<RecipientEntry>> RecipientsChanged { get; set; }
+
+    /// <summary>Available contacts for autocomplete suggestions.</summary>
+    [Parameter]
+    public IReadOnlyList<RecipientEntry> Contacts { get; set; } = [];
+
+    /// <summary>Placeholder text when no recipients are added.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>HTML id for the internal text input (enables label[for] association).</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>Test ID for the text input.</summary>
+    [Parameter]
+    public string? DataTestId { get; set; }
+
+    private ElementReference _inputRef;
+    private DotNetObjectReference<RecipientInput>? _dotNetRef;
+    private string _instanceId = Guid.NewGuid().ToString("N");
+    private bool _isFocused;
+    private bool _showDropdown;
+    private bool _initialized;
+    private string _currentQuery = "";
+    private HashSet<string> _flashingEmails = new(StringComparer.OrdinalIgnoreCase);
+    private int _flashCounter;
+    private List<RecipientEntry> _suggestions = [];
+    private System.Timers.Timer? _debounceTimer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await Js.InvokeVoidAsync("recipientInterop.init", _inputRef, _dotNetRef, _instanceId);
+            _initialized = true;
+        }
+
+        if (_flashingEmails.Count > 0)
+            _flashingEmails.Clear();
+    }
+
+    [JSInvokable]
+    public async Task JsConfirmToken(string value)
+    {
+        await ConfirmTokenAsync(value);
+    }
+
+    [JSInvokable]
+    public async Task JsRemoveLastToken()
+    {
+        if (Recipients.Count > 0)
+        {
+            Recipients.RemoveAt(Recipients.Count - 1);
+            await RecipientsChanged.InvokeAsync(Recipients);
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public async Task JsPasteTokens(string text)
+    {
+        var parts = text.Split(new[] { ',', ';', '\n', '\r' },
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        foreach (var part in parts)
+        {
+            if (!string.IsNullOrWhiteSpace(part))
+                await ConfirmTokenAsync(part);
+        }
+    }
+
+    [JSInvokable]
+    public void JsInputChanged(string value)
+    {
+        _currentQuery = value;
+
+        _debounceTimer?.Stop();
+        _debounceTimer?.Dispose();
+        _debounceTimer = new System.Timers.Timer(200);
+        _debounceTimer.Elapsed += (_, _) =>
+        {
+            _debounceTimer?.Stop();
+            InvokeAsync(() =>
+            {
+                UpdateSuggestions(_currentQuery);
+                StateHasChanged();
+            });
+        };
+        _debounceTimer.AutoReset = false;
+        _debounceTimer.Start();
+    }
+
+    private void UpdateSuggestions(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
+        {
+            _suggestions.Clear();
+            _showDropdown = false;
+            return;
+        }
+
+        var existingEmails = Recipients.Select(r => r.Email).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var q = query.ToLowerInvariant();
+
+        _suggestions = Contacts
+            .Where(c => !existingEmails.Contains(c.Email)
+                && (c.Email.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || (c.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)))
+            .Take(8)
+            .ToList();
+
+        _showDropdown = _suggestions.Count > 0;
+    }
+
+    private async Task ConfirmTokenAsync(string value)
+    {
+        // Check if it matches a suggestion first
+        var match = Contacts.FirstOrDefault(c =>
+            c.Email.Equals(value, StringComparison.OrdinalIgnoreCase)
+            || (c.Name?.Equals(value, StringComparison.OrdinalIgnoreCase) ?? false));
+
+        var entry = match ?? new RecipientEntry(null, value.Trim());
+
+        // Avoid duplicates — flash existing chip instead
+        if (Recipients.Any(r => r.Email.Equals(entry.Email, StringComparison.OrdinalIgnoreCase)))
+        {
+            FlashRecipient(entry.Email);
+        }
+        else
+        {
+            Recipients.Add(entry);
+            await RecipientsChanged.InvokeAsync(Recipients);
+        }
+
+        _suggestions.Clear();
+        _showDropdown = false;
+        _currentQuery = "";
+        StateHasChanged();
+    }
+
+    private async Task SelectSuggestionAsync(RecipientEntry suggestion)
+    {
+        await Js.InvokeVoidAsync("recipientInterop.clearInput", _inputRef);
+        await ConfirmTokenAsync(suggestion.Email);
+    }
+
+    private async Task RemoveRecipientAsync(RecipientEntry recipient)
+    {
+        Recipients.Remove(recipient);
+        await RecipientsChanged.InvokeAsync(Recipients);
+    }
+
+    private void FlashRecipient(string email)
+    {
+        _flashingEmails.Add(email);
+        _flashCounter++;
+    }
+
+    private int GetFlashKey(string email) =>
+        _flashingEmails.Contains(email) ? _flashCounter : 0;
+
+    private async Task FocusInputAsync()
+    {
+        await Js.InvokeVoidAsync("recipientInterop.focus", _inputRef);
+    }
+
+    private async Task OnBlurAsync()
+    {
+        // Small delay to allow click events on suggestions to fire first
+        await Task.Delay(150);
+
+        // Confirm any pending text in the input
+        var pending = await Js.InvokeAsync<string>("recipientInterop.getValue", _inputRef);
+        if (!string.IsNullOrWhiteSpace(pending))
+        {
+            await Js.InvokeVoidAsync("recipientInterop.clearInput", _inputRef);
+            await ConfirmTokenAsync(pending);
+        }
+
+        _isFocused = false;
+        _showDropdown = false;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _debounceTimer?.Stop();
+        _debounceTimer?.Dispose();
+
+        if (_initialized)
+        {
+            try
+            {
+                await Js.InvokeVoidAsync("recipientInterop.destroy", _instanceId);
+            }
+            catch (JSDisconnectedException) { }
+        }
+
+        _dotNetRef?.Dispose();
+    }
+}

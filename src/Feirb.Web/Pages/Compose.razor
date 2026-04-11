@@ -50,10 +50,13 @@ else
 
             @* To + CC/BCC toggle *@
             <div class="mb-3">
-                <label class="form-label fw-semibold" for="to">@L["ComposeTo"]</label>
+                <label class="form-label fw-semibold" for="compose-to">@L["ComposeTo"]</label>
                 <div class="d-flex align-items-center gap-2">
-                    <input id="to" type="text" class="form-control @(HasError("to") ? "is-invalid" : "")"
-                           @bind="_to" placeholder="@L["ComposePlaceholderTo"]" data-testid="compose-to" />
+                    <RecipientInput @bind-Recipients="_to"
+                                    Id="compose-to"
+                                    Placeholder="@L["ComposePlaceholderTo"]"
+                                    DataTestId="compose-to"
+                                    Class="@(HasError("to") ? "is-invalid" : "")" />
                     <Toggle Text="@L["ComposeShowCcBcc"]"
                             DisabledText="@L["ComposeShowCcBccOff"]"
                             @bind-Value="_showCcBcc"
@@ -69,21 +72,27 @@ else
             @if (_showCcBcc)
             {
                 <div class="mb-3">
-                    <label class="form-label fw-semibold" for="cc">@L["ComposeCc"]</label>
-                    <input id="cc" type="text" class="form-control @(HasError("cc") ? "is-invalid" : "")"
-                           @bind="_cc" placeholder="@L["ComposePlaceholderCc"]" data-testid="compose-cc" />
+                    <label class="form-label fw-semibold" for="compose-cc">@L["ComposeCc"]</label>
+                    <RecipientInput @bind-Recipients="_cc"
+                                    Id="compose-cc"
+                                    Placeholder="@L["ComposePlaceholderCc"]"
+                                    DataTestId="compose-cc"
+                                    Class="@(HasError("cc") ? "is-invalid" : "")" />
                     @if (HasError("cc"))
                     {
-                        <div class="invalid-feedback">@GetError("cc")</div>
+                        <div class="invalid-feedback d-block">@GetError("cc")</div>
                     }
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-semibold" for="bcc">@L["ComposeBcc"]</label>
-                    <input id="bcc" type="text" class="form-control @(HasError("bcc") ? "is-invalid" : "")"
-                           @bind="_bcc" placeholder="@L["ComposePlaceholderBcc"]" data-testid="compose-bcc" />
+                    <label class="form-label fw-semibold" for="compose-bcc">@L["ComposeBcc"]</label>
+                    <RecipientInput @bind-Recipients="_bcc"
+                                    Id="compose-bcc"
+                                    Placeholder="@L["ComposePlaceholderBcc"]"
+                                    DataTestId="compose-bcc"
+                                    Class="@(HasError("bcc") ? "is-invalid" : "")" />
                     @if (HasError("bcc"))
                     {
-                        <div class="invalid-feedback">@GetError("bcc")</div>
+                        <div class="invalid-feedback d-block">@GetError("bcc")</div>
                     }
                 </div>
             }
@@ -143,9 +152,9 @@ else
     private bool _isSending;
     private bool _showCcBcc;
 
-    private string _to = "";
-    private string _cc = "";
-    private string _bcc = "";
+    private List<RecipientEntry> _to = [];
+    private List<RecipientEntry> _cc = [];
+    private List<RecipientEntry> _bcc = [];
     private string _subject = "";
     private string _markdownBody = "";
     private bool _sendFormatted = true;
@@ -259,9 +268,9 @@ else
         var (body, contentType) = await GetBodyAndContentTypeAsync();
 
         // Validate
-        var toAddresses = ParseEmails(_to);
-        var ccAddresses = ParseEmails(_cc);
-        var bccAddresses = ParseEmails(_bcc);
+        var toAddresses = _to.Select(r => r.Email).ToArray();
+        var ccAddresses = _cc.Select(r => r.Email).ToArray();
+        var bccAddresses = _bcc.Select(r => r.Email).ToArray();
 
         if (toAddresses.Length == 0)
             _errors["to"] = L["ComposeValidationTo"];
@@ -343,13 +352,6 @@ else
 
         return (_markdownBody, "plain");
     }
-
-    private static string[] ParseEmails(string input) =>
-        string.IsNullOrWhiteSpace(input)
-            ? []
-            : input.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                   .Where(e => !string.IsNullOrWhiteSpace(e))
-                   .ToArray();
 
     private static bool IsValidEmail(string email)
     {

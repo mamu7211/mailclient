@@ -1,15 +1,20 @@
 @inject NotificationService NotificationService
-@implements IDisposable
+@inject IJSRuntime Js
+@implements IAsyncDisposable
 
 <div class="toast-container" role="alert" aria-live="polite">
     @foreach (var notification in NotificationService.Notifications)
     {
-        <div class="toast-item toast-@GetSeverityClass(notification.Severity) toast-enter">
+        var id = notification.Id;
+        var seconds = NotificationService.GetAutoDismissSeconds(notification.Severity);
+
+        <div @key="id" class="toast-item toast-@GetSeverityClass(notification.Severity)">
             <div class="toast-indicator">
-                @if (GetDismissSeconds(notification.Severity) is { } seconds)
+                @if (seconds is { } s)
                 {
                     <div class="toast-indicator-fill"
-                         style="animation-duration: @(seconds)s;">
+                         data-toast-id="@id"
+                         style="animation-duration: @(s)s;">
                     </div>
                 }
                 else
@@ -25,7 +30,7 @@
                 <button type="button"
                         class="btn-close btn-close-sm"
                         aria-label="Close"
-                        @onclick="() => NotificationService.Dismiss(notification.Id)">
+                        @onclick="() => NotificationService.Dismiss(id)">
                 </button>
             </div>
         </div>
@@ -33,11 +38,43 @@
 </div>
 
 @code {
-    protected override void OnInitialized() =>
-        NotificationService.OnChange += StateHasChanged;
+    private DotNetObjectReference<ToastContainer>? _dotNetRef;
 
-    public void Dispose() =>
-        NotificationService.OnChange -= StateHasChanged;
+    protected override void OnInitialized()
+    {
+        _dotNetRef = DotNetObjectReference.Create(this);
+        NotificationService.OnChange += OnNotificationChange;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Js.InvokeVoidAsync("toastInterop.init", _dotNetRef);
+        }
+    }
+
+    [JSInvokable]
+    public void OnAnimationEnd(string toastId)
+    {
+        if (Guid.TryParse(toastId, out var id))
+            NotificationService.Dismiss(id);
+    }
+
+    private void OnNotificationChange() => InvokeAsync(StateHasChanged);
+
+    public async ValueTask DisposeAsync()
+    {
+        NotificationService.OnChange -= OnNotificationChange;
+
+        try
+        {
+            await Js.InvokeVoidAsync("toastInterop.clearRef");
+        }
+        catch (JSDisconnectedException) { }
+
+        _dotNetRef?.Dispose();
+    }
 
     private static string GetSeverityClass(NotificationSeverity severity) => severity switch
     {
@@ -55,13 +92,5 @@
         NotificationSeverity.Success => "check-circle",
         NotificationSeverity.Info => "info-circle",
         _ => "info-circle",
-    };
-
-    private static int? GetDismissSeconds(NotificationSeverity severity) => severity switch
-    {
-        NotificationSeverity.Warning => 30,
-        NotificationSeverity.Success => 10,
-        NotificationSeverity.Info => 10,
-        _ => null,
     };
 }

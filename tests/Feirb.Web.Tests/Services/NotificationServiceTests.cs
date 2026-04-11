@@ -3,11 +3,9 @@ using FluentAssertions;
 
 namespace Feirb.Web.Tests.Services;
 
-public class NotificationServiceTests : IDisposable
+public class NotificationServiceTests
 {
     private readonly NotificationService _sut = new();
-
-    public void Dispose() => _sut.Dispose();
 
     [Fact]
     public void Add_SingleNotification_AppearsInList()
@@ -97,25 +95,27 @@ public class NotificationServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task Add_InfoNotification_AutoDismissesAfterDelayAsync()
-    {
-        _sut.Add("Test", NotificationSeverity.Info);
-        var id = _sut.Notifications[0].Id;
-
-        // Schedule a very short auto-dismiss to verify the mechanism works
-        _sut.ScheduleAutoDismissAsync(id, TimeSpan.FromMilliseconds(50));
-        await Task.Delay(150);
-
-        _sut.Notifications.Should().BeEmpty();
-    }
-
-    [Fact]
     public void Add_ErrorNotification_DoesNotAutoDismiss()
     {
         _sut.Add("Error message", NotificationSeverity.Error);
 
         // Error notifications should remain until manually dismissed
         _sut.Notifications.Should().HaveCount(1);
+    }
+
+    [Theory]
+    [InlineData(NotificationSeverity.Info, 10)]
+    [InlineData(NotificationSeverity.Success, 10)]
+    [InlineData(NotificationSeverity.Warning, 30)]
+    public void GetAutoDismissSeconds_ReturnsExpectedDelay(NotificationSeverity severity, int expected)
+    {
+        NotificationService.GetAutoDismissSeconds(severity).Should().Be(expected);
+    }
+
+    [Fact]
+    public void GetAutoDismissSeconds_Error_ReturnsNull()
+    {
+        NotificationService.GetAutoDismissSeconds(NotificationSeverity.Error).Should().BeNull();
     }
 
     [Theory]
