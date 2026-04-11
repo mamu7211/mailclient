@@ -18,7 +18,7 @@ public sealed class NotificationItem(string message, NotificationSeverity severi
 
 public sealed class NotificationService
 {
-    private static readonly Dictionary<NotificationSeverity, int?> AutoDismissSeconds = new()
+    private static readonly Dictionary<NotificationSeverity, int?> _autoDismissSeconds = new()
     {
         [NotificationSeverity.Error] = null,
         [NotificationSeverity.Warning] = 30,
@@ -33,7 +33,7 @@ public sealed class NotificationService
     public event Action? OnChange;
 
     public static int? GetAutoDismissSeconds(NotificationSeverity severity) =>
-        AutoDismissSeconds[severity];
+        _autoDismissSeconds[severity];
 
     public NotificationItem Add(string message, NotificationSeverity severity)
     {
