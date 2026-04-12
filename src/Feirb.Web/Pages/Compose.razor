@@ -125,7 +125,7 @@ else
 
             @* Rich text editor (Quill) *@
             <div style="@(_editorMode == EditorMode.RichText ? "" : "display:none")">
-                <div @ref="_quillEditorRef" data-testid="compose-editor-rich"
+                <div @ref="_quillEditorRef" class="quill-wrapper" data-testid="compose-editor-rich"
                      aria-labelledby="compose-body-label" role="textbox" aria-multiline="true"
                      style="min-height: 300px; display: flex; flex-direction: column;"></div>
             </div>
