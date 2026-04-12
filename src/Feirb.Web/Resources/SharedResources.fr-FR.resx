@@ -1761,4 +1761,25 @@
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Impossible de dissocier l'adresse.</value>
   </data>
+  <data name="MessageDetailBodyHeading" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="BodyFormatHtml" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="BodyFormatPlainText" xml:space="preserve">
+    <value>Texte brut</value>
+  </data>
+  <data name="RelativeTimeJustNow" xml:space="preserve">
+    <value>à l'instant</value>
+  </data>
+  <data name="RelativeTimeMinutesAgo" xml:space="preserve">
+    <value>il y a {0} min</value>
+  </data>
+  <data name="RelativeTimeHoursAgo" xml:space="preserve">
+    <value>il y a {0} h</value>
+  </data>
+  <data name="RelativeTimeDaysAgo" xml:space="preserve">
+    <value>il y a {0} j</value>
+  </data>
 </root>

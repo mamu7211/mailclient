@@ -1761,4 +1761,25 @@
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Failed to unlink address.</value>
   </data>
+  <data name="MessageDetailBodyHeading" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="BodyFormatHtml" xml:space="preserve">
+    <value>HTML</value>
+  </data>
+  <data name="BodyFormatPlainText" xml:space="preserve">
+    <value>Plain Text</value>
+  </data>
+  <data name="RelativeTimeJustNow" xml:space="preserve">
+    <value>just now</value>
+  </data>
+  <data name="RelativeTimeMinutesAgo" xml:space="preserve">
+    <value>{0} min ago</value>
+  </data>
+  <data name="RelativeTimeHoursAgo" xml:space="preserve">
+    <value>{0}h ago</value>
+  </data>
+  <data name="RelativeTimeDaysAgo" xml:space="preserve">
+    <value>{0}d ago</value>
+  </data>
 </root>
