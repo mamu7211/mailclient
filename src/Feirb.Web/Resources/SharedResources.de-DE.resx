@@ -240,14 +240,8 @@
   <data name="LabelSmtpPassword" xml:space="preserve">
     <value>SMTP-Passwort</value>
   </data>
-  <data name="LabelSmtpUseTls" xml:space="preserve">
-    <value>TLS/SSL verwenden</value>
-  </data>
   <data name="LabelSmtpRequiresAuth" xml:space="preserve">
     <value>Authentifizierung erforderlich</value>
-  </data>
-  <data name="LabelSmtpUseTlsOff" xml:space="preserve">
-    <value>TLS-Verschlüsselung aus</value>
   </data>
   <data name="LabelSmtpRequiresAuthOff" xml:space="preserve">
     <value>Keine Authentifizierung</value>
@@ -582,9 +576,6 @@
   <data name="LabelImapPassword" xml:space="preserve">
     <value>Passwort</value>
   </data>
-  <data name="LabelImapUseTls" xml:space="preserve">
-    <value>TLS verwenden</value>
-  </data>
   <data name="LabelSmtpHostMailbox" xml:space="preserve">
     <value>SMTP-Host</value>
   </data>
@@ -596,9 +587,6 @@
   </data>
   <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
     <value>Passwort</value>
-  </data>
-  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
-    <value>TLS verwenden</value>
   </data>
   <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
     <value>Authentifizierung erforderlich</value>
@@ -1760,6 +1748,21 @@
   </data>
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Adresse konnte nicht getrennt werden.</value>
+  </data>
+  <data name="LabelTlsMode" xml:space="preserve">
+    <value>TLS-Modus</value>
+  </data>
+  <data name="TlsModeAuto" xml:space="preserve">
+    <value>Automatisch (empfohlen)</value>
+  </data>
+  <data name="TlsModeSslOnConnect" xml:space="preserve">
+    <value>SSL/TLS</value>
+  </data>
+  <data name="TlsModeStartTls" xml:space="preserve">
+    <value>STARTTLS</value>
+  </data>
+  <data name="TlsModeNone" xml:space="preserve">
+    <value>Keine (unverschlüsselt)</value>
   </data>
   <data name="MessageDetailBodyHeading" xml:space="preserve">
     <value>Nachricht</value>

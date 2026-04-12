@@ -66,13 +66,13 @@ public static class MailboxEndpoints
             ImapUsername = request.ImapUsername,
             ImapEncryptedPassword = !string.IsNullOrEmpty(request.ImapPassword)
                 ? imapProtector.Protect(request.ImapPassword) : null,
-            ImapUseTls = request.ImapUseTls,
+            ImapTlsMode = request.ImapTlsMode,
             SmtpHost = request.SmtpHost,
             SmtpPort = request.SmtpPort,
             SmtpUsername = request.SmtpUsername,
             SmtpEncryptedPassword = !string.IsNullOrEmpty(request.SmtpPassword)
                 ? smtpProtector.Protect(request.SmtpPassword) : null,
-            SmtpUseTls = request.SmtpUseTls,
+            SmtpTlsMode = request.SmtpTlsMode,
             SmtpRequiresAuth = request.SmtpRequiresAuth,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
@@ -148,13 +148,13 @@ public static class MailboxEndpoints
         mailbox.ImapUsername = request.ImapUsername;
         if (!string.IsNullOrEmpty(request.ImapPassword))
             mailbox.ImapEncryptedPassword = imapProtector.Protect(request.ImapPassword);
-        mailbox.ImapUseTls = request.ImapUseTls;
+        mailbox.ImapTlsMode = request.ImapTlsMode;
         mailbox.SmtpHost = request.SmtpHost;
         mailbox.SmtpPort = request.SmtpPort;
         mailbox.SmtpUsername = request.SmtpUsername;
         if (!string.IsNullOrEmpty(request.SmtpPassword))
             mailbox.SmtpEncryptedPassword = smtpProtector.Protect(request.SmtpPassword);
-        mailbox.SmtpUseTls = request.SmtpUseTls;
+        mailbox.SmtpTlsMode = request.SmtpTlsMode;
         mailbox.SmtpRequiresAuth = request.SmtpRequiresAuth;
         mailbox.UpdatedAt = DateTime.UtcNow;
 
@@ -199,11 +199,11 @@ public static class MailboxEndpoints
             mailbox.ImapHost,
             mailbox.ImapPort,
             mailbox.ImapUsername,
-            mailbox.ImapUseTls,
+            mailbox.ImapTlsMode,
             mailbox.SmtpHost,
             mailbox.SmtpPort,
             mailbox.SmtpUsername,
-            mailbox.SmtpUseTls,
+            mailbox.SmtpTlsMode,
             mailbox.SmtpRequiresAuth,
             mailbox.CreatedAt,
             mailbox.UpdatedAt);

@@ -59,12 +59,15 @@ public class ResourceCompletenessTests
         "LabelImapPort",
         "LabelImapUsername",
         "LabelImapPassword",
-        "LabelImapUseTls",
+        "LabelTlsMode",
+        "TlsModeAuto",
+        "TlsModeSslOnConnect",
+        "TlsModeStartTls",
+        "TlsModeNone",
         "LabelSmtpHostMailbox",
         "LabelSmtpPortMailbox",
         "LabelSmtpUsernameMailbox",
         "LabelSmtpPasswordMailbox",
-        "LabelSmtpUseTlsMailbox",
         "LabelSmtpRequiresAuthMailbox",
         "ButtonAddMailbox",
         "TestConnectionSuccess",
@@ -141,7 +144,6 @@ public class ResourceCompletenessTests
         "ComposeValidationMailbox",
         "ComposeLoadMailboxesFailed",
         "ComposeNoMailboxes",
-        "LabelSmtpUseTlsOff",
         "LabelSmtpRequiresAuthOff",
     ];
 
@@ -153,6 +155,7 @@ public class ResourceCompletenessTests
         "LabelCc", "ColumnDate", "LabelDate", "PageTitleMessageDetail",
         "ComposeCc", "ComposeBcc", "ComposeMessageHeading",
         "ComposeModeMarkdown", "ComposeShowCcBcc",
+        "TlsModeSslOnConnect", "TlsModeStartTls",
     ];
 
     private static readonly ResourceManager _resourceManager = new(

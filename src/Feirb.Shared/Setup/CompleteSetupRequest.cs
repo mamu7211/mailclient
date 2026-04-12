@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Feirb.Shared.Settings;
 
 namespace Feirb.Shared.Setup;
 
@@ -16,5 +17,5 @@ public record CompleteSetupRequest(
     [StringLength(256)]
     string? SmtpUsername,
     string? SmtpPassword,
-    bool SmtpUseTls,
+    TlsMode SmtpTlsMode,
     bool SmtpRequiresAuth);

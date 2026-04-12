@@ -240,14 +240,8 @@
   <data name="LabelSmtpPassword" xml:space="preserve">
     <value>Mot de passe SMTP</value>
   </data>
-  <data name="LabelSmtpUseTls" xml:space="preserve">
-    <value>Utiliser TLS/SSL</value>
-  </data>
   <data name="LabelSmtpRequiresAuth" xml:space="preserve">
     <value>Authentification requise</value>
-  </data>
-  <data name="LabelSmtpUseTlsOff" xml:space="preserve">
-    <value>Chiffrement TLS désactivé</value>
   </data>
   <data name="LabelSmtpRequiresAuthOff" xml:space="preserve">
     <value>Pas d'authentification</value>
@@ -582,9 +576,6 @@
   <data name="LabelImapPassword" xml:space="preserve">
     <value>Mot de passe</value>
   </data>
-  <data name="LabelImapUseTls" xml:space="preserve">
-    <value>Utiliser TLS</value>
-  </data>
   <data name="LabelSmtpHostMailbox" xml:space="preserve">
     <value>Hôte SMTP</value>
   </data>
@@ -596,9 +587,6 @@
   </data>
   <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
     <value>Mot de passe</value>
-  </data>
-  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
-    <value>Utiliser TLS</value>
   </data>
   <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
     <value>Authentification requise</value>
@@ -1760,6 +1748,21 @@
   </data>
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Impossible de dissocier l'adresse.</value>
+  </data>
+  <data name="LabelTlsMode" xml:space="preserve">
+    <value>Mode TLS</value>
+  </data>
+  <data name="TlsModeAuto" xml:space="preserve">
+    <value>Automatique (recommandé)</value>
+  </data>
+  <data name="TlsModeSslOnConnect" xml:space="preserve">
+    <value>SSL/TLS</value>
+  </data>
+  <data name="TlsModeStartTls" xml:space="preserve">
+    <value>STARTTLS</value>
+  </data>
+  <data name="TlsModeNone" xml:space="preserve">
+    <value>Aucun (non chiffré)</value>
   </data>
   <data name="MessageDetailBodyHeading" xml:space="preserve">
     <value>Message</value>

@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Feirb.Shared.Auth;
 using Feirb.Shared.Avatars;
+using Feirb.Shared.Settings;
 using Feirb.Shared.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -233,7 +234,7 @@ public class AvatarEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",

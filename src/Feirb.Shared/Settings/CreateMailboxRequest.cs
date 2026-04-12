@@ -18,7 +18,7 @@ public record CreateMailboxRequest(
     [Required, StringLength(256)]
     string ImapUsername,
     string? ImapPassword,
-    bool ImapUseTls,
+    TlsMode ImapTlsMode,
     [Required, StringLength(256)]
     string SmtpHost,
     [Required, Range(1, 65535)]
@@ -26,5 +26,5 @@ public record CreateMailboxRequest(
     [Required, StringLength(256)]
     string SmtpUsername,
     string? SmtpPassword,
-    bool SmtpUseTls,
+    TlsMode SmtpTlsMode,
     bool SmtpRequiresAuth);

@@ -9,11 +9,11 @@ public record MailboxDetailResponse(
     string ImapHost,
     int ImapPort,
     string ImapUsername,
-    bool ImapUseTls,
+    TlsMode ImapTlsMode,
     string SmtpHost,
     int SmtpPort,
     string SmtpUsername,
-    bool SmtpUseTls,
+    TlsMode SmtpTlsMode,
     bool SmtpRequiresAuth,
     DateTime CreatedAt,
     DateTime UpdatedAt);

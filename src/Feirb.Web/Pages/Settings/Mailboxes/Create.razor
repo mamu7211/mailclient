@@ -71,9 +71,14 @@
             </div>
         </div>
         <div class="d-flex justify-content-between align-items-center">
-            <div class="form-check">
-                <InputCheckbox id="imapUseTls" class="form-check-input" @bind-Value="_model.ImapUseTls" />
-                <label for="imapUseTls" class="form-check-label">@L["LabelImapUseTls"]</label>
+            <div>
+                <label for="imapTlsMode" class="form-label">@L["LabelTlsMode"]</label>
+                <InputSelect id="imapTlsMode" class="form-select" @bind-Value="_model.ImapTlsMode">
+                    <option value="@TlsMode.Auto">@L["TlsModeAuto"]</option>
+                    <option value="@TlsMode.SslOnConnect">@L["TlsModeSslOnConnect"]</option>
+                    <option value="@TlsMode.StartTls">@L["TlsModeStartTls"]</option>
+                    <option value="@TlsMode.None">@L["TlsModeNone"]</option>
+                </InputSelect>
             </div>
             <Button Variant="ButtonVariant.Secondary" Size="ButtonSize.Small" OnClick="TestImapAsync" Disabled="_isTestingImap" data-testid="test-imap-button">
                 @if (_isTestingImap)
@@ -120,9 +125,14 @@
         }
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <div class="form-check">
-                    <InputCheckbox id="smtpUseTls" class="form-check-input" @bind-Value="_model.SmtpUseTls" />
-                    <label for="smtpUseTls" class="form-check-label">@L["LabelSmtpUseTlsMailbox"]</label>
+                <div class="mb-2">
+                    <label for="smtpTlsMode" class="form-label">@L["LabelTlsMode"]</label>
+                    <InputSelect id="smtpTlsMode" class="form-select" @bind-Value="_model.SmtpTlsMode">
+                        <option value="@TlsMode.Auto">@L["TlsModeAuto"]</option>
+                        <option value="@TlsMode.SslOnConnect">@L["TlsModeSslOnConnect"]</option>
+                        <option value="@TlsMode.StartTls">@L["TlsModeStartTls"]</option>
+                        <option value="@TlsMode.None">@L["TlsModeNone"]</option>
+                    </InputSelect>
                 </div>
                 <div class="form-check">
                     <InputCheckbox id="smtpRequiresAuth" class="form-check-input" @bind-Value="_model.SmtpRequiresAuth" />
@@ -181,9 +191,9 @@
             var request = new CreateMailboxRequest(
                 _model.Name!, _model.EmailAddress!, _model.DisplayName, _model.BadgeColor,
                 _model.ImapHost!, _model.ImapPort, _model.ImapUsername!, _model.ImapPassword,
-                _model.ImapUseTls,
+                _model.ImapTlsMode,
                 _model.SmtpHost!, _model.SmtpPort, _model.SmtpUsername!, _model.SmtpPassword,
-                _model.SmtpUseTls, _model.SmtpRequiresAuth);
+                _model.SmtpTlsMode, _model.SmtpRequiresAuth);
 
             var response = await Http.PostAsJsonAsync("/api/settings/mailboxes", request);
 
@@ -216,7 +226,7 @@
         try
         {
             var request = new TestImapRequest(
-                _model.ImapHost ?? "", _model.ImapPort, _model.ImapUsername, _model.ImapPassword, _model.ImapUseTls);
+                _model.ImapHost ?? "", _model.ImapPort, _model.ImapUsername, _model.ImapPassword, _model.ImapTlsMode);
             var response = await Http.PostAsJsonAsync("/api/mail/test/imap", request);
             _imapTestResult = await response.Content.ReadFromJsonAsync<TestConnectionResponse>();
         }
@@ -238,7 +248,7 @@
         {
             var request = new TestSmtpMailboxRequest(
                 _model.SmtpHost ?? "", _model.SmtpPort, _model.SmtpUsername, _model.SmtpPassword,
-                _model.SmtpUseTls, _model.SmtpRequiresAuth);
+                _model.SmtpTlsMode, _model.SmtpRequiresAuth);
             var response = await Http.PostAsJsonAsync("/api/mail/test/smtp", request);
             _smtpTestResult = await response.Content.ReadFromJsonAsync<TestConnectionResponse>();
         }
@@ -295,7 +305,7 @@
 
         public string? ImapPassword { get; set; }
 
-        public bool ImapUseTls { get; set; } = true;
+        public TlsMode ImapTlsMode { get; set; } = TlsMode.Auto;
 
         [System.ComponentModel.DataAnnotations.Required]
         [System.ComponentModel.DataAnnotations.StringLength(256)]
@@ -310,7 +320,7 @@
 
         public string? SmtpPassword { get; set; }
 
-        public bool SmtpUseTls { get; set; } = true;
+        public TlsMode SmtpTlsMode { get; set; } = TlsMode.Auto;
 
         public bool SmtpRequiresAuth { get; set; } = true;
     }

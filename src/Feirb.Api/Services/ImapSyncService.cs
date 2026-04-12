@@ -47,7 +47,8 @@ public class ImapSyncService(
             var password = protector.Unprotect(mailbox.ImapEncryptedPassword);
 
             using var client = new ImapClient();
-            await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, mailbox.ImapUseTls, cancellationToken);
+            var tlsOptions = TlsModeConverter.ToSecureSocketOptions(mailbox.ImapTlsMode);
+            await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, tlsOptions, cancellationToken);
             await client.AuthenticateAsync(mailbox.ImapUsername, password, cancellationToken);
 
             var inbox = client.Inbox;

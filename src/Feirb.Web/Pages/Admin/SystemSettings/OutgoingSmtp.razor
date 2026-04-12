@@ -75,9 +75,14 @@ else if (_model is not null)
                 }
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="form-check">
-                            <InputCheckbox id="smtpUseTls" class="form-check-input" @bind-Value="_model.UseTls" />
-                            <label for="smtpUseTls" class="form-check-label">@L["LabelSmtpUseTlsMailbox"]</label>
+                        <div class="mb-2">
+                            <label for="smtpTlsMode" class="form-label">@L["LabelTlsMode"]</label>
+                            <InputSelect id="smtpTlsMode" class="form-select" @bind-Value="_model.TlsMode">
+                                <option value="@TlsMode.Auto">@L["TlsModeAuto"]</option>
+                                <option value="@TlsMode.SslOnConnect">@L["TlsModeSslOnConnect"]</option>
+                                <option value="@TlsMode.StartTls">@L["TlsModeStartTls"]</option>
+                                <option value="@TlsMode.None">@L["TlsModeNone"]</option>
+                            </InputSelect>
                         </div>
                         <div class="form-check">
                             <InputCheckbox id="smtpRequiresAuth" class="form-check-input" @bind-Value="_model.RequiresAuth" />
@@ -145,7 +150,7 @@ else if (_model is not null)
                 {
                     Host = settings.Host,
                     Port = settings.Port,
-                    UseTls = settings.UseTls,
+                    TlsMode = settings.TlsMode,
                     RequiresAuth = settings.RequiresAuth,
                     Username = settings.Username,
                     FromAddress = settings.FromAddress,
@@ -175,7 +180,7 @@ else if (_model is not null)
         try
         {
             var request = new UpdateSystemSmtpSettingsRequest(
-                _model.Host!, _model.Port, _model.UseTls, _model.RequiresAuth,
+                _model.Host!, _model.Port, _model.TlsMode, _model.RequiresAuth,
                 _model.Username, _model.Password,
                 _model.FromAddress, _model.FromName);
 
@@ -213,7 +218,7 @@ else if (_model is not null)
         {
             var request = new TestSmtpMailboxRequest(
                 _model.Host, _model.Port, _model.Username, _model.Password,
-                _model.UseTls, _model.RequiresAuth);
+                _model.TlsMode, _model.RequiresAuth);
             var response = await Http.PostAsJsonAsync("/api/mail/test/smtp", request);
             _smtpTestResult = await response.Content.ReadFromJsonAsync<TestConnectionResponse>();
         }
@@ -253,7 +258,7 @@ else if (_model is not null)
 
         public string? Password { get; set; }
 
-        public bool UseTls { get; set; } = true;
+        public TlsMode TlsMode { get; set; } = TlsMode.Auto;
 
         public bool RequiresAuth { get; set; } = true;
 

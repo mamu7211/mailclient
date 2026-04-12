@@ -53,7 +53,7 @@ public static class SetupEndpoints
             Port = request.SmtpPort,
             Username = request.SmtpUsername,
             EncryptedPassword = request.SmtpPassword is not null ? protector.Protect(request.SmtpPassword) : null,
-            UseTls = request.SmtpUseTls,
+            TlsMode = request.SmtpTlsMode,
             RequiresAuth = request.SmtpRequiresAuth,
             FromAddress = request.Email,
             FromName = request.Username,
@@ -73,7 +73,8 @@ public static class SetupEndpoints
         try
         {
             using var client = new SmtpClient();
-            await client.ConnectAsync(request.Host, request.Port, request.UseTls);
+            var tlsOptions = TlsModeConverter.ToSecureSocketOptions(request.TlsMode);
+            await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             if (request.RequiresAuth)
                 await client.AuthenticateAsync(request.Username, request.Password);
             await client.DisconnectAsync(quit: true);

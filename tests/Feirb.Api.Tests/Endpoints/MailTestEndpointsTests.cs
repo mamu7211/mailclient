@@ -30,7 +30,7 @@ public class MailTestEndpointsTests : IDisposable
     [Fact]
     public async Task TestImap_Unauthenticated_ReturnsUnauthorizedAsync()
     {
-        var request = new TestImapRequest("imap.test.com", 993, "user", "pass", true);
+        var request = new TestImapRequest("imap.test.com", 993, "user", "pass", TlsMode.Auto);
         var response = await _client.PostAsJsonAsync("/api/mail/test/imap", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -39,7 +39,7 @@ public class MailTestEndpointsTests : IDisposable
     [Fact]
     public async Task TestSmtp_Unauthenticated_ReturnsUnauthorizedAsync()
     {
-        var request = new TestSmtpMailboxRequest("smtp.test.com", 587, "user", "pass", true, true);
+        var request = new TestSmtpMailboxRequest("smtp.test.com", 587, "user", "pass", TlsMode.Auto, true);
         var response = await _client.PostAsJsonAsync("/api/mail/test/smtp", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -51,7 +51,7 @@ public class MailTestEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var request = new TestImapRequest("nonexistent.invalid.host.test", 993, null, null, false);
+        var request = new TestImapRequest("nonexistent.invalid.host.test", 993, null, null, TlsMode.None);
         var response = await _client.PostAsJsonAsync("/api/mail/test/imap", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +66,7 @@ public class MailTestEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var request = new TestSmtpMailboxRequest("nonexistent.invalid.host.test", 587, null, null, false, false);
+        var request = new TestSmtpMailboxRequest("nonexistent.invalid.host.test", 587, null, null, TlsMode.None, false);
         var response = await _client.PostAsJsonAsync("/api/mail/test/smtp", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -79,7 +79,7 @@ public class MailTestEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",

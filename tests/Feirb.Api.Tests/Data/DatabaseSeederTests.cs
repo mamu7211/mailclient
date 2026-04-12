@@ -1,5 +1,6 @@
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
+using Feirb.Shared.Settings;
 using FluentAssertions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -54,7 +55,7 @@ public class DatabaseSeederTests
         mailboxes[0].EmailAddress.Should().Be("admin@feirb.local");
         mailboxes[0].ImapHost.Should().Be("localhost");
         mailboxes[0].ImapPort.Should().Be(3143);
-        mailboxes[0].ImapUseTls.Should().BeFalse();
+        mailboxes[0].ImapTlsMode.Should().Be(TlsMode.None);
         mailboxes[0].SmtpHost.Should().Be("localhost");
         mailboxes[0].SmtpPort.Should().Be(3025);
         mailboxes[0].ImapEncryptedPassword.Should().NotBeNullOrEmpty();
@@ -64,7 +65,7 @@ public class DatabaseSeederTests
         var smtp = await db.SmtpSettings.SingleAsync();
         smtp.Host.Should().Be("localhost");
         smtp.Port.Should().Be(3025);
-        smtp.UseTls.Should().BeFalse();
+        smtp.TlsMode.Should().Be(TlsMode.None);
         smtp.RequiresAuth.Should().BeFalse();
         smtp.FromAddress.Should().Be("noreply@feirb.local");
     }

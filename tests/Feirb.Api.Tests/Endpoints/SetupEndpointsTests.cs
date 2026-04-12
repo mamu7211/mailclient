@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
 using Feirb.Api.Services;
+using Feirb.Shared.Settings;
 using Feirb.Shared.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -64,7 +65,7 @@ public class SetupEndpointsTests : IDisposable
             587,
             "smtp-user",
             "smtp-password",
-            true,
+            TlsMode.Auto,
             false);
 
         var response = await _client.PostAsJsonAsync("/api/setup/complete", request);
@@ -85,7 +86,7 @@ public class SetupEndpointsTests : IDisposable
         smtp!.Host.Should().Be("smtp.example.com");
         smtp.Port.Should().Be(587);
         smtp.Username.Should().Be("smtp-user");
-        smtp.UseTls.Should().BeTrue();
+        smtp.TlsMode.Should().Be(TlsMode.Auto);
         smtp.EncryptedPassword.Should().NotBe("smtp-password");
     }
 
@@ -102,7 +103,7 @@ public class SetupEndpointsTests : IDisposable
             587,
             "smtp-user",
             "smtp-password",
-            true,
+            TlsMode.Auto,
             false);
 
         var response = await _client.PostAsJsonAsync("/api/setup/complete", request);
@@ -124,7 +125,7 @@ public class SetupEndpointsTests : IDisposable
             587,
             "smtp-user",
             "smtp-password",
-            true,
+            TlsMode.Auto,
             false);
 
         await _client.PostAsJsonAsync("/api/setup/complete", request);

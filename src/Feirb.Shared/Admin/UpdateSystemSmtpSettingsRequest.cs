@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Feirb.Shared.Settings;
 
 namespace Feirb.Shared.Admin;
 
@@ -7,7 +8,7 @@ public record UpdateSystemSmtpSettingsRequest(
     string Host,
     [Required, Range(1, 65535)]
     int Port,
-    bool UseTls,
+    TlsMode TlsMode,
     bool RequiresAuth,
     [StringLength(256)]
     string? Username,

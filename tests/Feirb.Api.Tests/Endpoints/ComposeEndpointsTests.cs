@@ -183,7 +183,7 @@ public class ComposeEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",
@@ -198,8 +198,8 @@ public class ComposeEndpointsTests : IDisposable
     private async Task<Guid> CreateMailboxAsync(string name, string email)
     {
         var request = new CreateMailboxRequest(name, email, null, null,
-            "imap.test.com", 993, "user@test.com", "imappass", true,
-            "smtp.test.com", 587, "user@test.com", "smtppass", true, true);
+            "imap.test.com", 993, "user@test.com", "imappass", TlsMode.Auto,
+            "smtp.test.com", 587, "user@test.com", "smtppass", TlsMode.Auto, true);
         var response = await _client.PostAsJsonAsync("/api/settings/mailboxes", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var mailbox = await response.Content.ReadFromJsonAsync<MailboxDetailResponse>();

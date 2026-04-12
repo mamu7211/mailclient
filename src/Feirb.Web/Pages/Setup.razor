@@ -1,6 +1,7 @@
 @page "/setup"
 @layout AuthLayout
 @attribute [AllowAnonymous]
+@using Feirb.Shared.Settings
 @using Feirb.Shared.Setup
 @inject HttpClient Http
 @inject NavigationManager Navigation
@@ -84,11 +85,15 @@
                         <ValidationMessage For="() => _smtpModel.Port" />
                     </div>
 
-                    <Toggle Text="@L["LabelSmtpUseTls"]"
-                            DisabledText="@L["LabelSmtpUseTlsOff"]"
-                            @bind-Value="_smtpModel.UseTls"
-                            For="() => _smtpModel.UseTls"
-                            Class="mb-3" />
+                    <div class="mb-3">
+                        <label for="smtpTlsMode" class="form-label small fw-medium">@L["LabelTlsMode"]</label>
+                        <InputSelect id="smtpTlsMode" class="form-select form-select-lg" @bind-Value="_smtpModel.TlsMode">
+                            <option value="@TlsMode.Auto">@L["TlsModeAuto"]</option>
+                            <option value="@TlsMode.SslOnConnect">@L["TlsModeSslOnConnect"]</option>
+                            <option value="@TlsMode.StartTls">@L["TlsModeStartTls"]</option>
+                            <option value="@TlsMode.None">@L["TlsModeNone"]</option>
+                        </InputSelect>
+                    </div>
 
                     <Toggle Text="@L["LabelSmtpRequiresAuth"]"
                             DisabledText="@L["LabelSmtpRequiresAuthOff"]"
@@ -210,7 +215,7 @@
             _smtpModel.Port,
             _smtpModel.Username!,
             _smtpModel.Password!,
-            _smtpModel.UseTls,
+            _smtpModel.TlsMode,
             _smtpModel.RequiresAuth);
 
         try
@@ -251,7 +256,7 @@
             _smtpModel.Port,
             _smtpModel.Username!,
             _smtpModel.Password!,
-            _smtpModel.UseTls,
+            _smtpModel.TlsMode,
             _smtpModel.RequiresAuth);
 
         try
@@ -312,7 +317,7 @@
 
         public string? Password { get; set; }
 
-        public bool UseTls { get; set; } = true;
+        public TlsMode TlsMode { get; set; } = TlsMode.Auto;
 
         public bool RequiresAuth { get; set; } = true;
     }
