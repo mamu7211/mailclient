@@ -67,6 +67,11 @@ public class ClassificationService(
             logger.LogWarning(ex, "Ollama unavailable, skipping classification for message {MessageId}", message.Id);
             return ClassificationServiceResult.Skipped;
         }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogWarning(ex, "Ollama request timed out, skipping classification for message {MessageId}", message.Id);
+            return ClassificationServiceResult.Skipped;
+        }
 
         // Parse and validate the response
         return ParseAndValidateResponse(responseText, labels);

@@ -162,6 +162,27 @@ public class ClassificationServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task ClassifyAsync_OllamaTimeout_ReturnsSkippedAsync()
+    {
+        SeedLabels("newsletter");
+        SeedRules("Classify emails");
+
+        var chatClient = Substitute.For<IChatClient>();
+        chatClient.GetResponseAsync(
+            Arg.Any<IEnumerable<ChatMessage>>(),
+            Arg.Any<ChatOptions>(),
+            Arg.Any<CancellationToken>())
+            .Returns<ChatResponse>(_ => throw new TaskCanceledException("Request timed out"));
+
+        var service = CreateService(chatClient);
+        var message = CreateMessage();
+
+        var result = await service.ClassifyAsync(message);
+
+        result.IsSkipped.Should().BeTrue();
+    }
+
+    [Fact]
     public async Task ClassifyAsync_MailboxNotFound_ReturnsFailedAsync()
     {
         var service = CreateService(MockChatClient("[]"));
