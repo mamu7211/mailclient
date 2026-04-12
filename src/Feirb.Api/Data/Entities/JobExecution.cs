@@ -9,4 +9,5 @@ public class JobExecution
     public DateTimeOffset? FinishedAt { get; set; }
     public JobExecutionStatus Status { get; set; }
     public string? Error { get; set; }
+    public List<JobExecutionLog> Logs { get; set; } = [];
 }

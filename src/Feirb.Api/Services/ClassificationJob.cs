@@ -54,6 +54,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         }
 
         logger.LogInformation("Processing {Count} classification queue items", pendingItems.Count);
+        await LogAsync(JobExecutionLogLevel.Info, $"Classification started (batch: {pendingItems.Count} items)", cancellationToken: cancellationToken);
 
         foreach (var item in pendingItems)
         {
@@ -72,6 +73,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
                 {
                     // No rules or labels configured, or Ollama unavailable — revert to Pending
                     item.Status = ClassificationQueueItemStatus.Pending;
+                    await LogAsync(JobExecutionLogLevel.Warning, $"Mail '{item.CachedMessage.Subject}' -> skipped (classifier not configured or unavailable)", cancellationToken: cancellationToken);
                     continue;
                 }
 
@@ -88,6 +90,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
                     });
 
                     db.ClassificationQueueItems.Remove(item);
+                    await LogAsync(JobExecutionLogLevel.Info, $"Mail '{item.CachedMessage.Subject}' -> labels: {result.Result}", cancellationToken: cancellationToken);
                 }
                 else if (result.Success)
                 {
@@ -101,11 +104,13 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
                     });
 
                     db.ClassificationQueueItems.Remove(item);
+                    await LogAsync(JobExecutionLogLevel.Info, $"Mail '{item.CachedMessage.Subject}' -> labels: []", cancellationToken: cancellationToken);
                 }
                 else
                 {
                     item.Status = ClassificationQueueItemStatus.Failed;
                     item.Error = result.Error;
+                    await LogAsync(JobExecutionLogLevel.Error, $"Mail '{item.CachedMessage.Subject}' -> failed: {result.Error}", cancellationToken: cancellationToken);
                 }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
@@ -113,6 +118,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
                 logger.LogError(ex, "Classification failed for queue item {QueueItemId}", item.Id);
                 item.Status = ClassificationQueueItemStatus.Failed;
                 item.Error = ex.Message.Length > 4096 ? ex.Message[..4096] : ex.Message;
+                await LogAsync(JobExecutionLogLevel.Error, $"Mail '{item.CachedMessage.Subject}' -> failed: {ex.Message}");
             }
         }
 
@@ -121,6 +127,8 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         var classified = pendingItems.Count - failed - skipped;
 
         await db.SaveChangesAsync(cancellationToken);
+
+        await LogAsync(JobExecutionLogLevel.Info, $"Batch complete: {classified} classified, {skipped} skipped, {failed} failed", cancellationToken: cancellationToken);
 
         logger.LogInformation(
             "Classification complete: {Classified} classified, {Failed} failed, {Skipped} skipped",

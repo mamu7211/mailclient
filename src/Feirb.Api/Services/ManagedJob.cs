@@ -11,6 +11,8 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
     private const int _consecutiveFailureThreshold = 10;
     private static readonly TimeSpan _staleExecutionCutoff = TimeSpan.FromHours(1);
 
+    private Guid? _currentExecutionId;
+
     public async Task Execute(IJobExecutionContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -70,6 +72,8 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         // check reliably prevents concurrent executions across overlapping triggers.
         await db.SaveChangesAsync(context.CancellationToken);
 
+        _currentExecutionId = execution.Id;
+
         try
         {
             await RunAsync(scope.ServiceProvider, jobSettings, context.CancellationToken);
@@ -105,9 +109,37 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
             await db.SaveChangesAsync(CancellationToken.None);
             await CheckConsecutiveFailuresAsync(db, jobSettings, scope.ServiceProvider);
         }
+        finally
+        {
+            _currentExecutionId = null;
+        }
     }
 
     protected abstract Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken);
+
+    protected async Task LogAsync(
+        JobExecutionLogLevel level, string message, string? metadata = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        if (_currentExecutionId is null)
+            return;
+
+        using var logScope = scopeFactory.CreateScope();
+        var logDb = logScope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+
+        logDb.JobExecutionLogs.Add(new JobExecutionLog
+        {
+            Id = Guid.NewGuid(),
+            JobExecutionId = _currentExecutionId.Value,
+            Timestamp = DateTimeOffset.UtcNow,
+            Level = level,
+            Message = message.Length > 4096 ? message[..4096] : message,
+            Metadata = metadata is not null && metadata.Length > 4096 ? metadata[..4096] : metadata,
+        });
+
+        await logDb.SaveChangesAsync(cancellationToken);
+    }
 
     private async Task CheckConsecutiveFailuresAsync(
         FeirbDbContext db, JobSettings jobSettings, IServiceProvider serviceProvider)
