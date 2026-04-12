@@ -18,7 +18,7 @@ public sealed class UnsavedChangesService
 
     public async Task<bool> SaveAllAsync()
     {
-        foreach (var form in _forms.Where(f => f.HasUnsavedChanges).ToList())
+        foreach (var form in _forms.ToList())
         {
             if (!await form.SubmitAsync())
                 return false;

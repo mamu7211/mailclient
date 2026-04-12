@@ -76,7 +76,7 @@ public class UnsavedChangesServiceTests
     }
 
     [Fact]
-    public async Task SaveAllAsync_CallsSubmitOnDirtyFormsOnlyAsync()
+    public async Task SaveAllAsync_CallsSubmitOnAllRegisteredFormsAsync()
     {
         var clean = new FakeTrackedForm();
         var dirty = new FakeTrackedForm { HasUnsavedChanges = true };
@@ -85,7 +85,7 @@ public class UnsavedChangesServiceTests
 
         await _sut.SaveAllAsync();
 
-        clean.SubmitCallCount.Should().Be(0);
+        clean.SubmitCallCount.Should().Be(1);
         dirty.SubmitCallCount.Should().Be(1);
     }
 

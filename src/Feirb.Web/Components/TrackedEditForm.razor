@@ -55,9 +55,12 @@
     {
         if (_editContext.Validate())
         {
-            return await HandleValidSubmitAsync();
+            var result = await HandleValidSubmitAsync();
+            StateHasChanged();
+            return result;
         }
 
+        StateHasChanged();
         return false;
     }
 
