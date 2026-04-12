@@ -12,6 +12,8 @@ namespace Feirb.Api.Tests.Endpoints;
 
 public class AuthEndpointsTests : IDisposable
 {
+    private const string RefreshTokenCookieName = "refreshToken";
+
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
 
@@ -28,7 +30,7 @@ public class AuthEndpointsTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private async Task<TokenResponse> RegisterAndLoginAsync(
+    private async Task<(TokenResponse Tokens, string? RefreshTokenCookie)> RegisterAndLoginAsync(
         string username = "testuser",
         string email = "test@example.com",
         string password = "Password123!")
@@ -42,7 +44,24 @@ public class AuthEndpointsTests : IDisposable
 
         var tokens = await response.Content.ReadFromJsonAsync<TokenResponse>();
         tokens.Should().NotBeNull();
-        return tokens!;
+
+        var refreshCookie = ExtractRefreshTokenCookie(response);
+        return (tokens!, refreshCookie);
+    }
+
+    private static string? ExtractRefreshTokenCookie(HttpResponseMessage response)
+    {
+        if (!response.Headers.TryGetValues("Set-Cookie", out var cookies))
+            return null;
+
+        var refreshCookie = cookies.FirstOrDefault(c => c.StartsWith($"{RefreshTokenCookieName}=", StringComparison.Ordinal));
+        return refreshCookie;
+    }
+
+    private static string ExtractCookieValue(string setCookieHeader)
+    {
+        var value = setCookieHeader.Split(';')[0];
+        return value[(value.IndexOf('=') + 1)..];
     }
 
     // --- Registration tests ---
@@ -119,8 +138,38 @@ public class AuthEndpointsTests : IDisposable
         var tokens = await response.Content.ReadFromJsonAsync<TokenResponse>();
         tokens.Should().NotBeNull();
         tokens!.AccessToken.Should().NotBeNullOrEmpty();
-        tokens.RefreshToken.Should().NotBeNullOrEmpty();
         tokens.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
+    }
+
+    [Fact]
+    public async Task Login_ValidCredentials_SetsRefreshTokenCookieAsync()
+    {
+        await _client.PostAsJsonAsync("/api/auth/register",
+            new RegisterRequest("cookieuser", "cookie@example.com", "Password123!"));
+
+        var response = await _client.PostAsJsonAsync("/api/auth/login",
+            new LoginRequest("cookieuser", "Password123!"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var cookie = ExtractRefreshTokenCookie(response);
+        cookie.Should().NotBeNull();
+        cookie.Should().Contain("httponly", "refresh token cookie must be HttpOnly");
+        cookie.Should().Contain("samesite=strict", "refresh token cookie must be SameSite=Strict");
+        cookie.Should().Contain("path=/api/auth", "refresh token cookie must be scoped to /api/auth");
+    }
+
+    [Fact]
+    public async Task Login_ValidCredentials_DoesNotReturnRefreshTokenInBodyAsync()
+    {
+        await _client.PostAsJsonAsync("/api/auth/register",
+            new RegisterRequest("nobody", "nobody@example.com", "Password123!"));
+
+        var response = await _client.PostAsJsonAsync("/api/auth/login",
+            new LoginRequest("nobody", "Password123!"));
+
+        var body = await response.Content.ReadAsStringAsync();
+        body.Should().NotContain("refreshToken", "refresh token must not appear in response body");
     }
 
     [Fact]
@@ -147,28 +196,79 @@ public class AuthEndpointsTests : IDisposable
     // --- Refresh tests ---
 
     [Fact]
-    public async Task Refresh_ValidToken_ReturnsNewTokensAsync()
+    public async Task Refresh_ValidCookie_ReturnsNewTokensAsync()
     {
-        var tokens = await RegisterAndLoginAsync("refreshuser", "refresh@example.com");
+        var (_, refreshCookie) = await RegisterAndLoginAsync("refreshuser", "refresh@example.com");
+        refreshCookie.Should().NotBeNull();
 
-        var response = await _client.PostAsJsonAsync("/api/auth/refresh",
-            new RefreshRequest(tokens.RefreshToken));
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+
+        var response = await _client.SendAsync(refreshRequest);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var newTokens = await response.Content.ReadFromJsonAsync<TokenResponse>();
         newTokens.Should().NotBeNull();
         newTokens!.AccessToken.Should().NotBeNullOrEmpty();
-        newTokens.RefreshToken.Should().NotBe(tokens.RefreshToken);
+
+        // New refresh token cookie should be set
+        var newCookie = ExtractRefreshTokenCookie(response);
+        newCookie.Should().NotBeNull();
     }
 
     [Fact]
-    public async Task Refresh_InvalidToken_ReturnsUnauthorizedAsync()
+    public async Task Refresh_NoCookie_ReturnsUnauthorizedAsync()
     {
-        var response = await _client.PostAsJsonAsync("/api/auth/refresh",
-            new RefreshRequest("invalid-refresh-token"));
+        var response = await _client.PostAsync("/api/auth/refresh", null);
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Refresh_InvalidCookie_ReturnsUnauthorizedAsync()
+    {
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}=invalid-refresh-token");
+
+        var response = await _client.SendAsync(refreshRequest);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    // --- Logout tests ---
+
+    [Fact]
+    public async Task Logout_ClearsRefreshTokenCookieAsync()
+    {
+        var (_, refreshCookie) = await RegisterAndLoginAsync("logoutuser", "logout@example.com");
+        refreshCookie.Should().NotBeNull();
+
+        using var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
+        logoutRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+
+        var response = await _client.SendAsync(logoutRequest);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Logout_InvalidatesRefreshTokenInDatabaseAsync()
+    {
+        var (_, refreshCookie) = await RegisterAndLoginAsync("logoutdb", "logoutdb@example.com");
+        refreshCookie.Should().NotBeNull();
+
+        using var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
+        logoutRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+
+        await _client.SendAsync(logoutRequest);
+
+        // Trying to refresh with the old cookie should fail
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+
+        var refreshResponse = await _client.SendAsync(refreshRequest);
+        refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     // --- Protected endpoint tests ---
@@ -176,11 +276,10 @@ public class AuthEndpointsTests : IDisposable
     [Fact]
     public async Task Login_ThenAccessProtectedEndpoint_SucceedsAsync()
     {
-        var tokens = await RegisterAndLoginAsync("protuser", "prot@example.com");
+        var (tokens, _) = await RegisterAndLoginAsync("protuser", "prot@example.com");
 
         // Verify the access token is valid by validating it can be used
         tokens.AccessToken.Should().NotBeNullOrEmpty();
-        tokens.RefreshToken.Should().NotBeNullOrEmpty();
         tokens.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
     }
 
@@ -313,7 +412,8 @@ public class AuthEndpointsTests : IDisposable
     [Fact]
     public async Task ResetPassword_InvalidatesRefreshTokenAsync()
     {
-        var tokens = await RegisterAndLoginAsync("invalidaterefresh", "invalidaterefresh@example.com");
+        var (_, refreshCookie) = await RegisterAndLoginAsync("invalidaterefresh", "invalidaterefresh@example.com");
+        refreshCookie.Should().NotBeNull();
 
         await _client.PostAsJsonAsync("/api/auth/request-reset",
             new RequestResetRequest("invalidaterefresh@example.com"));
@@ -329,9 +429,11 @@ public class AuthEndpointsTests : IDisposable
         await _client.PostAsJsonAsync("/api/auth/reset-password",
             new ResetPasswordRequest(resetToken, "NewPassword456!"));
 
-        // Old refresh token should no longer work
-        var refreshResponse = await _client.PostAsJsonAsync("/api/auth/refresh",
-            new RefreshRequest(tokens.RefreshToken));
+        // Old refresh token cookie should no longer work
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+
+        var refreshResponse = await _client.SendAsync(refreshRequest);
         refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

@@ -11,11 +11,14 @@ namespace Feirb.Api.Endpoints;
 
 public static class AuthEndpoints
 {
+    private const string RefreshTokenCookieName = "refreshToken";
+
     public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/register", RegisterAsync);
         group.MapPost("/login", LoginAsync);
         group.MapPost("/refresh", RefreshAsync);
+        group.MapPost("/logout", LogoutAsync);
         group.MapPost("/request-reset", RequestResetAsync);
         group.MapGet("/validate-reset-token/{token}", ValidateResetTokenAsync);
         group.MapPost("/reset-password", ResetPasswordAsync);
@@ -55,6 +58,7 @@ public static class AuthEndpoints
 
     private static async Task<IResult> LoginAsync(
         LoginRequest request,
+        HttpContext httpContext,
         FeirbDbContext db,
         IAuthService authService,
         IOptions<JwtSettings> jwtSettings,
@@ -65,34 +69,63 @@ public static class AuthEndpoints
             return Results.Unauthorized();
 
         var tokens = authService.GenerateTokens(user);
+        var refreshTokenExpiryDays = jwtSettings.Value.RefreshTokenExpiryDays;
 
         user.RefreshToken = tokens.RefreshToken;
-        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiryDays);
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(refreshTokenExpiryDays);
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        return Results.Ok(tokens);
+        SetRefreshTokenCookie(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
+        return Results.Ok(new TokenResponse(tokens.AccessToken, tokens.ExpiresAt));
     }
 
     private static async Task<IResult> RefreshAsync(
-        RefreshRequest request,
+        HttpContext httpContext,
         FeirbDbContext db,
         IAuthService authService,
         IOptions<JwtSettings> jwtSettings,
         IStringLocalizer<ApiMessages> localizer)
     {
-        var user = await db.Users.FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken);
+        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookieName];
+        if (string.IsNullOrEmpty(refreshToken))
+            return Results.Unauthorized();
+
+        var user = await db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         if (user is null || user.RefreshTokenExpiresAt < DateTime.UtcNow)
             return Results.Unauthorized();
 
         var tokens = authService.GenerateTokens(user);
+        var refreshTokenExpiryDays = jwtSettings.Value.RefreshTokenExpiryDays;
 
         user.RefreshToken = tokens.RefreshToken;
-        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpiryDays);
+        user.RefreshTokenExpiresAt = DateTime.UtcNow.AddDays(refreshTokenExpiryDays);
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        return Results.Ok(tokens);
+        SetRefreshTokenCookie(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
+        return Results.Ok(new TokenResponse(tokens.AccessToken, tokens.ExpiresAt));
+    }
+
+    private static async Task<IResult> LogoutAsync(
+        HttpContext httpContext,
+        FeirbDbContext db)
+    {
+        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookieName];
+        if (!string.IsNullOrEmpty(refreshToken))
+        {
+            var user = await db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user is not null)
+            {
+                user.RefreshToken = null;
+                user.RefreshTokenExpiresAt = null;
+                user.UpdatedAt = DateTime.UtcNow;
+                await db.SaveChangesAsync();
+            }
+        }
+
+        ClearRefreshTokenCookie(httpContext);
+        return Results.Ok();
     }
 
     private static async Task<IResult> RequestResetAsync(
@@ -174,5 +207,28 @@ public static class AuthEndpoints
         await db.SaveChangesAsync();
 
         return Results.Ok(new { message = localizer["PasswordResetSuccess"].Value });
+    }
+
+    private static void SetRefreshTokenCookie(HttpContext httpContext, string refreshToken, int expiryDays)
+    {
+        httpContext.Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/api/auth",
+            Expires = DateTime.UtcNow.AddDays(expiryDays),
+        });
+    }
+
+    private static void ClearRefreshTokenCookie(HttpContext httpContext)
+    {
+        httpContext.Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Path = "/api/auth",
+        });
     }
 }

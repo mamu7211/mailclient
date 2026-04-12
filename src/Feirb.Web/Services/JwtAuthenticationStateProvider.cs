@@ -28,7 +28,7 @@ public sealed class JwtAuthenticationStateProvider(IJSRuntime jsRuntime) : Authe
     public async Task LoginAsync(TokenResponse tokens)
     {
         ArgumentNullException.ThrowIfNull(tokens);
-        await jsRuntime.InvokeVoidAsync("blazorAuth.setTokens", tokens.AccessToken, tokens.RefreshToken);
+        await jsRuntime.InvokeVoidAsync("blazorAuth.setAccessToken", tokens.AccessToken);
         var claims = ParseClaimsFromJwt(tokens.AccessToken);
         var identity = new ClaimsIdentity(claims, "jwt", ClaimTypes.Name, ClaimTypes.Role);
         var user = new ClaimsPrincipal(identity);
