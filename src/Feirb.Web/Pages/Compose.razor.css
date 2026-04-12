@@ -1,45 +1,96 @@
+/* ── Text selection ── */
 ::deep ::selection {
     background-color: var(--bs-primary);
     color: white;
 }
 
+/* ── Quill toolbar ── */
 ::deep .ql-toolbar {
-    border-color: var(--bs-border-color) !important;
-    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0;
+    border: 1px solid var(--feirb-border-color-input) !important;
+    border-radius: var(--feirb-radius-input) var(--feirb-radius-input) 0 0;
+    background-color: var(--feirb-surface);
 }
 
+/* ── Quill container + editor ── */
 ::deep .ql-container {
     flex: 1;
     min-height: 250px;
-    border-color: var(--bs-border-color) !important;
-    border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+    border: 1px solid var(--feirb-border-color-input) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--feirb-radius-input) var(--feirb-radius-input);
+    background-color: var(--feirb-surface);
 }
 
 ::deep .ql-editor {
     min-height: 250px;
+    color: var(--bs-body-color);
 }
 
+::deep .ql-editor.ql-blank::before {
+    color: var(--feirb-on-surface-variant) !important;
+    font-style: normal;
+}
+
+/* ── Focus ring matching .form-control:focus ── */
+::deep .ql-container:focus-within {
+    border-color: var(--bs-primary) !important;
+    box-shadow: var(--feirb-focus-shadow);
+}
+
+/* ── Toolbar icon strokes ── */
 ::deep .ql-snow .ql-stroke {
-    stroke: var(--bs-body-color) !important;
+    stroke: var(--feirb-on-surface-variant) !important;
 }
 
 ::deep .ql-snow .ql-fill,
 ::deep .ql-snow .ql-stroke.ql-fill {
-    fill: var(--bs-body-color) !important;
+    fill: var(--feirb-on-surface-variant) !important;
 }
 
 ::deep .ql-snow .ql-picker {
-    color: var(--bs-body-color) !important;
+    color: var(--feirb-on-surface-variant) !important;
 }
 
+/* ── Toolbar button hover ── */
+::deep .ql-snow button:hover .ql-stroke,
+::deep .ql-snow .ql-picker-label:hover .ql-stroke {
+    stroke: var(--bs-primary) !important;
+}
+
+::deep .ql-snow button:hover .ql-fill,
+::deep .ql-snow button:hover .ql-stroke.ql-fill,
+::deep .ql-snow .ql-picker-label:hover .ql-fill {
+    fill: var(--bs-primary) !important;
+}
+
+::deep .ql-snow button:hover,
+::deep .ql-snow .ql-picker-label:hover {
+    color: var(--bs-primary) !important;
+}
+
+/* ── Toolbar button active state ── */
+::deep .ql-snow button.ql-active .ql-stroke {
+    stroke: var(--bs-primary) !important;
+}
+
+::deep .ql-snow button.ql-active .ql-fill,
+::deep .ql-snow button.ql-active .ql-stroke.ql-fill {
+    fill: var(--bs-primary) !important;
+}
+
+::deep .ql-snow button.ql-active {
+    color: var(--bs-primary) !important;
+}
+
+/* ── Picker (header dropdown) ── */
 ::deep .ql-snow .ql-picker-label {
-    border-color: var(--bs-border-color) !important;
-    border-radius: var(--bs-border-radius) !important;
+    border-color: transparent !important;
+    border-radius: var(--feirb-radius-input) !important;
 }
 
 ::deep .ql-snow .ql-picker.ql-expanded .ql-picker-label {
-    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0 0 !important;
-    border-bottom-color: var(--bs-border-color) !important;
+    border-color: var(--feirb-border-color-input) !important;
+    border-radius: var(--feirb-radius-input) var(--feirb-radius-input) 0 0 !important;
 }
 
 ::deep .ql-snow .ql-picker-label.ql-active,
@@ -51,7 +102,43 @@
 
 ::deep .ql-snow .ql-picker-options {
     background-color: var(--feirb-surface) !important;
-    border-color: var(--bs-border-color) !important;
-    border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) var(--bs-border-radius) !important;
+    border: 1px solid var(--feirb-border-color-input) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--feirb-radius-input) var(--feirb-radius-input) !important;
+    box-shadow: var(--feirb-shadow);
     min-width: 100%;
+}
+
+/* ── Picker label SVG arrow ── */
+::deep .ql-snow .ql-picker-label::before {
+    color: var(--feirb-on-surface-variant);
+}
+
+::deep .ql-snow .ql-picker.ql-expanded .ql-picker-label::before {
+    color: var(--bs-primary);
+}
+
+/* ── Tooltip (link input) ── */
+::deep .ql-snow .ql-tooltip {
+    background-color: var(--feirb-surface) !important;
+    border: 1px solid var(--feirb-border-color-input) !important;
+    border-radius: var(--feirb-radius-input) !important;
+    box-shadow: var(--feirb-shadow);
+    color: var(--bs-body-color) !important;
+}
+
+::deep .ql-snow .ql-tooltip input[type="text"] {
+    border: 1px solid var(--feirb-border-color-input) !important;
+    border-radius: var(--feirb-radius-input) !important;
+    background-color: var(--feirb-surface) !important;
+    color: var(--bs-body-color) !important;
+}
+
+::deep .ql-snow .ql-tooltip input[type="text"]:focus {
+    border-color: var(--bs-primary) !important;
+    box-shadow: var(--feirb-focus-shadow);
+}
+
+::deep .ql-snow .ql-tooltip a {
+    color: var(--bs-link-color) !important;
 }
