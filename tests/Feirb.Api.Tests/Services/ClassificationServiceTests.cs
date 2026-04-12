@@ -58,7 +58,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public async Task ClassifyAsync_NoRules_ReturnsSkippedAsync()
     {
-        SeedLabels("Newsletter", "Important");
+        SeedLabels("newsletter", "important");
         var service = CreateService(MockChatClient("[]"));
         var message = CreateMessage();
 
@@ -84,7 +84,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public async Task ClassifyAsync_ValidLabels_ReturnsSuccessWithLabelsAsync()
     {
-        SeedLabels("Newsletter", "Important");
+        SeedLabels("newsletter", "important");
         SeedRules("Mark newsletters as Newsletter");
         var service = CreateService(MockChatClient("""["Newsletter"]"""));
         var message = CreateMessage();
@@ -93,14 +93,14 @@ public class ClassificationServiceTests : IDisposable
 
         result.Success.Should().BeTrue();
         result.IsSkipped.Should().BeFalse();
-        result.Result.Should().Be("""["Newsletter"]""");
+        result.Result.Should().Be("""["newsletter"]""");
         result.Error.Should().BeNull();
     }
 
     [Fact]
     public async Task ClassifyAsync_EmptyArrayResponse_ReturnsSuccessAsync()
     {
-        SeedLabels("Newsletter");
+        SeedLabels("newsletter");
         SeedRules("Mark newsletters as Newsletter");
         var service = CreateService(MockChatClient("[]"));
         var message = CreateMessage();
@@ -115,7 +115,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public async Task ClassifyAsync_UnknownLabels_ReturnsFailedAsync()
     {
-        SeedLabels("Newsletter");
+        SeedLabels("newsletter");
         SeedRules("Classify emails");
         var service = CreateService(MockChatClient("""["NonExistent"]"""));
         var message = CreateMessage();
@@ -129,7 +129,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public async Task ClassifyAsync_MalformedJson_ReturnsFailedAsync()
     {
-        SeedLabels("Newsletter");
+        SeedLabels("newsletter");
         SeedRules("Classify emails");
         var service = CreateService(MockChatClient("not json at all"));
         var message = CreateMessage();
@@ -143,7 +143,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public async Task ClassifyAsync_OllamaUnavailable_ReturnsSkippedAsync()
     {
-        SeedLabels("Newsletter");
+        SeedLabels("newsletter");
         SeedRules("Classify emails");
 
         var chatClient = Substitute.For<IChatClient>();
@@ -246,18 +246,18 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public void ParseAndValidateResponse_ValidLabels_ReturnsSuccess()
     {
-        var validLabels = new List<string> { "Newsletter", "Important" };
+        var validLabels = new List<string> { "newsletter", "important" };
 
         var result = ClassificationService.ParseAndValidateResponse("""["Newsletter"]""", validLabels);
 
         result.Success.Should().BeTrue();
-        result.Result.Should().Be("""["Newsletter"]""");
+        result.Result.Should().Be("""["newsletter"]""");
     }
 
     [Fact]
     public void ParseAndValidateResponse_EmptyArray_ReturnsSuccess()
     {
-        var validLabels = new List<string> { "Newsletter" };
+        var validLabels = new List<string> { "newsletter" };
 
         var result = ClassificationService.ParseAndValidateResponse("[]", validLabels);
 
@@ -268,7 +268,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public void ParseAndValidateResponse_UnknownLabels_ReturnsFailed()
     {
-        var validLabels = new List<string> { "Newsletter" };
+        var validLabels = new List<string> { "newsletter" };
 
         var result = ClassificationService.ParseAndValidateResponse("""["Spam"]""", validLabels);
 
@@ -279,7 +279,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public void ParseAndValidateResponse_MalformedJson_ReturnsFailed()
     {
-        var validLabels = new List<string> { "Newsletter" };
+        var validLabels = new List<string> { "newsletter" };
 
         var result = ClassificationService.ParseAndValidateResponse("invalid json", validLabels);
 
@@ -290,7 +290,7 @@ public class ClassificationServiceTests : IDisposable
     [Fact]
     public void ParseAndValidateResponse_MarkdownCodeFence_StripsAndParses()
     {
-        var validLabels = new List<string> { "Newsletter" };
+        var validLabels = new List<string> { "newsletter" };
         var response = """
             ```json
             ["Newsletter"]
@@ -300,30 +300,42 @@ public class ClassificationServiceTests : IDisposable
         var result = ClassificationService.ParseAndValidateResponse(response, validLabels);
 
         result.Success.Should().BeTrue();
-        result.Result.Should().Be("""["Newsletter"]""");
+        result.Result.Should().Be("""["newsletter"]""");
     }
 
     [Fact]
     public void ParseAndValidateResponse_CaseInsensitiveLabelMatching_ReturnsSuccess()
     {
-        var validLabels = new List<string> { "Newsletter" };
+        var validLabels = new List<string> { "newsletter" };
 
-        var result = ClassificationService.ParseAndValidateResponse("""["newsletter"]""", validLabels);
+        var result = ClassificationService.ParseAndValidateResponse("""["Newsletter"]""", validLabels);
 
         result.Success.Should().BeTrue();
+        result.Result.Should().Be("""["newsletter"]""");
+    }
+
+    [Fact]
+    public void ParseAndValidateResponse_NullEntriesInArray_FiltersAndReturnsSuccess()
+    {
+        var validLabels = new List<string> { "newsletter" };
+
+        var result = ClassificationService.ParseAndValidateResponse("""[null, "Newsletter", ""]""", validLabels);
+
+        result.Success.Should().BeTrue();
+        result.Result.Should().Be("""["newsletter"]""");
     }
 
     [Fact]
     public void ParseAndValidateResponse_MultipleValidLabels_ReturnsAll()
     {
-        var validLabels = new List<string> { "Newsletter", "Important", "Work" };
+        var validLabels = new List<string> { "newsletter", "important", "work" };
 
         var result = ClassificationService.ParseAndValidateResponse(
             """["Newsletter", "Important"]""", validLabels);
 
         result.Success.Should().BeTrue();
-        result.Result.Should().Contain("Newsletter");
-        result.Result.Should().Contain("Important");
+        result.Result.Should().Contain("newsletter");
+        result.Result.Should().Contain("important");
     }
 
     private ClassificationService CreateService(IChatClient chatClient)

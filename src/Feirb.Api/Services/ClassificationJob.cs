@@ -130,9 +130,11 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
     private static async Task ApplyLabelsAsync(
         FeirbDbContext db, CachedMessage message, string resultJson, CancellationToken cancellationToken)
     {
-        var labelNames = JsonSerializer.Deserialize<string[]>(resultJson);
-        if (labelNames is null || labelNames.Length == 0)
+        var rawLabelNames = JsonSerializer.Deserialize<string[]>(resultJson);
+        if (rawLabelNames is null || rawLabelNames.Length == 0)
             return;
+
+        var labelNames = rawLabelNames.Where(n => !string.IsNullOrWhiteSpace(n)).Select(n => n.ToLowerInvariant()).ToArray();
 
         var mailbox = message.Mailbox ?? await db.Mailboxes
             .AsNoTracking()

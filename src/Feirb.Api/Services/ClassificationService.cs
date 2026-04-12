@@ -172,6 +172,9 @@ public class ClassificationService(
                 false, null, $"Failed to parse LLM response as JSON array: {Truncate(responseText, 500)}");
         }
 
+        // Filter out null/whitespace entries (LLM may return [null] or [""])
+        parsedLabels = parsedLabels.Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+
         // Empty array is a valid classification (no labels apply)
         if (parsedLabels.Length == 0)
         {
@@ -188,8 +191,9 @@ public class ClassificationService(
                 false, null, $"Unknown labels in response: {string.Join(", ", unknownLabels)}");
         }
 
-        // Return the validated label names as JSON
-        var result = JsonSerializer.Serialize(parsedLabels);
+        // Normalize label names to lowercase to match stored labels
+        var normalizedLabels = parsedLabels.Select(l => l.ToLowerInvariant()).ToArray();
+        var result = JsonSerializer.Serialize(normalizedLabels);
         return new ClassificationServiceResult(true, result, null);
     }
 
