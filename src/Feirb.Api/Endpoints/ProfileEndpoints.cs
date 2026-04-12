@@ -110,13 +110,7 @@ public static class ProfileEndpoints
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        httpContext.Response.Cookies.Delete("refreshToken", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/api/auth",
-        });
+        RefreshTokenCookie.Clear(httpContext);
 
         return Results.Ok(new MessageResponse(localizer["AllSessionsLoggedOut"].Value));
     }

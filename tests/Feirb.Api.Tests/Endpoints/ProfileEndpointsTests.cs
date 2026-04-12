@@ -156,16 +156,14 @@ public class ProfileEndpointsTests : IDisposable
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Verify refresh token cookie is invalidated
-        if (refreshCookie is not null)
-        {
-            var cookieValue = refreshCookie.Split(';')[0].Split('=', 2)[1];
-            using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-            refreshRequest.Headers.Add("Cookie", $"refreshToken={cookieValue}");
+        // Verify refresh token cookie was set during login and is now invalidated
+        refreshCookie.Should().NotBeNull();
+        var cookieValue = refreshCookie!.Split(';')[0].Split('=', 2)[1];
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"refreshToken={cookieValue}");
 
-            var refreshResponse = await _client.SendAsync(refreshRequest);
-            refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
+        var refreshResponse = await _client.SendAsync(refreshRequest);
+        refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]

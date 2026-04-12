@@ -11,8 +11,6 @@ namespace Feirb.Api.Endpoints;
 
 public static class AuthEndpoints
 {
-    private const string RefreshTokenCookieName = "refreshToken";
-
     public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/register", RegisterAsync);
@@ -76,7 +74,7 @@ public static class AuthEndpoints
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        SetRefreshTokenCookie(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
+        RefreshTokenCookie.Set(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
         return Results.Ok(new TokenResponse(tokens.AccessToken, tokens.ExpiresAt));
     }
 
@@ -87,7 +85,7 @@ public static class AuthEndpoints
         IOptions<JwtSettings> jwtSettings,
         IStringLocalizer<ApiMessages> localizer)
     {
-        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookieName];
+        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookie.Name];
         if (string.IsNullOrEmpty(refreshToken))
             return Results.Unauthorized();
 
@@ -103,7 +101,7 @@ public static class AuthEndpoints
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
-        SetRefreshTokenCookie(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
+        RefreshTokenCookie.Set(httpContext, tokens.RefreshToken, refreshTokenExpiryDays);
         return Results.Ok(new TokenResponse(tokens.AccessToken, tokens.ExpiresAt));
     }
 
@@ -111,7 +109,7 @@ public static class AuthEndpoints
         HttpContext httpContext,
         FeirbDbContext db)
     {
-        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookieName];
+        var refreshToken = httpContext.Request.Cookies[RefreshTokenCookie.Name];
         if (!string.IsNullOrEmpty(refreshToken))
         {
             var user = await db.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
@@ -124,7 +122,7 @@ public static class AuthEndpoints
             }
         }
 
-        ClearRefreshTokenCookie(httpContext);
+        RefreshTokenCookie.Clear(httpContext);
         return Results.Ok();
     }
 
@@ -209,26 +207,4 @@ public static class AuthEndpoints
         return Results.Ok(new { message = localizer["PasswordResetSuccess"].Value });
     }
 
-    private static void SetRefreshTokenCookie(HttpContext httpContext, string refreshToken, int expiryDays)
-    {
-        httpContext.Response.Cookies.Append(RefreshTokenCookieName, refreshToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/api/auth",
-            Expires = DateTime.UtcNow.AddDays(expiryDays),
-        });
-    }
-
-    private static void ClearRefreshTokenCookie(HttpContext httpContext)
-    {
-        httpContext.Response.Cookies.Delete(RefreshTokenCookieName, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Path = "/api/auth",
-        });
-    }
 }

@@ -67,7 +67,14 @@
 
     private async Task LogoutAsync()
     {
-        await Http.PostAsync("/api/auth/logout", null);
+        try
+        {
+            await Http.PostAsync("/api/auth/logout", null);
+        }
+        catch
+        {
+            // Server logout is best-effort — always clear local state
+        }
 
         if (AuthStateProvider is JwtAuthenticationStateProvider jwtProvider)
             await jwtProvider.LogoutAsync();

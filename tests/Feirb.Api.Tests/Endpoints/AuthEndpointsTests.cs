@@ -154,9 +154,11 @@ public class AuthEndpointsTests : IDisposable
 
         var cookie = ExtractRefreshTokenCookie(response);
         cookie.Should().NotBeNull();
-        cookie.Should().Contain("httponly", "refresh token cookie must be HttpOnly");
-        cookie.Should().Contain("samesite=strict", "refresh token cookie must be SameSite=Strict");
-        cookie.Should().Contain("path=/api/auth", "refresh token cookie must be scoped to /api/auth");
+        var cookieLower = cookie!.ToLowerInvariant();
+        cookieLower.Should().Contain("httponly", "refresh token cookie must be HttpOnly");
+        cookieLower.Should().Contain("secure", "refresh token cookie must be Secure");
+        cookieLower.Should().Contain("samesite=strict", "refresh token cookie must be SameSite=Strict");
+        cookieLower.Should().Contain("path=/api/auth", "refresh token cookie must be scoped to /api/auth");
     }
 
     [Fact]
@@ -250,6 +252,12 @@ public class AuthEndpointsTests : IDisposable
         var response = await _client.SendAsync(logoutRequest);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        // Verify the response clears the cookie
+        response.Headers.TryGetValues("Set-Cookie", out var setCookieHeaders).Should().BeTrue();
+        var clearedCookie = setCookieHeaders!
+            .FirstOrDefault(h => h.StartsWith($"{RefreshTokenCookieName}=", StringComparison.OrdinalIgnoreCase));
+        clearedCookie.Should().NotBeNull("logout must clear the refresh token cookie");
     }
 
     [Fact]
