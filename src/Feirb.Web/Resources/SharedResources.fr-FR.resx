@@ -1737,4 +1737,28 @@
   <data name="AddressBookActionBack" xml:space="preserve">
     <value>Retour</value>
   </data>
+  <data name="ContactNotFound" xml:space="preserve">
+    <value>Contact introuvable.</value>
+  </data>
+  <data name="AddressNotFound" xml:space="preserve">
+    <value>Adresse introuvable.</value>
+  </data>
+  <data name="ContactSaveFailed" xml:space="preserve">
+    <value>Impossible d'enregistrer le contact.</value>
+  </data>
+  <data name="ContactDeleteFailed" xml:space="preserve">
+    <value>Impossible de supprimer le contact.</value>
+  </data>
+  <data name="AddressSaveFailed" xml:space="preserve">
+    <value>Impossible d'enregistrer l'adresse.</value>
+  </data>
+  <data name="AddressDeleteFailed" xml:space="preserve">
+    <value>Impossible de supprimer l'adresse.</value>
+  </data>
+  <data name="AddressPromoteFailed" xml:space="preserve">
+    <value>Impossible d'ajouter aux contacts.</value>
+  </data>
+  <data name="AddressUnlinkFailed" xml:space="preserve">
+    <value>Impossible de dissocier l'adresse.</value>
+  </data>
 </root>

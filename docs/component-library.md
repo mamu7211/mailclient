@@ -421,8 +421,8 @@ Compact person display with avatar, name, optional email, and optional status ba
 
 ```razor
 <PersonChip Name="Alice Johnson" Email="alice@example.com" />
-<PersonChip Name="Bob Smith" Email="bob@example.com" Size="PersonChipSize.Small" Status="RecipientStatus.Important" />
-<PersonChip Name="Unknown Sender" Email="someone@external.com" Size="PersonChipSize.Mini" Status="RecipientStatus.Unknown" />
+<PersonChip Name="Bob Smith" Email="bob@example.com" Size="PersonChipSize.Small" Status="AddressStatus.Important" />
+<PersonChip Name="Unknown Sender" Email="someone@external.com" Size="PersonChipSize.Mini" Status="AddressStatus.Unknown" />
 ```
 
 | Parameter | Type | Default | Description |
@@ -430,13 +430,26 @@ Compact person display with avatar, name, optional email, and optional status ba
 | `Name` | `string` (required) | — | Display name |
 | `Email` | `string?` | `null` | Email address (hidden in Mini size) |
 | `Size` | `PersonChipSize` | `Default` | `Default`, `Small`, `Mini` |
-| `Status` | `RecipientStatus` | `None` | `None` (no badge), `Known`, `Unknown`, `Important`, `Blocked` |
+| `Status` | `AddressStatus?` | `null` | `null` (no badge), `Unknown`, `Known`, `Important`, `Blocked` |
 | `StatusTitle` | `string?` | `null` | Tooltip for the status badge |
 | `Class` | `string?` | `null` | Extra CSS classes |
 
 **Avatar lookup:** If `Email` is set, the component fetches `/api/avatars/{hash}` automatically. The endpoint returns `204` when no avatar exists — the component falls back to a dashed placeholder icon.
 
-**Status badge colors:** `Known` → primary, `Unknown` → secondary, `Important` → warning, `Blocked` → danger. `None` renders no badge (use for chips outside address-book context like Compose recipient tokens).
+**Status badge colors:** `Known` → success (green), `Unknown` → info (blue), `Important` → warning (yellow), `Blocked` → danger (red). `null` renders no badge (use for chips outside address-book context like Compose recipient tokens).
+
+## HelpHint
+
+Inline help text with a question-circle icon. Used below form controls to explain the current selection or provide contextual guidance.
+
+```razor
+<HelpHint>This address was automatically captured and has not been reviewed yet.</HelpHint>
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment` (required) | — | Help text |
+| `Class` | `string?` | `null` | Extra CSS classes |
 
 ## Toggle
 

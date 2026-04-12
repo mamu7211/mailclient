@@ -14,8 +14,8 @@
         }
         @if (_statusIcon is not null)
         {
-            <span class="feirb-person-chip-status feirb-person-chip-status-@_statusClass" title="@_statusTitle">
-                <i class="bi bi-@_statusIcon"></i>
+            <span class="feirb-person-chip-status feirb-person-chip-status-@_statusClass" title="@_statusTitle" role="img" aria-label="@_statusTitle">
+                <i class="bi bi-@_statusIcon" aria-hidden="true"></i>
             </span>
         }
     </div>

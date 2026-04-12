@@ -136,12 +136,12 @@ else
                 return true;
             }
 
-            Notifications.Add("Failed to save contact.", NotificationSeverity.Error);
+            Notifications.Add(L["ContactSaveFailed"], NotificationSeverity.Error);
             return false;
         }
         catch
         {
-            Notifications.Add("Failed to save contact.", NotificationSeverity.Error);
+            Notifications.Add(L["ContactSaveFailed"], NotificationSeverity.Error);
             return false;
         }
     }
@@ -158,12 +158,12 @@ else
             }
             else
             {
-                Notifications.Add("Failed to delete contact.", NotificationSeverity.Error);
+                Notifications.Add(L["ContactDeleteFailed"], NotificationSeverity.Error);
             }
         }
         catch
         {
-            Notifications.Add("Failed to delete contact.", NotificationSeverity.Error);
+            Notifications.Add(L["ContactDeleteFailed"], NotificationSeverity.Error);
         }
     }
 

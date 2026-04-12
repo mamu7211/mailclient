@@ -49,6 +49,8 @@ public static class AddressBookEndpoints
         var query = db.Contacts.AsNoTracking().Where(c => c.UserId == userId);
         if (!string.IsNullOrWhiteSpace(q))
         {
+            // ToLower+Contains is portable across providers (InMemory tests + PostgreSQL).
+            // Could be upgraded to EF.Functions.ILike for better index usage on large datasets.
             var term = q.Trim().ToLower();
             query = query.Where(c => c.DisplayName.ToLower().Contains(term));
         }
@@ -168,6 +170,9 @@ public static class AddressBookEndpoints
 
         if (contact is null)
             return Results.NotFound(new { message = localizer["ContactNotFound"].Value });
+
+        if (string.IsNullOrWhiteSpace(request.DisplayName))
+            return Results.BadRequest(new { message = localizer["ContactDisplayNameRequired"].Value });
 
         contact.DisplayName = request.DisplayName.Trim();
         contact.Notes = request.Notes?.Trim();

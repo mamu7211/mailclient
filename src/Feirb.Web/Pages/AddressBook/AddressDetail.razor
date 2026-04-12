@@ -24,7 +24,7 @@
 }
 else if (_address is null)
 {
-    <p class="text-muted">@L["AddressDetailPageTitle"]</p>
+    <p class="text-muted">@L["AddressNotFound"]</p>
 }
 else
 {
@@ -169,12 +169,12 @@ else
                 return true;
             }
 
-            Notifications.Add("Failed to save address.", NotificationSeverity.Error);
+            Notifications.Add(L["AddressSaveFailed"], NotificationSeverity.Error);
             return false;
         }
         catch
         {
-            Notifications.Add("Failed to save address.", NotificationSeverity.Error);
+            Notifications.Add(L["AddressSaveFailed"], NotificationSeverity.Error);
             return false;
         }
     }
@@ -191,12 +191,12 @@ else
             }
             else
             {
-                Notifications.Add("Failed to delete address.", NotificationSeverity.Error);
+                Notifications.Add(L["AddressDeleteFailed"], NotificationSeverity.Error);
             }
         }
         catch
         {
-            Notifications.Add("Failed to delete address.", NotificationSeverity.Error);
+            Notifications.Add(L["AddressDeleteFailed"], NotificationSeverity.Error);
         }
     }
 
@@ -214,12 +214,12 @@ else
             }
             else
             {
-                Notifications.Add("Failed to add to contacts.", NotificationSeverity.Error);
+                Notifications.Add(L["AddressPromoteFailed"], NotificationSeverity.Error);
             }
         }
         catch
         {
-            Notifications.Add("Failed to add to contacts.", NotificationSeverity.Error);
+            Notifications.Add(L["AddressPromoteFailed"], NotificationSeverity.Error);
         }
     }
 
@@ -235,12 +235,12 @@ else
             }
             else
             {
-                Notifications.Add("Failed to unlink address.", NotificationSeverity.Error);
+                Notifications.Add(L["AddressUnlinkFailed"], NotificationSeverity.Error);
             }
         }
         catch
         {
-            Notifications.Add("Failed to unlink address.", NotificationSeverity.Error);
+            Notifications.Add(L["AddressUnlinkFailed"], NotificationSeverity.Error);
         }
     }
 
