@@ -12,6 +12,6 @@ public static class TlsModeConverter
             TlsMode.Auto => SecureSocketOptions.Auto,
             TlsMode.SslOnConnect => SecureSocketOptions.SslOnConnect,
             TlsMode.StartTls => SecureSocketOptions.StartTls,
-            _ => SecureSocketOptions.Auto,
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unsupported TLS mode."),
         };
 }

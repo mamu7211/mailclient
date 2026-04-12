@@ -4,7 +4,6 @@ using Feirb.Api.Resources;
 using Feirb.Api.Services;
 using Feirb.Shared.Setup;
 using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;

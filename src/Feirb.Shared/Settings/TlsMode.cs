@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace Feirb.Shared.Settings;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TlsMode
 {
     None = 0,
