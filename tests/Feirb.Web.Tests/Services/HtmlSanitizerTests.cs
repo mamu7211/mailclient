@@ -162,5 +162,41 @@ public class HtmlSanitizerTests
         var input = "<a href=\"data:text/html,<script>alert(1)</script>\">Click</a>";
         var result = HtmlSanitizer.Sanitize(input);
         result.Should().NotContain("<script");
+        result.Should().NotContain("data:text/html");
+    }
+
+    [Fact]
+    public void Sanitize_VideoTag_Removed()
+    {
+        var input = "<video src=\"http://example.com/video.mp4\"><source src=\"video.mp4\"></video>";
+        var result = HtmlSanitizer.Sanitize(input);
+        result.Should().NotContain("<video");
+        result.Should().NotContain("<source");
+    }
+
+    [Fact]
+    public void Sanitize_AudioTag_Removed()
+    {
+        var input = "<audio src=\"http://example.com/audio.mp3\"></audio>";
+        var result = HtmlSanitizer.Sanitize(input);
+        result.Should().NotContain("<audio");
+    }
+
+    [Fact]
+    public void Sanitize_PictureTag_Removed()
+    {
+        var input = "<picture><source srcset=\"image.webp\"><img src=\"data:image/png;base64,abc\"></picture>";
+        var result = HtmlSanitizer.Sanitize(input);
+        result.Should().NotContain("<picture");
+        result.Should().NotContain("<source");
+    }
+
+    [Fact]
+    public void Sanitize_LinkTag_Removed()
+    {
+        var input = "<link rel=\"stylesheet\" href=\"http://evil.com/track.css\"><p>Content</p>";
+        var result = HtmlSanitizer.Sanitize(input);
+        result.Should().NotContain("<link");
+        result.Should().NotContain("evil.com");
     }
 }

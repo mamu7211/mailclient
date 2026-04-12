@@ -83,6 +83,108 @@ test.describe.serial("Auth flows", () => {
     await expect(page.locator("#username")).toBeVisible();
   });
 
+  test("login: stores only access token in localStorage, not refresh token", async ({
+    page,
+    request,
+  }) => {
+    const username = `e2etoken_${Date.now()}`;
+    await request.post("/api/auth/register", {
+      data: {
+        username,
+        email: `${username}@feirb.local`,
+        password: TEST_PASSWORD,
+      },
+    });
+
+    await page.goto("/login");
+    await page.locator("#username").fill(username);
+    await page.locator("#password").fill(TEST_PASSWORD);
+    await page.getByRole("button", { name: "Log In" }).click();
+
+    await expect(
+      page.getByLabel("breadcrumb").getByText("Dashboard"),
+    ).toBeVisible({ timeout: 15000 });
+
+    // Verify AccessToken is stored
+    const accessToken = await page.evaluate(() =>
+      localStorage.getItem("AccessToken"),
+    );
+    expect(accessToken).toBeTruthy();
+
+    // Verify RefreshToken is NOT stored (XSS protection)
+    const refreshToken = await page.evaluate(() =>
+      localStorage.getItem("RefreshToken"),
+    );
+    expect(refreshToken).toBeNull();
+
+    // Verify no other token-like keys exist
+    const allKeys = await page.evaluate(() => Object.keys(localStorage));
+    expect(allKeys).not.toContain("RefreshToken");
+    expect(allKeys).not.toContain("refreshToken");
+  });
+
+  test("logout: clears access token from localStorage", async ({
+    page,
+    request,
+  }) => {
+    const username = `e2elogout_${Date.now()}`;
+    await request.post("/api/auth/register", {
+      data: {
+        username,
+        email: `${username}@feirb.local`,
+        password: TEST_PASSWORD,
+      },
+    });
+
+    await page.goto("/login");
+    await page.locator("#username").fill(username);
+    await page.locator("#password").fill(TEST_PASSWORD);
+    await page.getByRole("button", { name: "Log In" }).click();
+
+    await expect(
+      page.getByLabel("breadcrumb").getByText("Dashboard"),
+    ).toBeVisible({ timeout: 15000 });
+
+    // Verify token is present before logout
+    const tokenBefore = await page.evaluate(() =>
+      localStorage.getItem("AccessToken"),
+    );
+    expect(tokenBefore).toBeTruthy();
+
+    // Logout
+    await page.getByRole("button", { name: "Logout" }).click();
+    await page.waitForURL("**/login");
+
+    // Verify token is cleared after logout
+    const tokenAfter = await page.evaluate(() =>
+      localStorage.getItem("AccessToken"),
+    );
+    expect(tokenAfter).toBeNull();
+  });
+
+  test("login: refresh token is not in API response body", async ({
+    request,
+  }) => {
+    const username = `e2eapi_${Date.now()}`;
+    await request.post("/api/auth/register", {
+      data: {
+        username,
+        email: `${username}@feirb.local`,
+        password: TEST_PASSWORD,
+      },
+    });
+
+    const loginResponse = await request.post("/api/auth/login", {
+      data: { username, password: TEST_PASSWORD },
+    });
+    expect(loginResponse.ok()).toBeTruthy();
+
+    const body = await loginResponse.json();
+    expect(body.accessToken).toBeTruthy();
+    expect(body.expiresAt).toBeTruthy();
+    expect(body).not.toHaveProperty("refreshToken");
+  });
+
   test("login: shows error for invalid credentials", async ({ page }) => {
     await page.goto("/login");
     await page.locator("#username").fill("wronguser");

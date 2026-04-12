@@ -3,6 +3,7 @@
 @inject IStringLocalizer<SharedResources> L
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject HttpClient Http
 
 <aside class="feirb-sidebar" data-testid="sidebar">
     <!-- User Profile -->
@@ -66,10 +67,18 @@
 
     private async Task LogoutAsync()
     {
-        if (AuthStateProvider is JwtAuthenticationStateProvider jwtProvider)
+        try
         {
-            await jwtProvider.LogoutAsync();
-            Navigation.NavigateTo("/login", forceLoad: true);
+            await Http.PostAsync("/api/auth/logout", null);
         }
+        catch
+        {
+            // Server logout is best-effort — always clear local state
+        }
+
+        if (AuthStateProvider is JwtAuthenticationStateProvider jwtProvider)
+            await jwtProvider.LogoutAsync();
+
+        Navigation.NavigateTo("/login", forceLoad: true);
     }
 }

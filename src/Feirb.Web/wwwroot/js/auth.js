@@ -1,12 +1,9 @@
 window.blazorAuth = {
     getAccessToken: () => localStorage.getItem('AccessToken'),
-    getRefreshToken: () => localStorage.getItem('RefreshToken'),
-    setTokens: (accessToken, refreshToken) => {
+    setAccessToken: (accessToken) => {
         localStorage.setItem('AccessToken', accessToken);
-        localStorage.setItem('RefreshToken', refreshToken);
     },
     clearTokens: () => {
         localStorage.removeItem('AccessToken');
-        localStorage.removeItem('RefreshToken');
     }
 };

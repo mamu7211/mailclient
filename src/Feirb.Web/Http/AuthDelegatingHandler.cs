@@ -42,13 +42,9 @@ public sealed class AuthDelegatingHandler(
 
     private async Task<bool> TryRefreshTokenAsync(CancellationToken cancellationToken)
     {
-        var refreshToken = await jsRuntime.InvokeAsync<string?>("blazorAuth.getRefreshToken");
-        if (string.IsNullOrEmpty(refreshToken))
-            return false;
-
-        // Use InnerHandler directly to avoid recursive handler chain
+        // Use InnerHandler directly to avoid recursive handler chain.
+        // The refresh token cookie is sent automatically by the browser.
         using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-        refreshRequest.Content = JsonContent.Create(new RefreshRequest(refreshToken));
 
         using var invoker = new HttpMessageInvoker(InnerHandler!, disposeHandler: false);
         var response = await invoker.SendAsync(refreshRequest, cancellationToken);
@@ -66,7 +62,7 @@ public sealed class AuthDelegatingHandler(
             return false;
         }
 
-        await jsRuntime.InvokeVoidAsync("blazorAuth.setTokens", tokens.AccessToken, tokens.RefreshToken);
+        await jsRuntime.InvokeVoidAsync("blazorAuth.setAccessToken", tokens.AccessToken);
         return true;
     }
 

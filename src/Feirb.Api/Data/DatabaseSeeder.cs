@@ -119,9 +119,9 @@ internal static class DatabaseSeeder
 
         var labels = new[]
         {
-            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Newsletter", Color = "#4CAF50", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Work", Color = "#2196F3", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "Personal", Color = "#FF9800", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "newsletter", Color = "#4CAF50", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "work", Color = "#2196F3", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Label { Id = Guid.NewGuid(), UserId = user.Id, Name = "personal", Color = "#FF9800", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
         };
 
         db.Labels.AddRange(labels);

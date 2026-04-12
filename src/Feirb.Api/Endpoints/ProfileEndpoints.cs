@@ -110,6 +110,8 @@ public static class ProfileEndpoints
         user.UpdatedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
 
+        RefreshTokenCookie.Clear(httpContext);
+
         return Results.Ok(new MessageResponse(localizer["AllSessionsLoggedOut"].Value));
     }
 
