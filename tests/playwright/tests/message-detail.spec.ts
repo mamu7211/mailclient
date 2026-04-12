@@ -31,7 +31,7 @@ test.describe.serial("Message Detail View", () => {
     });
 
     // Click first mail card to navigate to detail
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
 
@@ -50,7 +50,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -76,7 +76,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -108,7 +108,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -129,7 +129,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -159,7 +159,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -177,14 +177,12 @@ test.describe.serial("Message Detail View", () => {
       const buttons = toggleGroup.getByRole("radio");
       await expect(buttons).toHaveCount(2);
 
-      // HTML should be selected by default
-      const htmlButton = toggleGroup.getByRole("radio", { name: "HTML" });
+      // First option (HTML) should be selected by default
+      const htmlButton = toggleGroup.getByRole("radio").nth(0);
       await expect(htmlButton).toHaveAttribute("aria-checked", "true");
 
-      // Click Plain Text
-      const plainButton = toggleGroup.getByRole("radio", {
-        name: "Plain Text",
-      });
+      // Click second option (Plain Text)
+      const plainButton = toggleGroup.getByRole("radio").nth(1);
       await plainButton.click();
       await expect(plainButton).toHaveAttribute("aria-checked", "true");
 
@@ -211,7 +209,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -249,7 +247,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -271,7 +269,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({
@@ -293,7 +291,7 @@ test.describe.serial("Message Detail View", () => {
       timeout: 10000,
     });
 
-    const firstCard = page.locator("a.feirb-mail-card").first();
+    const firstCard = page.locator('[data-testid="mail-card"]').first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await firstCard.click();
     await expect(page.locator(".spinner-border")).toBeHidden({

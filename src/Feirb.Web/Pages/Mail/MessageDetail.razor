@@ -93,7 +93,7 @@ else if (_message is not null)
         @if (_hasBothBodyFormats)
         {
             <div class="mb-3">
-                <ToggleButtonGroup Items="@_bodyFormatOptions" @bind-SelectedId="_selectedBodyFormat" />
+                <ToggleButtonGroup Items="@BodyFormatOptions" @bind-SelectedId="_selectedBodyFormat" />
             </div>
         }
 
@@ -143,10 +143,10 @@ else if (_message is not null)
     private string _selectedBodyFormat = "html";
     private bool _hasBothBodyFormats;
 
-    private static readonly IReadOnlyList<ToggleButtonItem> _bodyFormatOptions =
+    private IReadOnlyList<ToggleButtonItem> BodyFormatOptions =>
     [
-        new("html", "HTML"),
-        new("plain", "Plain Text")
+        new("html", L["BodyFormatHtml"]),
+        new("plain", L["BodyFormatPlainText"])
     ];
 
     protected override async Task OnInitializedAsync()
@@ -209,7 +209,7 @@ else if (_message is not null)
         if (elapsed.TotalDays < 7)
             return string.Format(L["RelativeTimeDaysAgo"], (int)elapsed.TotalDays);
 
-        return date.LocalDateTime.ToString("MMM d, yyyy");
+        return date.LocalDateTime.ToString("d", System.Globalization.CultureInfo.CurrentCulture);
     }
 
     private static string GetFileTypeIcon(string mimeType) => mimeType.Split('/')[0] switch

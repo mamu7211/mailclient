@@ -150,6 +150,15 @@ public static class MessageEndpoints
 
     private static List<MessageAddressResponse> ParseAddressList(string addresses)
     {
+        if (MimeKit.InternetAddressList.TryParse(addresses, out var list))
+        {
+            return list.Mailboxes
+                .Select(mb => new MessageAddressResponse(
+                    string.IsNullOrWhiteSpace(mb.Name) ? mb.Address : mb.Name,
+                    mb.Address))
+                .ToList();
+        }
+
         return addresses
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(a => ToAddressResponse(ParseFromAddress(a)))
