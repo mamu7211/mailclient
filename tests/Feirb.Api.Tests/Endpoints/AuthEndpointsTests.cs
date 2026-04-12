@@ -12,7 +12,7 @@ namespace Feirb.Api.Tests.Endpoints;
 
 public class AuthEndpointsTests : IDisposable
 {
-    private const string RefreshTokenCookieName = "refreshToken";
+    private const string _refreshTokenCookieName = "refreshToken";
 
     private readonly WebApplicationFactory<Program> _factory;
     private readonly HttpClient _client;
@@ -54,7 +54,7 @@ public class AuthEndpointsTests : IDisposable
         if (!response.Headers.TryGetValues("Set-Cookie", out var cookies))
             return null;
 
-        var refreshCookie = cookies.FirstOrDefault(c => c.StartsWith($"{RefreshTokenCookieName}=", StringComparison.Ordinal));
+        var refreshCookie = cookies.FirstOrDefault(c => c.StartsWith($"{_refreshTokenCookieName}=", StringComparison.Ordinal));
         return refreshCookie;
     }
 
@@ -204,7 +204,7 @@ public class AuthEndpointsTests : IDisposable
         refreshCookie.Should().NotBeNull();
 
         using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+        refreshRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
 
         var response = await _client.SendAsync(refreshRequest);
 
@@ -231,7 +231,7 @@ public class AuthEndpointsTests : IDisposable
     public async Task Refresh_InvalidCookie_ReturnsUnauthorizedAsync()
     {
         using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}=invalid-refresh-token");
+        refreshRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}=invalid-refresh-token");
 
         var response = await _client.SendAsync(refreshRequest);
 
@@ -247,7 +247,7 @@ public class AuthEndpointsTests : IDisposable
         refreshCookie.Should().NotBeNull();
 
         using var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
-        logoutRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+        logoutRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
 
         var response = await _client.SendAsync(logoutRequest);
 
@@ -256,7 +256,7 @@ public class AuthEndpointsTests : IDisposable
         // Verify the response clears the cookie
         response.Headers.TryGetValues("Set-Cookie", out var setCookieHeaders).Should().BeTrue();
         var clearedCookie = setCookieHeaders!
-            .FirstOrDefault(h => h.StartsWith($"{RefreshTokenCookieName}=", StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(h => h.StartsWith($"{_refreshTokenCookieName}=", StringComparison.OrdinalIgnoreCase));
         clearedCookie.Should().NotBeNull("logout must clear the refresh token cookie");
     }
 
@@ -267,13 +267,13 @@ public class AuthEndpointsTests : IDisposable
         refreshCookie.Should().NotBeNull();
 
         using var logoutRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/logout");
-        logoutRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+        logoutRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
 
         await _client.SendAsync(logoutRequest);
 
         // Trying to refresh with the old cookie should fail
         using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+        refreshRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
 
         var refreshResponse = await _client.SendAsync(refreshRequest);
         refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -439,7 +439,7 @@ public class AuthEndpointsTests : IDisposable
 
         // Old refresh token cookie should no longer work
         using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
-        refreshRequest.Headers.Add("Cookie", $"{RefreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
+        refreshRequest.Headers.Add("Cookie", $"{_refreshTokenCookieName}={ExtractCookieValue(refreshCookie!)}");
 
         var refreshResponse = await _client.SendAsync(refreshRequest);
         refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
