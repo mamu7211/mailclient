@@ -1761,4 +1761,19 @@
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Adresse konnte nicht getrennt werden.</value>
   </data>
+  <data name="MessageDetailBodyHeading" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="RelativeTimeJustNow" xml:space="preserve">
+    <value>gerade eben</value>
+  </data>
+  <data name="RelativeTimeMinutesAgo" xml:space="preserve">
+    <value>vor {0} Min.</value>
+  </data>
+  <data name="RelativeTimeHoursAgo" xml:space="preserve">
+    <value>vor {0} Std.</value>
+  </data>
+  <data name="RelativeTimeDaysAgo" xml:space="preserve">
+    <value>vor {0} T.</value>
+  </data>
 </root>

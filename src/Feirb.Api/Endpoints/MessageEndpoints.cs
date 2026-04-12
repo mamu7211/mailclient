@@ -95,10 +95,36 @@ public static class MessageEndpoints
         var message = await db.CachedMessages
             .Include(m => m.Mailbox)
             .Include(m => m.Attachments)
+            .Include(m => m.Labels)
             .FirstOrDefaultAsync(m => m.Id == id && m.Mailbox.UserId == userId);
 
         if (message is null)
             return Results.NotFound(new { message = localizer["MessageNotFound"].Value });
+
+        var (fromName, fromEmail) = ParseFromAddress(message.From);
+        var normalizedFrom = EmailNormalizer.Normalize(fromEmail);
+
+        AddressStatus? senderStatus = null;
+        if (normalizedFrom.Length > 0)
+        {
+            senderStatus = await db.Addresses
+                .AsNoTracking()
+                .Where(a => a.UserId == userId && a.NormalizedEmail == normalizedFrom)
+                .Select(a => (AddressStatus?)a.Status)
+                .FirstOrDefaultAsync();
+        }
+
+        var fromAddress = new MessageAddressResponse(fromName, fromEmail, senderStatus);
+        var toAddresses = ParseAddressList(message.To);
+        var ccAddresses = !string.IsNullOrEmpty(message.Cc) ? ParseAddressList(message.Cc) : null;
+        var replyToAddress = !string.IsNullOrEmpty(message.ReplyTo) && message.ReplyTo != message.From
+            ? ToAddressResponse(ParseFromAddress(message.ReplyTo))
+            : null;
+
+        var labels = message.Labels
+            .OrderBy(l => l.Name)
+            .Select(l => new MessageLabelResponse(l.Name, l.Color))
+            .ToList();
 
         var response = new MessageDetailResponse(
             message.Id,
@@ -108,14 +134,30 @@ public static class MessageEndpoints
             message.To,
             message.Cc,
             message.ReplyTo,
+            fromAddress,
+            toAddresses,
+            ccAddresses,
+            replyToAddress,
             message.Date,
             message.Subject,
             message.BodyHtml,
             message.BodyPlainText,
-            message.Attachments.Select(a => new AttachmentResponse(a.Id, a.Filename, a.Size, a.MimeType)).ToList());
+            message.Attachments.Select(a => new AttachmentResponse(a.Id, a.Filename, a.Size, a.MimeType)).ToList(),
+            labels);
 
         return Results.Ok(response);
     }
+
+    private static List<MessageAddressResponse> ParseAddressList(string addresses)
+    {
+        return addresses
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(a => ToAddressResponse(ParseFromAddress(a)))
+            .ToList();
+    }
+
+    private static MessageAddressResponse ToAddressResponse((string Name, string Email) parsed) =>
+        new(parsed.Name, parsed.Email);
 
     private static Guid GetCurrentUserId(HttpContext httpContext)
     {

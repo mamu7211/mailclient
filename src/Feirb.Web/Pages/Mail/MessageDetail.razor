@@ -1,6 +1,7 @@
 @page "/mail/inbox/{Id:guid}"
 @attribute [Authorize]
 @using Feirb.Shared.Mail
+@using Feirb.Web.Components.UI
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 @inject BreadcrumbOverrideService BreadcrumbOverride
@@ -31,76 +32,103 @@ else if (!string.IsNullOrEmpty(_errorMessage))
 }
 else if (_message is not null)
 {
-    <div class="mb-3" data-testid="message-mailbox">
-        <span class="badge" style="background-color: @(_message.MailboxBadgeColor ?? "#6c757d");">
-            @_message.MailboxName
-        </span>
-    </div>
-
-    <div class="card mb-4" data-testid="message-headers">
-        <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-2">@L["LabelFrom"]</dt>
-                <dd class="col-sm-10">@_message.From</dd>
-
-                <dt class="col-sm-2">@L["LabelTo"]</dt>
-                <dd class="col-sm-10">@_message.To</dd>
-
-                @if (!string.IsNullOrEmpty(_message.Cc))
-                {
-                    <dt class="col-sm-2">@L["LabelCc"]</dt>
-                    <dd class="col-sm-10">@_message.Cc</dd>
-                }
-
-                @if (!string.IsNullOrEmpty(_message.ReplyTo) && _message.ReplyTo != _message.From)
-                {
-                    <dt class="col-sm-2">@L["LabelReplyTo"]</dt>
-                    <dd class="col-sm-10">@_message.ReplyTo</dd>
-                }
-
-                <dt class="col-sm-2">@L["LabelDate"]</dt>
-                <dd class="col-sm-10">@_message.Date.LocalDateTime.ToString("g")</dd>
-
-                <dt class="col-sm-2">@L["LabelSubject"]</dt>
-                <dd class="col-sm-10">@_message.Subject</dd>
-            </dl>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3" data-testid="message-meta">
+        <MailboxChip Name="@_message.MailboxName" Color="@_message.MailboxBadgeColor" />
+        <div class="feirb-detail-date" title="@_message.Date.LocalDateTime.ToString("f")">
+            <Icon Name="clock" Size="IconSize.Small" />
+            <span>@FormatRelativeTime(_message.Date)</span>
         </div>
+        @if (_message.Labels.Count > 0)
+        {
+            @foreach (var label in _message.Labels)
+            {
+                <LabelPill Name="@label.Name" Color="@label.Color" />
+            }
+        }
     </div>
 
-    <div class="card mb-4" data-testid="message-body">
-        <div class="card-body">
-            @if (!string.IsNullOrEmpty(_message.BodyHtml))
-            {
+    <ContentSection Icon="envelope-open" Title="@_message.Subject" data-testid="message-headers">
+        <div class="mb-3">
+            <div class="text-muted small mb-1">@L["LabelFrom"]</div>
+            <PersonChip Name="@_message.FromAddress.Name"
+                        Email="@_message.FromAddress.Email"
+                        Status="@_message.FromAddress.Status" />
+        </div>
+
+        <div class="mb-3">
+            <div class="text-muted small mb-1">@L["LabelTo"]</div>
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var addr in _message.ToAddresses)
+                {
+                    <PersonChip Name="@addr.Name" Email="@addr.Email" Size="PersonChipSize.Small" />
+                }
+            </div>
+        </div>
+
+        @if (_message.CcAddresses is { Count: > 0 })
+        {
+            <div class="mb-3">
+                <div class="text-muted small mb-1">@L["LabelCc"]</div>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var addr in _message.CcAddresses)
+                    {
+                        <PersonChip Name="@addr.Name" Email="@addr.Email" Size="PersonChipSize.Small" />
+                    }
+                </div>
+            </div>
+        }
+
+        @if (_message.ReplyToAddress is not null)
+        {
+            <div>
+                <div class="text-muted small mb-1">@L["LabelReplyTo"]</div>
+                <PersonChip Name="@_message.ReplyToAddress.Name"
+                            Email="@_message.ReplyToAddress.Email"
+                            Size="PersonChipSize.Small" />
+            </div>
+        }
+    </ContentSection>
+
+    <ContentSection Icon="body-text" Title="@L["MessageDetailBodyHeading"]" data-testid="message-body">
+        @if (_hasBothBodyFormats)
+        {
+            <div class="mb-3">
+                <ToggleButtonGroup Items="@_bodyFormatOptions" @bind-SelectedId="_selectedBodyFormat" />
+            </div>
+        }
+
+        @if (_selectedBodyFormat == "html" && !string.IsNullOrEmpty(_message.BodyHtml))
+        {
+            <div class="feirb-message-body-html">
                 @((MarkupString)HtmlSanitizer.Sanitize(_message.BodyHtml))
-            }
-            else if (!string.IsNullOrEmpty(_message.BodyPlainText))
-            {
-                <div style="white-space: pre-wrap;">@_message.BodyPlainText</div>
-            }
-            else
-            {
-                <p class="text-muted mb-0">@L["NoBodyContent"]</p>
-            }
-        </div>
-    </div>
+            </div>
+        }
+        else if (!string.IsNullOrEmpty(_message.BodyPlainText))
+        {
+            <div class="feirb-message-body-plain" style="white-space: pre-wrap;">@_message.BodyPlainText</div>
+        }
+        else
+        {
+            <p class="text-muted mb-0">@L["NoBodyContent"]</p>
+        }
+    </ContentSection>
 
     @if (_message.Attachments.Count > 0)
     {
-        <h5>@L["AttachmentsHeading"]</h5>
-        <div class="list-group" data-testid="message-attachments">
-            @foreach (var attachment in _message.Attachments)
-            {
-                <div class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="bi bi-paperclip me-2" style="font-size: 1.2rem; vertical-align: middle;"></i>
-                        @attachment.Filename
+        <ContentSection Icon="paperclip" Title="@L["AttachmentsHeading"]" Subtitle="@(_message.Attachments.Count.ToString())" data-testid="message-attachments">
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var attachment in _message.Attachments)
+                {
+                    <div class="feirb-attachment-card">
+                        <Icon Name="@GetFileTypeIcon(attachment.MimeType)" Class="feirb-attachment-icon" />
+                        <div class="feirb-attachment-info">
+                            <span class="feirb-attachment-name" title="@attachment.Filename">@attachment.Filename</span>
+                            <span class="feirb-attachment-meta">@FormatFileSize(attachment.Size)</span>
+                        </div>
                     </div>
-                    <div class="text-muted small">
-                        @FormatFileSize(attachment.Size) &middot; @attachment.MimeType
-                    </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        </ContentSection>
     }
 }
 
@@ -112,6 +140,14 @@ else if (_message is not null)
     private bool _isLoading = true;
     private bool _notFound;
     private string? _errorMessage;
+    private string _selectedBodyFormat = "html";
+    private bool _hasBothBodyFormats;
+
+    private static readonly IReadOnlyList<ToggleButtonItem> _bodyFormatOptions =
+    [
+        new("html", "HTML"),
+        new("plain", "Plain Text")
+    ];
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,8 +166,13 @@ else if (_message is not null)
 
             if (_message is not null)
             {
+                _hasBothBodyFormats = !string.IsNullOrEmpty(_message.BodyHtml)
+                    && !string.IsNullOrEmpty(_message.BodyPlainText);
+
+                _selectedBodyFormat = !string.IsNullOrEmpty(_message.BodyHtml) ? "html" : "plain";
+
                 BreadcrumbOverride.SetLastSegmentLabel(
-                    $"{_message.From} \u2014 {_message.Subject} \u2014 {_message.Date.LocalDateTime.ToString("g")}");
+                    $"{_message.FromAddress.Name} \u2014 {_message.Subject}");
             }
         }
         catch
@@ -154,4 +195,44 @@ else if (_message is not null)
             return $"{bytes / 1024.0:F1} KB";
         return $"{bytes} B";
     }
+
+    private string FormatRelativeTime(DateTimeOffset date)
+    {
+        var elapsed = DateTimeOffset.Now - date;
+
+        if (elapsed.TotalMinutes < 1)
+            return L["RelativeTimeJustNow"];
+        if (elapsed.TotalMinutes < 60)
+            return string.Format(L["RelativeTimeMinutesAgo"], (int)elapsed.TotalMinutes);
+        if (elapsed.TotalHours < 24)
+            return string.Format(L["RelativeTimeHoursAgo"], (int)elapsed.TotalHours);
+        if (elapsed.TotalDays < 7)
+            return string.Format(L["RelativeTimeDaysAgo"], (int)elapsed.TotalDays);
+
+        return date.LocalDateTime.ToString("MMM d, yyyy");
+    }
+
+    private static string GetFileTypeIcon(string mimeType) => mimeType.Split('/')[0] switch
+    {
+        "image" => "file-image",
+        "video" => "file-play",
+        "audio" => "file-music",
+        "text" => "file-text",
+        _ => mimeType switch
+        {
+            "application/pdf" => "file-pdf",
+            "application/zip" or "application/x-rar-compressed" or "application/gzip"
+                => "file-zip",
+            "application/msword"
+                or "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                => "file-word",
+            "application/vnd.ms-excel"
+                or "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                => "file-excel",
+            "application/vnd.ms-powerpoint"
+                or "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                => "file-ppt",
+            _ => "file-earmark"
+        }
+    };
 }

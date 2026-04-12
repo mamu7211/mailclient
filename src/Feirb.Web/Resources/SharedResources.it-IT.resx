@@ -1761,4 +1761,19 @@
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Impossibile scollegare l'indirizzo.</value>
   </data>
+  <data name="MessageDetailBodyHeading" xml:space="preserve">
+    <value>Messaggio</value>
+  </data>
+  <data name="RelativeTimeJustNow" xml:space="preserve">
+    <value>proprio ora</value>
+  </data>
+  <data name="RelativeTimeMinutesAgo" xml:space="preserve">
+    <value>{0} min fa</value>
+  </data>
+  <data name="RelativeTimeHoursAgo" xml:space="preserve">
+    <value>{0} ore fa</value>
+  </data>
+  <data name="RelativeTimeDaysAgo" xml:space="preserve">
+    <value>{0} g fa</value>
+  </data>
 </root>
