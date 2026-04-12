@@ -315,6 +315,17 @@ public class ClassificationServiceTests : IDisposable
     }
 
     [Fact]
+    public void ParseAndValidateResponse_NullEntriesInArray_FiltersAndReturnsSuccess()
+    {
+        var validLabels = new List<string> { "newsletter" };
+
+        var result = ClassificationService.ParseAndValidateResponse("""[null, "Newsletter", ""]""", validLabels);
+
+        result.Success.Should().BeTrue();
+        result.Result.Should().Be("""["newsletter"]""");
+    }
+
+    [Fact]
     public void ParseAndValidateResponse_MultipleValidLabels_ReturnsAll()
     {
         var validLabels = new List<string> { "newsletter", "important", "work" };

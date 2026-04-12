@@ -172,6 +172,9 @@ public class ClassificationService(
                 false, null, $"Failed to parse LLM response as JSON array: {Truncate(responseText, 500)}");
         }
 
+        // Filter out null/whitespace entries (LLM may return [null] or [""])
+        parsedLabels = parsedLabels.Where(l => !string.IsNullOrWhiteSpace(l)).ToArray();
+
         // Empty array is a valid classification (no labels apply)
         if (parsedLabels.Length == 0)
         {

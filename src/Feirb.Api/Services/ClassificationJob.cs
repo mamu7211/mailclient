@@ -134,7 +134,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         if (rawLabelNames is null || rawLabelNames.Length == 0)
             return;
 
-        var labelNames = rawLabelNames.Select(n => n.ToLowerInvariant()).ToArray();
+        var labelNames = rawLabelNames.Where(n => !string.IsNullOrWhiteSpace(n)).Select(n => n.ToLowerInvariant()).ToArray();
 
         var mailbox = message.Mailbox ?? await db.Mailboxes
             .AsNoTracking()
