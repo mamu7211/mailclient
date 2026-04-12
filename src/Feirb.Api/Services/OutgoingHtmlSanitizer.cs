@@ -1,30 +1,27 @@
-using Ganss.Xss;
+using Feirb.Shared.Mail;
 
 namespace Feirb.Api.Services;
 
+/// <summary>
+/// Sanitizes HTML for outgoing (composed) mail.
+///
+/// Extends the shared base (<see cref="HtmlSanitizerBase"/>) with:
+///   - data: URI scheme — allowed so users can embed inline images
+///     (e.g., pasted screenshots) in composed messages.
+/// </summary>
 public static class OutgoingHtmlSanitizer
 {
-    private static readonly HtmlSanitizer _sanitizer = CreateSanitizer();
+    private static readonly Ganss.Xss.HtmlSanitizer _sanitizer = CreateSanitizer();
 
     public static string Sanitize(string html) =>
         string.IsNullOrWhiteSpace(html) ? string.Empty : _sanitizer.Sanitize(html);
 
-    private static HtmlSanitizer CreateSanitizer()
+    private static Ganss.Xss.HtmlSanitizer CreateSanitizer()
     {
-        var sanitizer = new HtmlSanitizer();
+        var sanitizer = HtmlSanitizerBase.CreateBaseSanitizer();
 
-        sanitizer.AllowedSchemes.Clear();
-        sanitizer.AllowedSchemes.Add("https");
-        sanitizer.AllowedSchemes.Add("http");
-        sanitizer.AllowedSchemes.Add("mailto");
+        // Outgoing mail may contain user-pasted inline images as data: URIs.
         sanitizer.AllowedSchemes.Add("data");
-
-        sanitizer.AllowedTags.Remove("script");
-        sanitizer.AllowedTags.Remove("form");
-        sanitizer.AllowedTags.Remove("input");
-        sanitizer.AllowedTags.Remove("button");
-        sanitizer.AllowedTags.Remove("select");
-        sanitizer.AllowedTags.Remove("textarea");
 
         return sanitizer;
     }
