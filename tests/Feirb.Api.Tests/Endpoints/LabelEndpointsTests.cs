@@ -57,8 +57,8 @@ public class LabelEndpointsTests : IDisposable
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var labels = await response.Content.ReadFromJsonAsync<List<LabelResponse>>();
         labels.Should().HaveCount(2);
-        labels![0].Name.Should().Be("Alpha");
-        labels[1].Name.Should().Be("Zebra");
+        labels![0].Name.Should().Be("alpha");
+        labels[1].Name.Should().Be("zebra");
     }
 
     [Fact]
@@ -103,7 +103,7 @@ public class LabelEndpointsTests : IDisposable
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var label = await response.Content.ReadFromJsonAsync<LabelResponse>();
         label.Should().NotBeNull();
-        label!.Name.Should().Be("Work");
+        label!.Name.Should().Be("work");
         label.Color.Should().Be("#FF0000");
         label.Description.Should().Be("Work emails");
     }
@@ -139,7 +139,7 @@ public class LabelEndpointsTests : IDisposable
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var label = await response.Content.ReadFromJsonAsync<LabelResponse>();
-        label!.Name.Should().Be("New Name");
+        label!.Name.Should().Be("new name");
         label.Color.Should().Be("#00FF00");
         label.Description.Should().Be("Updated description");
     }

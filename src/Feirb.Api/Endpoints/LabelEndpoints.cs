@@ -44,7 +44,7 @@ public static class LabelEndpoints
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            Name = request.Name,
+            Name = request.Name.ToLowerInvariant(),
             Color = request.Color ?? GenerateRandomColor(),
             Description = request.Description,
             CreatedAt = DateTime.UtcNow,
@@ -69,7 +69,7 @@ public static class LabelEndpoints
         if (label is null)
             return Results.NotFound(new { message = localizer["LabelNotFound"].Value });
 
-        label.Name = request.Name;
+        label.Name = request.Name.ToLowerInvariant();
         label.Color = request.Color;
         label.Description = request.Description;
         label.UpdatedAt = DateTime.UtcNow;

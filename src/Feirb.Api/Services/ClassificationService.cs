@@ -188,8 +188,9 @@ public class ClassificationService(
                 false, null, $"Unknown labels in response: {string.Join(", ", unknownLabels)}");
         }
 
-        // Return the validated label names as JSON
-        var result = JsonSerializer.Serialize(parsedLabels);
+        // Normalize label names to lowercase to match stored labels
+        var normalizedLabels = parsedLabels.Select(l => l.ToLowerInvariant()).ToArray();
+        var result = JsonSerializer.Serialize(normalizedLabels);
         return new ClassificationServiceResult(true, result, null);
     }
 
