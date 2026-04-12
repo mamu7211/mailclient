@@ -1,7 +1,9 @@
 #!/bin/bash
-# Authenticate with the Feirb API and store JWT tokens
+# Authenticate with the Feirb API and store JWT access token
 # Usage: login.sh [username] [password]
 #   Defaults to admin / password
+# Note: Refresh token is stored as HttpOnly cookie by the server,
+#       not in the response body.
 set -euo pipefail
 
 USERNAME="${1:-admin}"
@@ -17,7 +19,5 @@ import sys, json
 d = json.load(sys.stdin)
 with open('/tmp/feirb-token.txt', 'w') as f:
     f.write(d['accessToken'])
-with open('/tmp/feirb-refresh-token.txt', 'w') as f:
-    f.write(d['refreshToken'])
-print('Login OK (' + '$USERNAME' + '), tokens stored')
+print('Login OK (' + '$USERNAME' + '), access token stored')
 " < /tmp/feirb-auth.json

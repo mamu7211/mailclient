@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Feirb.Api.Data.Entities;
-using Feirb.Shared.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,7 +18,7 @@ public class AuthService(IOptions<JwtSettings> jwtSettings) : IAuthService
     public bool VerifyPassword(string password, string passwordHash) =>
         BCrypt.Net.BCrypt.Verify(password, passwordHash);
 
-    public TokenResponse GenerateTokens(User user)
+    public GeneratedTokens GenerateTokens(User user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
@@ -27,7 +26,7 @@ public class AuthService(IOptions<JwtSettings> jwtSettings) : IAuthService
         var accessToken = GenerateAccessToken(user, expiresAt);
         var refreshToken = GenerateRefreshToken();
 
-        return new TokenResponse(accessToken, refreshToken, expiresAt);
+        return new GeneratedTokens(accessToken, refreshToken, expiresAt);
     }
 
     public Guid? ValidateAccessTokenAsync(string token)

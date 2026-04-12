@@ -32,7 +32,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task GetProfile_Authenticated_ReturnsProfileAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var response = await _client.GetAsync("/api/settings/profile");
@@ -57,7 +57,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task UpdateProfile_ChangeUsername_ReturnsUpdatedProfileAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new UpdateProfileRequest("newadmin", null);
@@ -72,7 +72,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task UpdateProfile_ChangeEmail_ReturnsUpdatedProfileAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new UpdateProfileRequest(null, "newemail@example.com");
@@ -87,7 +87,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task UpdateProfile_DuplicateUsername_ReturnsConflictAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         // Register another user
@@ -102,7 +102,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task UpdateProfile_DuplicateEmail_ReturnsConflictAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequest("otheruser", "other@example.com", "Password123!"));
@@ -118,7 +118,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task ChangePassword_ValidCurrentPassword_ReturnsOkAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new ChangePasswordRequest("AdminPassword123!", "NewPassword456!");
@@ -135,7 +135,7 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task ChangePassword_WrongCurrentPassword_ReturnsBadRequestAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, _) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new ChangePasswordRequest("WrongPassword!", "NewPassword456!");
@@ -149,16 +149,20 @@ public class ProfileEndpointsTests : IDisposable
     [Fact]
     public async Task LogoutAll_Authenticated_InvalidatesRefreshTokenAsync()
     {
-        var tokens = await SetupAndLoginAsAdminAsync();
+        var (tokens, refreshCookie) = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var response = await _client.PostAsync("/api/settings/profile/logout-all", null);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        // Verify refresh token is invalidated
-        var refreshResponse = await _client.PostAsJsonAsync("/api/auth/refresh",
-            new RefreshRequest(tokens.RefreshToken));
+        // Verify refresh token cookie was set during login and is now invalidated
+        refreshCookie.Should().NotBeNull();
+        var cookieValue = refreshCookie!.Split(';')[0].Split('=', 2)[1];
+        using var refreshRequest = new HttpRequestMessage(HttpMethod.Post, "/api/auth/refresh");
+        refreshRequest.Headers.Add("Cookie", $"refreshToken={cookieValue}");
+
+        var refreshResponse = await _client.SendAsync(refreshRequest);
         refreshResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
@@ -172,7 +176,7 @@ public class ProfileEndpointsTests : IDisposable
 
     // --- Helper Methods ---
 
-    private async Task<TokenResponse> SetupAndLoginAsAdminAsync()
+    private async Task<(TokenResponse Tokens, string? RefreshCookie)> SetupAndLoginAsAdminAsync()
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
@@ -185,6 +189,11 @@ public class ProfileEndpointsTests : IDisposable
 
         var tokens = await loginResponse.Content.ReadFromJsonAsync<TokenResponse>();
         tokens.Should().NotBeNull();
-        return tokens!;
+
+        string? refreshCookie = null;
+        if (loginResponse.Headers.TryGetValues("Set-Cookie", out var cookies))
+            refreshCookie = cookies.FirstOrDefault(c => c.StartsWith("refreshToken=", StringComparison.Ordinal));
+
+        return (tokens!, refreshCookie);
     }
 }
