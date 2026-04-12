@@ -75,6 +75,13 @@
         var success = await OnSave();
         if (success)
         {
+            // Recreate the EditContext so that any model mutations made during
+            // OnSave (e.g. clearing password fields) are treated as the new
+            // baseline and do not re-trigger the dirty flag on the next render.
+            _editContext.OnFieldChanged -= OnFieldChanged;
+            _editContext = new EditContext(Model);
+            _editContext.OnFieldChanged += OnFieldChanged;
+
             _hasUnsavedChanges = false;
             UnsavedChanges.NotifyChanged();
         }
