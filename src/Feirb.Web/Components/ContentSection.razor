@@ -1,6 +1,6 @@
 @using Feirb.Web.Components.UI
 
-<div class="content-section mb-4 @Class">
+<div class="content-section mb-4 @Class" @attributes="AdditionalAttributes">
     <div class="content-section-header">
         <Icon Name="@Icon" Size="IconSize.Large" Class="content-section-icon" />
         <Heading Level="HeadingLevel.Small" Subtitle="@Subtitle" Class="mb-0">@Title</Heading>
@@ -16,4 +16,5 @@
     [Parameter] public string? Subtitle { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public string? Class { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
 }
