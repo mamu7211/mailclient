@@ -33,13 +33,9 @@
     {
         if (_editContext?.Model != Model)
         {
-            if (_editContext is not null)
-                _editContext.OnFieldChanged -= OnFieldChanged;
-
             var wasDirty = _hasUnsavedChanges;
+            ResetEditContext();
             _hasUnsavedChanges = false;
-            _editContext = new EditContext(Model);
-            _editContext.OnFieldChanged += OnFieldChanged;
 
             if (wasDirty)
                 UnsavedChanges.NotifyChanged();
@@ -75,11 +71,23 @@
         var success = await OnSave();
         if (success)
         {
+            // Recreate the EditContext so that any model mutations made during
+            // OnSave (e.g. clearing password fields) are treated as the new
+            // baseline and do not re-trigger the dirty flag on the next render.
+            ResetEditContext();
             _hasUnsavedChanges = false;
             UnsavedChanges.NotifyChanged();
         }
 
         return success;
+    }
+
+    private void ResetEditContext()
+    {
+        if (_editContext is not null)
+            _editContext.OnFieldChanged -= OnFieldChanged;
+        _editContext = new EditContext(Model);
+        _editContext.OnFieldChanged += OnFieldChanged;
     }
 
     public void Dispose()

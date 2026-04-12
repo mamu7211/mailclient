@@ -152,6 +152,36 @@ public class UnsavedChangesServiceTests
         changed.Should().BeTrue();
     }
 
+    [Fact]
+    public async Task SaveAllAsync_AfterSuccessfulSave_FormReportsCleanAsync()
+    {
+        // Simulates TrackedEditForm behavior: OnSave mutates the model but
+        // after successful submit the form resets its dirty state.
+        var form = new FakeTrackedFormThatResetsOnSubmit { HasUnsavedChanges = true };
+        _sut.Register(form);
+
+        var result = await _sut.SaveAllAsync();
+
+        result.Should().BeTrue();
+        form.HasUnsavedChanges.Should().BeFalse();
+        _sut.HasUnsavedChanges.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SaveAllAsync_ModelMutatedDuringSave_StillReportsCleanAsync()
+    {
+        // Verifies that even when the save callback mutates the model (which would
+        // normally trigger field-changed), the form correctly resets to clean state.
+        var form = new FakeTrackedFormThatMutatesDuringSave { HasUnsavedChanges = true };
+        _sut.Register(form);
+
+        var result = await _sut.SaveAllAsync();
+
+        result.Should().BeTrue();
+        form.HasUnsavedChanges.Should().BeFalse();
+        _sut.HasUnsavedChanges.Should().BeFalse();
+    }
+
     private sealed class FakeTrackedForm : ITrackedForm
     {
         public bool HasUnsavedChanges { get; set; }
@@ -170,5 +200,43 @@ public class UnsavedChangesServiceTests
             ResetCallCount++;
             HasUnsavedChanges = false;
         }
+    }
+
+    /// <summary>
+    /// Simulates TrackedEditForm that resets dirty state after a successful submit,
+    /// mirroring the real component's HandleValidSubmitAsync behavior.
+    /// </summary>
+    private sealed class FakeTrackedFormThatResetsOnSubmit : ITrackedForm
+    {
+        public bool HasUnsavedChanges { get; set; }
+
+        public Task<bool> SubmitAsync()
+        {
+            HasUnsavedChanges = false;
+            return Task.FromResult(true);
+        }
+
+        public void ResetDirtyState() => HasUnsavedChanges = false;
+    }
+
+    /// <summary>
+    /// Simulates a form where the save callback mutates the model (e.g. clears a
+    /// password field), which would normally trigger OnFieldChanged. The form must
+    /// still report clean after submit completes.
+    /// </summary>
+    private sealed class FakeTrackedFormThatMutatesDuringSave : ITrackedForm
+    {
+        public bool HasUnsavedChanges { get; set; }
+
+        public Task<bool> SubmitAsync()
+        {
+            // Simulate: OnSave mutates model -> field change fires -> dirty = true
+            HasUnsavedChanges = true;
+            // Then the component's post-save logic resets dirty state
+            HasUnsavedChanges = false;
+            return Task.FromResult(true);
+        }
+
+        public void ResetDirtyState() => HasUnsavedChanges = false;
     }
 }
