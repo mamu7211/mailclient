@@ -37,6 +37,50 @@ namespace Feirb.Api.Data.Migrations
                     b.ToTable("CachedMessageLabel");
                 });
 
+            modelBuilder.Entity("Feirb.Api.Data.Entities.Address", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ContactId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("FirstSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<int>("SeenCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("UserId", "NormalizedEmail")
+                        .IsUnique();
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("Feirb.Api.Data.Entities.Avatar", b =>
                 {
                     b.Property<Guid>("Id")
@@ -250,6 +294,37 @@ namespace Feirb.Api.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ClassificationRules");
+                });
+
+            modelBuilder.Entity("Feirb.Api.Data.Entities.Contact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.DashboardLayout", b =>
@@ -710,6 +785,24 @@ namespace Feirb.Api.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Feirb.Api.Data.Entities.Address", b =>
+                {
+                    b.HasOne("Feirb.Api.Data.Entities.Contact", "Contact")
+                        .WithMany("Addresses")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Feirb.Api.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedAttachment", b =>
                 {
                     b.HasOne("Feirb.Api.Data.Entities.CachedMessage", "CachedMessage")
@@ -755,6 +848,17 @@ namespace Feirb.Api.Data.Migrations
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.ClassificationRule", b =>
+                {
+                    b.HasOne("Feirb.Api.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Feirb.Api.Data.Entities.Contact", b =>
                 {
                     b.HasOne("Feirb.Api.Data.Entities.User", "User")
                         .WithMany()
@@ -842,6 +946,11 @@ namespace Feirb.Api.Data.Migrations
             modelBuilder.Entity("Feirb.Api.Data.Entities.CachedMessage", b =>
                 {
                     b.Navigation("Attachments");
+                });
+
+            modelBuilder.Entity("Feirb.Api.Data.Entities.Contact", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("Feirb.Api.Data.Entities.JobSettings", b =>

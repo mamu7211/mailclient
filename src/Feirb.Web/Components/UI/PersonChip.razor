@@ -1,4 +1,5 @@
 @namespace Feirb.Web.Components.UI
+@using Feirb.Shared.AddressBook
 @using Feirb.Shared.Avatars
 
 @* Compact person display with avatar placeholder, name, and optional email. *@
@@ -10,6 +11,12 @@
             <img src="@_avatarUrl" alt="" class="feirb-person-chip-avatar-img"
                  onload="if (this.naturalWidth === 0) { this.style.display='none'; } else { this.parentElement.style.borderStyle='solid'; }"
                  onerror="this.style.display='none'" />
+        }
+        @if (_statusIcon is not null)
+        {
+            <span class="feirb-person-chip-status feirb-person-chip-status-@_statusClass" title="@_statusTitle" role="img" aria-label="@_statusTitle">
+                <i class="bi bi-@_statusIcon" aria-hidden="true"></i>
+            </span>
         }
     </div>
     <div class="feirb-person-chip-info">
@@ -38,13 +45,34 @@
     [Parameter]
     public string? Class { get; set; }
 
+    /// <summary>Address status — controls the corner badge icon. Null = no badge.</summary>
+    [Parameter]
+    public AddressStatus? Status { get; set; }
+
+    /// <summary>Accessible title for the status badge.</summary>
+    [Parameter]
+    public string? StatusTitle { get; set; }
+
     private string? _avatarUrl;
+    private string? _statusIcon;
+    private string _statusClass = "none";
+    private string? _statusTitle;
 
     protected override void OnParametersSet()
     {
         _avatarUrl = !string.IsNullOrEmpty(Email)
             ? $"/api/avatars/{AvatarHashHelper.ComputeEmailHash(Email)}"
             : null;
+
+        (_statusIcon, _statusClass) = Status switch
+        {
+            AddressStatus.Known => ("check-circle-fill", "known"),
+            AddressStatus.Unknown => ("question-circle-fill", "unknown"),
+            AddressStatus.Important => ("exclamation-circle-fill", "important"),
+            AddressStatus.Blocked => ("x-circle-fill", "blocked"),
+            _ => (null, "none"),
+        };
+        _statusTitle = StatusTitle;
     }
 
     private string SizeCss => Size switch

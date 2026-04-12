@@ -48,6 +48,10 @@ for i in $(seq 1 40); do
     if curl -sk https://localhost:7272/health 2>/dev/null; then
         echo "Healthy"
         echo "API ready (attempt $i)"
+        DASHBOARD_URL=$(grep -oE 'https://localhost:[0-9]+/login\?t=[a-f0-9]+' /tmp/feirb-aspire.log | head -1)
+        if [ -n "$DASHBOARD_URL" ]; then
+            echo "Aspire dashboard: $DASHBOARD_URL"
+        fi
         exit 0
     fi
     sleep 3

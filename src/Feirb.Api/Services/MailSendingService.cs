@@ -13,6 +13,7 @@ namespace Feirb.Api.Services;
 public class MailSendingService(
     FeirbDbContext db,
     IDataProtectionProvider dataProtection,
+    IAddressExtractor addressExtractor,
     ILogger<MailSendingService> logger) : IMailSendingService
 {
     private const string _smtpPasswordPurpose = "MailboxSmtpPassword";
@@ -27,6 +28,14 @@ public class MailSendingService(
             ?? throw new InvalidOperationException("Mailbox not found or not owned by user.");
 
         var message = BuildMimeMessage(mailbox, request);
+
+        await addressExtractor.CaptureAsync(
+            db,
+            userId,
+            [message.To, message.Cc, message.Bcc],
+            markAsKnown: true,
+            cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
 
         await SendViaSmtpAsync(mailbox, message, cancellationToken);
         await AppendToSentFolderAsync(mailbox, message, cancellationToken);

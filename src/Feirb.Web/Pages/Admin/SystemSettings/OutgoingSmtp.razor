@@ -46,7 +46,7 @@ else if (_model is not null)
     <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
         <DataAnnotationsValidator />
 
-        <ContentSection Icon="send" Title="@L["MailboxSectionSmtp"]" Subtitle="@L["SectionSmtpSubtitle"]" Class="mb-4">
+        <ContentSection Icon="send" Title="@L["MailboxSectionSmtp"]" Subtitle="@L["SectionSmtpSubtitle"]">
                 <div class="row mb-3">
                     <div class="col-md-8">
                         <label for="smtpHost" class="form-label">@L["LabelSmtpHostMailbox"]</label>
@@ -100,7 +100,7 @@ else if (_model is not null)
                 }
         </ContentSection>
 
-        <ContentSection Icon="person" Title="@L["SectionSender"]" Subtitle="@L["SectionSenderSubtitle"]" Class="mb-4">
+        <ContentSection Icon="person" Title="@L["SectionSender"]" Subtitle="@L["SectionSenderSubtitle"]">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="fromAddress" class="form-label">@L["LabelFromAddress"]</label>

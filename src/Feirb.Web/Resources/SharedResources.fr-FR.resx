@@ -1617,4 +1617,148 @@
   <data name="ComposeNoMailboxes" xml:space="preserve">
     <value>Aucune boîte mail configurée. Veuillez d'abord ajouter une boîte mail dans les paramètres.</value>
   </data>
+  <data name="AddressBookNavLabel" xml:space="preserve">
+    <value>Carnet d'adresses</value>
+  </data>
+  <data name="AddressBookPageTitle" xml:space="preserve">
+    <value>Carnet d'adresses</value>
+  </data>
+  <data name="AddressBookPageSubtitle" xml:space="preserve">
+    <value>Contacts et adresses capturées</value>
+  </data>
+  <data name="AddressBookContactsHeading" xml:space="preserve">
+    <value>Contacts</value>
+  </data>
+  <data name="AddressBookContactsSubtitle" xml:space="preserve">
+    <value>Personnes que vous avez organisées</value>
+  </data>
+  <data name="AddressBookAddressesHeading" xml:space="preserve">
+    <value>Adresses</value>
+  </data>
+  <data name="AddressBookAddressesSubtitle" xml:space="preserve">
+    <value>Toutes les adresses vues dans le courrier entrant et sortant</value>
+  </data>
+  <data name="AddressBookNewContact" xml:space="preserve">
+    <value>Nouveau contact</value>
+  </data>
+  <data name="AddressBookColumnName" xml:space="preserve">
+    <value>Nom</value>
+  </data>
+  <data name="AddressBookColumnEmail" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="AddressBookColumnAddresses" xml:space="preserve">
+    <value>Adresses</value>
+  </data>
+  <data name="AddressBookColumnStatus" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="AddressBookColumnLastSeen" xml:space="preserve">
+    <value>Vu récemment</value>
+  </data>
+  <data name="AddressBookColumnContact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="AddressBookColumnSeenCount" xml:space="preserve">
+    <value>Vu</value>
+  </data>
+  <data name="AddressBookStatusKnown" xml:space="preserve">
+    <value>Connu</value>
+  </data>
+  <data name="AddressBookStatusUnknown" xml:space="preserve">
+    <value>Inconnu</value>
+  </data>
+  <data name="AddressBookStatusImportant" xml:space="preserve">
+    <value>Important</value>
+  </data>
+  <data name="AddressBookStatusBlocked" xml:space="preserve">
+    <value>Bloqué</value>
+  </data>
+  <data name="AddressBookNoContacts" xml:space="preserve">
+    <value>Aucun contact pour l'instant. Les adresses capturées apparaîtront dans la section Adresses.</value>
+  </data>
+  <data name="AddressBookNoAddresses" xml:space="preserve">
+    <value>Aucune adresse capturée pour l'instant. Les adresses sont ajoutées automatiquement à la réception et à l'envoi.</value>
+  </data>
+  <data name="ContactDetailPageTitle" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="ContactDetailDisplayName" xml:space="preserve">
+    <value>Nom affiché</value>
+  </data>
+  <data name="ContactDetailNotes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="ContactDetailStatusPerAddressHint" xml:space="preserve">
+    <value>Le statut (connu, important, bloqué) se définit par adresse dans la liste ci-dessous.</value>
+  </data>
+  <data name="ContactDetailLinkedAddresses" xml:space="preserve">
+    <value>Adresses liées</value>
+  </data>
+  <data name="AddressDetailPageTitle" xml:space="preserve">
+    <value>Adresse</value>
+  </data>
+  <data name="AddressDetailDisplayName" xml:space="preserve">
+    <value>Nom affiché</value>
+  </data>
+  <data name="AddressDetailStatusLabel" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="AddressStatusHintUnknown" xml:space="preserve">
+    <value>Cette adresse a été capturée automatiquement depuis un e-mail entrant ou sortant et n'a pas encore été examinée.</value>
+  </data>
+  <data name="AddressStatusHintKnown" xml:space="preserve">
+    <value>Vous avez confirmé cette adresse. Les e-mails de cet expéditeur apparaissent avec un badge vert.</value>
+  </data>
+  <data name="AddressStatusHintImportant" xml:space="preserve">
+    <value>Cette adresse est marquée comme importante. Les e-mails de cet expéditeur sont mis en avant et mieux classés dans les suggestions.</value>
+  </data>
+  <data name="AddressStatusHintBlocked" xml:space="preserve">
+    <value>Cette adresse est bloquée. Les e-mails de cet expéditeur sont classés en dernier dans les suggestions.</value>
+  </data>
+  <data name="AddressDetailLinkedContact" xml:space="preserve">
+    <value>Contact lié</value>
+  </data>
+  <data name="AddressDetailPromote" xml:space="preserve">
+    <value>Ajouter aux contacts</value>
+  </data>
+  <data name="AddressDetailUnlink" xml:space="preserve">
+    <value>Dissocier du contact</value>
+  </data>
+  <data name="AddressDetailNoContact" xml:space="preserve">
+    <value>Non lié à un contact</value>
+  </data>
+  <data name="AddressBookActionSave" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="AddressBookActionDelete" xml:space="preserve">
+    <value>Supprimer</value>
+  </data>
+  <data name="AddressBookActionBack" xml:space="preserve">
+    <value>Retour</value>
+  </data>
+  <data name="ContactNotFound" xml:space="preserve">
+    <value>Contact introuvable.</value>
+  </data>
+  <data name="AddressNotFound" xml:space="preserve">
+    <value>Adresse introuvable.</value>
+  </data>
+  <data name="ContactSaveFailed" xml:space="preserve">
+    <value>Impossible d'enregistrer le contact.</value>
+  </data>
+  <data name="ContactDeleteFailed" xml:space="preserve">
+    <value>Impossible de supprimer le contact.</value>
+  </data>
+  <data name="AddressSaveFailed" xml:space="preserve">
+    <value>Impossible d'enregistrer l'adresse.</value>
+  </data>
+  <data name="AddressDeleteFailed" xml:space="preserve">
+    <value>Impossible de supprimer l'adresse.</value>
+  </data>
+  <data name="AddressPromoteFailed" xml:space="preserve">
+    <value>Impossible d'ajouter aux contacts.</value>
+  </data>
+  <data name="AddressUnlinkFailed" xml:space="preserve">
+    <value>Impossible de dissocier l'adresse.</value>
+  </data>
 </root>

@@ -1,3 +1,5 @@
+using Feirb.Shared.AddressBook;
+
 namespace Feirb.Shared.Mail;
 
 public record MessageListItemResponse(
@@ -6,6 +8,7 @@ public record MessageListItemResponse(
     string? MailboxBadgeColor,
     string FromName,
     string FromEmail,
+    AddressStatus? SenderStatus,
     string Subject,
     string? Summary,
     DateTimeOffset Date,

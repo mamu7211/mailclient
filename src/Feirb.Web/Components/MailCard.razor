@@ -1,3 +1,4 @@
+@using Feirb.Shared.AddressBook
 @using Feirb.Web.Components.UI
 
 @* Card component for displaying mail items across different layout contexts. *@
@@ -5,7 +6,7 @@
    title="@Subject" data-testid="mail-card">
     <div class="mail-card-body">
         <div class="mail-card-header">
-            <PersonChip Name="@SenderName" Email="@SenderEmail" Size="@PersonChipSizeForMode" />
+            <PersonChip Name="@SenderName" Email="@SenderEmail" Status="@SenderStatus" Size="@PersonChipSizeForMode" />
             <DateTimeChip Value="new DateTimeOffset(ReceivedAt)" />
         </div>
 
@@ -37,6 +38,10 @@
     /// <summary>Sender email address.</summary>
     [Parameter, EditorRequired]
     public string SenderEmail { get; set; } = default!;
+
+    /// <summary>Sender address-book status (null = no badge).</summary>
+    [Parameter]
+    public AddressStatus? SenderStatus { get; set; }
 
     /// <summary>Mail subject line (truncated with ellipsis).</summary>
     [Parameter, EditorRequired]

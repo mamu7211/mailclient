@@ -1,0 +1,188 @@
+@page "/address-book/contacts/{Id:guid}"
+@using Feirb.Shared.AddressBook
+@using Feirb.Web.Components.UI
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Navigation
+@inject NotificationService Notifications
+@inject BreadcrumbOverrideService BreadcrumbOverride
+@inject ToolbarStateService ToolbarState
+@inject UnsavedChangesService UnsavedChanges
+@implements IDisposable
+
+<PageTitle>@(_contact?.DisplayName ?? L["ContactDetailPageTitle"])</PageTitle>
+
+<InfoHeader Title="@(_contact?.DisplayName ?? L["ContactDetailPageTitle"])"
+            Icon="person-fill"
+            Subtitle="@L["ContactDetailPageTitle"]" />
+
+@if (_loading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else if (_contact is null)
+{
+    <p class="text-muted">@L["ContactNotFound"]</p>
+}
+else
+{
+    <ContentSection Icon="person-gear" Title="@L["ContactDetailPageTitle"]" Subtitle="@_contact.DisplayName">
+        <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
+            <DataAnnotationsValidator />
+            <div class="mb-3">
+                <label for="contactDisplayName" class="form-label">@L["ContactDetailDisplayName"]</label>
+                <InputText id="contactDisplayName" class="form-control" @bind-Value="_model.DisplayName" data-testid="contact-display-name" />
+                <ValidationMessage For="() => _model.DisplayName" />
+            </div>
+            <div class="mb-3">
+                <label for="contactNotes" class="form-label">@L["ContactDetailNotes"]</label>
+                <InputTextArea id="contactNotes" class="form-control" rows="4" @bind-Value="_model.Notes" data-testid="contact-notes" />
+            </div>
+            <p class="text-muted small mb-0">@L["ContactDetailStatusPerAddressHint"]</p>
+        </TrackedEditForm>
+    </ContentSection>
+
+    <ContentSection Icon="at" Title="@L["ContactDetailLinkedAddresses"]">
+        @if (_contact.Addresses.Count == 0)
+        {
+            <p class="text-muted mb-0">@L["AddressBookNoAddresses"]</p>
+        }
+        else
+        {
+            <Table Hover>
+                <TableHeader>
+                    <TableColumn>@L["AddressBookColumnEmail"]</TableColumn>
+                    <TableColumn Width="8rem">@L["AddressBookColumnSeenCount"]</TableColumn>
+                    <TableColumn Width="10rem">@L["AddressBookColumnLastSeen"]</TableColumn>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var addr in _contact.Addresses)
+                    {
+                        <TableRow OnClick="() => NavigateToAddress(addr.Id)">
+                            <TableCell>@addr.NormalizedEmail</TableCell>
+                            <TableCell>@addr.SeenCount</TableCell>
+                            <TableCell>@addr.LastSeenAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</TableCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        }
+    </ContentSection>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private ContactResponse? _contact;
+    private bool _loading = true;
+    private FormModel _model = new();
+    private ToolbarAction[] _toolbarActions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning,
+                () => { Navigation.NavigateTo("/address-book"); return Task.CompletedTask; }, "x-lg"),
+            new ToolbarAction(L["ButtonSave"], ButtonVariant.Primary,
+                async () => { await UnsavedChanges.SaveAllAsync(); }, "check-lg"),
+            new ToolbarAction(L["ButtonDelete"], ButtonVariant.Danger, HandleDeleteAsync, "trash"),
+        ];
+        ToolbarState.AddActions(_toolbarActions);
+
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        try
+        {
+            _contact = await Http.GetFromJsonAsync<ContactResponse>($"/api/address-book/contacts/{Id}");
+            if (_contact is not null)
+            {
+                _model = new FormModel
+                {
+                    DisplayName = _contact.DisplayName,
+                    Notes = _contact.Notes,
+                };
+                BreadcrumbOverride.SetLastSegmentLabel(_contact.DisplayName);
+            }
+        }
+        catch
+        {
+            _contact = null;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task<bool> HandleSaveAsync()
+    {
+        if (_contact is null) return false;
+        try
+        {
+            var request = new UpdateContactRequest(_model.DisplayName!, _model.Notes);
+            var response = await Http.PutAsJsonAsync($"/api/address-book/contacts/{Id}", request);
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["ButtonSave"], NotificationSeverity.Success);
+                await LoadAsync();
+                return true;
+            }
+
+            Notifications.Add(L["ContactSaveFailed"], NotificationSeverity.Error);
+            return false;
+        }
+        catch
+        {
+            Notifications.Add(L["ContactSaveFailed"], NotificationSeverity.Error);
+            return false;
+        }
+    }
+
+    private async Task HandleDeleteAsync()
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"/api/address-book/contacts/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Notifications.Add(L["ButtonDelete"], NotificationSeverity.Success);
+                Navigation.NavigateTo("/address-book");
+            }
+            else
+            {
+                Notifications.Add(L["ContactDeleteFailed"], NotificationSeverity.Error);
+            }
+        }
+        catch
+        {
+            Notifications.Add(L["ContactDeleteFailed"], NotificationSeverity.Error);
+        }
+    }
+
+    private void NavigateToAddress(Guid addressId) =>
+        Navigation.NavigateTo($"/address-book/addresses/{addressId}");
+
+    public void Dispose()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+        BreadcrumbOverride.Clear();
+    }
+
+    private sealed class FormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(256)]
+        public string? DisplayName { get; set; }
+
+        [System.ComponentModel.DataAnnotations.StringLength(2048)]
+        public string? Notes { get; set; }
+    }
+}

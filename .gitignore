@@ -64,3 +64,6 @@ tests/playwright/dist/
 # Local Ollama model data
 .ollama-data/
 .playwright-mcp/
+
+# Claude Code runtime state
+.claude/scheduled_tasks.lock

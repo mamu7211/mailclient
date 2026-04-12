@@ -131,7 +131,7 @@ public class ImapSyncServiceTests
         var logger = NullLogger<ImapSyncService>.Instance;
         var scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
 
-        var service = new ImapSyncService(scopeFactory, logger, Options.Create(new ImapSyncSettings()));
+        var service = new ImapSyncService(scopeFactory, logger, Options.Create(new ImapSyncSettings()), new AddressExtractor());
 
         // Should not throw — just logs warning
         await service.Invoking(s => s.SyncMailboxAsync(Guid.NewGuid()))
@@ -171,7 +171,7 @@ public class ImapSyncServiceTests
 
         var logger = NullLogger<ImapSyncService>.Instance;
         var scopeFactory = services.GetRequiredService<IServiceScopeFactory>();
-        var service = new ImapSyncService(scopeFactory, logger, Options.Create(new ImapSyncSettings()));
+        var service = new ImapSyncService(scopeFactory, logger, Options.Create(new ImapSyncSettings()), new AddressExtractor());
 
         // Should not throw — just logs warning and skips
         await service.Invoking(s => s.SyncMailboxAsync(mailbox.Id))

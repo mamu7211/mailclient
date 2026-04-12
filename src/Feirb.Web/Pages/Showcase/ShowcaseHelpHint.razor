@@ -1,0 +1,59 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="HelpHint" Icon="question-circle" Subtitle="Inline help text with icon for contextual guidance" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Inline help text with a question-circle icon. Used below form controls to explain the current selection or provide contextual guidance. Inherits the muted on-surface-variant color for subtle presentation.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment</code></TableCell><TableCell>required</TableCell><TableCell>Help text content</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Examples</Heading>
+    <div class="d-flex flex-column gap-3">
+        <div>
+            <span class="badge bg-secondary mb-2">Short hint</span>
+            <HelpHint>This field is optional.</HelpHint>
+        </div>
+        <div>
+            <span class="badge bg-secondary mb-2">Descriptive hint</span>
+            <HelpHint>This address was automatically captured from incoming or outgoing mail and has not been reviewed yet.</HelpHint>
+        </div>
+        <div>
+            <span class="badge bg-secondary mb-2">With custom class</span>
+            <HelpHint Class="mt-0">Hint with removed top margin via custom class.</HelpHint>
+        </div>
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private ElementReference _codeElement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, _code); }
+        catch (JSException) { }
+    }
+
+    private const string _code = """
+        <HelpHint>This field is optional.</HelpHint>
+        <HelpHint Class="mt-0">Custom class example.</HelpHint>
+        """;
+}

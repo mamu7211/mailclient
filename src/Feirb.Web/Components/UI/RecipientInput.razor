@@ -1,4 +1,5 @@
 @namespace Feirb.Web.Components.UI
+@using Feirb.Shared.AddressBook
 @using Feirb.Shared.Mail
 @inject IJSRuntime Js
 @implements IAsyncDisposable
@@ -10,7 +11,7 @@
     {
         var key = $"{recipient.Email}-{GetFlashKey(recipient.Email)}";
         <div @key="key" class="feirb-recipient-token @(_flashingEmails.Contains(recipient.Email) ? "feirb-recipient-flash" : "")">
-            <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Size="PersonChipSize.Mini" />
+            <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Status="@recipient.Status" Size="PersonChipSize.Mini" />
             <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipientAsync(recipient)"
                     @onclick:stopPropagation="true" aria-label="Remove @(recipient.Name ?? recipient.Email)">
                 <Icon Name="x" Size="IconSize.Small" />
@@ -35,7 +36,7 @@
                 <button type="button" class="feirb-recipient-suggestion"
                         @onmousedown="() => SelectSuggestionAsync(suggestion)"
                         @onmousedown:preventDefault="true">
-                    <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Size="PersonChipSize.Mini" />
+                    <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Status="@suggestion.Status" Size="PersonChipSize.Mini" />
                 </button>
             }
         </div>
@@ -51,9 +52,13 @@
     [Parameter]
     public EventCallback<List<RecipientEntry>> RecipientsChanged { get; set; }
 
-    /// <summary>Available contacts for autocomplete suggestions.</summary>
+    /// <summary>Available contacts for autocomplete suggestions (static list).</summary>
     [Parameter]
     public IReadOnlyList<RecipientEntry> Contacts { get; set; } = [];
+
+    /// <summary>Async contacts provider — when set, takes precedence over the static Contacts list.</summary>
+    [Parameter]
+    public Func<string, Task<IReadOnlyList<RecipientEntry>>>? ContactsProvider { get; set; }
 
     /// <summary>Placeholder text when no recipients are added.</summary>
     [Parameter]
@@ -137,9 +142,9 @@
         _debounceTimer.Elapsed += (_, _) =>
         {
             _debounceTimer?.Stop();
-            InvokeAsync(() =>
+            InvokeAsync(async () =>
             {
-                UpdateSuggestions(_currentQuery);
+                await UpdateSuggestionsAsync(_currentQuery);
                 StateHasChanged();
             });
         };
@@ -147,7 +152,7 @@
         _debounceTimer.Start();
     }
 
-    private void UpdateSuggestions(string query)
+    private async Task UpdateSuggestionsAsync(string query)
     {
         if (string.IsNullOrWhiteSpace(query) || query.Length < 2)
         {
@@ -157,14 +162,32 @@
         }
 
         var existingEmails = Recipients.Select(r => r.Email).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var q = query.ToLowerInvariant();
 
-        _suggestions = Contacts
-            .Where(c => !existingEmails.Contains(c.Email)
-                && (c.Email.Contains(q, StringComparison.OrdinalIgnoreCase)
-                    || (c.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)))
-            .Take(8)
-            .ToList();
+        if (ContactsProvider is not null)
+        {
+            try
+            {
+                var fetched = await ContactsProvider(query);
+                _suggestions = fetched
+                    .Where(c => !existingEmails.Contains(c.Email))
+                    .Take(8)
+                    .ToList();
+            }
+            catch
+            {
+                _suggestions.Clear();
+            }
+        }
+        else
+        {
+            var q = query.ToLowerInvariant();
+            _suggestions = Contacts
+                .Where(c => !existingEmails.Contains(c.Email)
+                    && (c.Email.Contains(q, StringComparison.OrdinalIgnoreCase)
+                        || (c.Name?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false)))
+                .Take(8)
+                .ToList();
+        }
 
         _showDropdown = _suggestions.Count > 0;
     }
@@ -176,7 +199,7 @@
             c.Email.Equals(value, StringComparison.OrdinalIgnoreCase)
             || (c.Name?.Equals(value, StringComparison.OrdinalIgnoreCase) ?? false));
 
-        var entry = match ?? new RecipientEntry(null, value.Trim());
+        var entry = match ?? new RecipientEntry(null, value.Trim(), null);
 
         // Avoid duplicates — flash existing chip instead
         if (Recipients.Any(r => r.Email.Equals(entry.Email, StringComparison.OrdinalIgnoreCase)))

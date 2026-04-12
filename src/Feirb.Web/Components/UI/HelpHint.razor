@@ -1,0 +1,14 @@
+@namespace Feirb.Web.Components.UI
+
+<div class="feirb-help-hint @Class">
+    <Icon Name="question-circle" Size="IconSize.Small" />
+    <span>@ChildContent</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public string? Class { get; set; }
+}

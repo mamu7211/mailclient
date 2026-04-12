@@ -38,11 +38,27 @@
             </div>
         </div>
         <div class="showcase-color-item">
+            <div class="showcase-color-swatch" style="background-color: var(--bs-success);"></div>
+            <div class="showcase-color-info">
+                <strong class="showcase-color-name">Success</strong>
+                <code class="showcase-color-token">--bs-success</code>
+                <span class="showcase-color-usage text-muted">Known / positive status</span>
+            </div>
+        </div>
+        <div class="showcase-color-item">
+            <div class="showcase-color-swatch" style="background-color: var(--bs-info);"></div>
+            <div class="showcase-color-info">
+                <strong class="showcase-color-name">Info</strong>
+                <code class="showcase-color-token">--bs-info</code>
+                <span class="showcase-color-usage text-muted">Unknown / informational status</span>
+            </div>
+        </div>
+        <div class="showcase-color-item">
             <div class="showcase-color-swatch" style="background-color: var(--bs-warning);"></div>
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Warning</strong>
                 <code class="showcase-color-token">--bs-warning</code>
-                <span class="showcase-color-usage text-muted">Warnings, tags, highlights</span>
+                <span class="showcase-color-usage text-muted">Important / attention-required status</span>
             </div>
         </div>
         <div class="showcase-color-item">
@@ -50,7 +66,7 @@
             <div class="showcase-color-info">
                 <strong class="showcase-color-name">Error</strong>
                 <code class="showcase-color-token">--bs-danger</code>
-                <span class="showcase-color-usage text-muted">Danger actions, validation errors</span>
+                <span class="showcase-color-usage text-muted">Blocked / danger / validation errors</span>
             </div>
         </div>
         <div class="showcase-color-item">
@@ -94,6 +110,24 @@
             </div>
         </div>
     </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Semantic Status Colors</Heading>
+    <p class="mb-2">Status indicators (badges, chips, validation) always use these four Bootstrap semantic tokens — never the themed <code>--bs-primary</code>, since accent color changes per theme and would break the meaning.</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Status</TableColumn>
+            <TableColumn>Token</TableColumn>
+            <TableColumn>Meaning</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell>Known / positive</TableCell><TableCell><code>--bs-success</code> (green)</TableCell><TableCell>Recipient known, action succeeded, healthy</TableCell></TableRow>
+            <TableRow><TableCell>Unknown / informational</TableCell><TableCell><code>--bs-info</code> (blue)</TableCell><TableCell>Recipient unknown, neutral info, hint</TableCell></TableRow>
+            <TableRow><TableCell>Important / attention</TableCell><TableCell><code>--bs-warning</code> (yellow)</TableCell><TableCell>Needs attention, flagged, pending</TableCell></TableRow>
+            <TableRow><TableCell>Blocked / error</TableCell><TableCell><code>--bs-danger</code> (red)</TableCell><TableCell>Blocked, failed, validation error</TableCell></TableRow>
+        </TableBody>
+    </Table>
 </Card>
 
 <Card Class="mb-3 p-4">

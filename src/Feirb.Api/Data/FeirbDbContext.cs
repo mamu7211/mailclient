@@ -21,6 +21,8 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<ClassificationResult> ClassificationResults => Set<ClassificationResult>();
     public DbSet<ClassificationRule> ClassificationRules => Set<ClassificationRule>();
     public DbSet<Avatar> Avatars => Set<Avatar>();
+    public DbSet<Contact> Contacts => Set<Contact>();
+    public DbSet<Address> Addresses => Set<Address>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -239,6 +241,35 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasIndex(e => e.EmailHash).IsUnique();
             entity.Property(e => e.EmailHash).HasMaxLength(512);
             entity.Property(e => e.Email).HasMaxLength(256);
+        });
+
+        modelBuilder.Entity<Contact>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId);
+            entity.Property(e => e.DisplayName).HasMaxLength(256);
+            entity.Property(e => e.Notes).HasMaxLength(2048);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Address>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.NormalizedEmail }).IsUnique();
+            entity.HasIndex(e => e.ContactId);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.DisplayName).HasMaxLength(256);
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Contact)
+                .WithMany(c => c.Addresses)
+                .HasForeignKey(e => e.ContactId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

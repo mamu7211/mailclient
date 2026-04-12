@@ -25,7 +25,7 @@
 <TrackedEditForm Model="_model" OnSave="HandleSaveAsync" data-testid="mailbox-form">
     <DataAnnotationsValidator />
 
-    <ContentSection Icon="info-circle" Title="@L["MailboxSectionGeneral"]" Subtitle="@L["SectionMailboxGeneralSubtitle"]" Class="mb-4">
+    <ContentSection Icon="info-circle" Title="@L["MailboxSectionGeneral"]" Subtitle="@L["SectionMailboxGeneralSubtitle"]">
         <div class="mb-3">
             <label for="name" class="form-label">@L["LabelMailboxName"]</label>
             <InputText id="name" class="form-control" @bind-Value="_model.Name" placeholder="@L["PlaceholderMailboxName"]" data-testid="mailbox-name" />
@@ -46,7 +46,7 @@
         </div>
     </ContentSection>
 
-    <ContentSection Icon="inbox" Title="@L["MailboxSectionImap"]" Subtitle="@L["SectionMailboxImapSubtitle"]" Class="mb-4">
+    <ContentSection Icon="inbox" Title="@L["MailboxSectionImap"]" Subtitle="@L["SectionMailboxImapSubtitle"]">
         <div class="row mb-3">
             <div class="col-md-8">
                 <label for="imapHost" class="form-label">@L["LabelImapHost"]</label>
@@ -91,7 +91,7 @@
         }
     </ContentSection>
 
-    <ContentSection Icon="inbox" Title="@L["MailboxSectionSmtp"]" Subtitle="@L["SectionMailboxSmtpSubtitle"]" Class="mb-4">
+    <ContentSection Icon="inbox" Title="@L["MailboxSectionSmtp"]" Subtitle="@L["SectionMailboxSmtpSubtitle"]">
         <div class="row mb-3">
             <div class="col-md-8">
                 <label for="smtpHost" class="form-label">@L["LabelSmtpHostMailbox"]</label>

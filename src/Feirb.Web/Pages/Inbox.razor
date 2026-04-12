@@ -41,6 +41,7 @@ else if (UseCardLayout)
             <MailCard Mode="MailCardMode.Small"
                       SenderName="@msg.FromName"
                       SenderEmail="@msg.FromEmail"
+                      SenderStatus="@msg.SenderStatus"
                       Subject="@msg.Subject"
                       Summary="@msg.Summary"
                       Labels="@msg.Labels.Select(l => new MailCardLabel(l.Name, l.Color)).ToList()"
@@ -81,7 +82,7 @@ else
                             <MailboxChip Name="@msg.MailboxName" Color="@msg.MailboxBadgeColor" />
                         </TableCell>
                         <TableCell>
-                            <PersonChip Name="@msg.FromName" Email="@msg.FromEmail" Size="PersonChipSize.Small" />
+                            <PersonChip Name="@msg.FromName" Email="@msg.FromEmail" Status="@msg.SenderStatus" Size="PersonChipSize.Small" />
                         </TableCell>
                         <TableCell Class="inbox-subject-cell">
                             <MailSubjectChip Subject="@msg.Subject"

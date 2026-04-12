@@ -1,5 +1,6 @@
 @page "/compose"
 @attribute [Authorize]
+@using Feirb.Shared.AddressBook
 @using Feirb.Shared.Mail
 @using Feirb.Shared.Settings
 @inject HttpClient Http
@@ -56,6 +57,7 @@ else
                                     Id="compose-to"
                                     Placeholder="@L["ComposePlaceholderTo"]"
                                     DataTestId="compose-to"
+                                    ContactsProvider="SearchRecipientsAsync"
                                     Class="@(HasError("to") ? "is-invalid" : "")" />
                     <Toggle Text="@L["ComposeShowCcBcc"]"
                             DisabledText="@L["ComposeShowCcBccOff"]"
@@ -77,6 +79,7 @@ else
                                     Id="compose-cc"
                                     Placeholder="@L["ComposePlaceholderCc"]"
                                     DataTestId="compose-cc"
+                                    ContactsProvider="SearchRecipientsAsync"
                                     Class="@(HasError("cc") ? "is-invalid" : "")" />
                     @if (HasError("cc"))
                     {
@@ -89,6 +92,7 @@ else
                                     Id="compose-bcc"
                                     Placeholder="@L["ComposePlaceholderBcc"]"
                                     DataTestId="compose-bcc"
+                                    ContactsProvider="SearchRecipientsAsync"
                                     Class="@(HasError("bcc") ? "is-invalid" : "")" />
                     @if (HasError("bcc"))
                     {
@@ -215,6 +219,23 @@ else
                 // Ignored during disposal
             }
             _quillInitialized = false;
+        }
+    }
+
+    private async Task<IReadOnlyList<RecipientEntry>> SearchRecipientsAsync(string query)
+    {
+        try
+        {
+            var encoded = Uri.EscapeDataString(query);
+            var suggestions = await Http.GetFromJsonAsync<List<RecipientSuggestion>>(
+                $"/api/mail/recipients/search?q={encoded}");
+            return suggestions is null
+                ? []
+                : suggestions.Select(s => new RecipientEntry(s.DisplayName, s.Email, s.Status)).ToList();
+        }
+        catch
+        {
+            return [];
         }
     }
 

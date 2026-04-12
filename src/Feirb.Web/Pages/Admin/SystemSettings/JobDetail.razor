@@ -36,7 +36,7 @@ else if (_model is not null)
 {
     <TrackedEditForm Model="_model" OnSave="HandleSaveAsync">
         <DataAnnotationsValidator />
-        <ContentSection Icon="calendar-event" Title="@L["JobDetailSectionSchedule"]" Subtitle="@L["JobDetailSectionScheduleSubtitle"]" Class="mb-4">
+        <ContentSection Icon="calendar-event" Title="@L["JobDetailSectionSchedule"]" Subtitle="@L["JobDetailSectionScheduleSubtitle"]">
             <div class="mb-3">
                 <label class="form-label">@L["JobsCronSchedule"]</label>
                 <ToggleButtonGroup Items="_schedulePresets" SelectedId="@_selectedPreset" SelectedIdChanged="OnPresetChanged" For="() => _model.Cron" />

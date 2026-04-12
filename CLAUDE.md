@@ -184,6 +184,17 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 - **Adding a new locale:** Create `.{locale}.resx` files in both `Resources/` directories, add culture code to `supportedCultures` in `Feirb.Api/Program.cs`, add option to `LanguageSwitcher.razor`
 - **Adding a new string:** Add key to all `.resx` files (default + all locales), use `L["Key"]` in components or `localizer["Key"]` in API endpoints
 
+## UI/UX Work (`/implement-ui`)
+
+**You MUST invoke the `/implement-ui` skill before touching any Razor file for UI/UX work** — new pages, new components, layout changes, or non-trivial styling. The skill enforces the shared component library, documents hard rules (Button/Icon/Card/CircularButton usage), and captures project-wide patterns like the toolbar actions convention on edit/detail pages.
+
+Exceptions (inline edits OK, no skill needed):
+- Fixing a typo, broken `@onclick`, or a localization key
+- Wiring an existing page to a new API endpoint with no visual changes
+- Bug fixes that don't change the DOM structure
+
+When in doubt, invoke the skill.
+
 ## Browser Testing (Playwright MCP)
 
 Use `/test-ui <path> <what to test>` to verify UI features via browser. The skill:

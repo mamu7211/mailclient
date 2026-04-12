@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Feirb.Api.Data;
 using Feirb.Api.Resources;
+using Feirb.Shared.AddressBook;
 using Feirb.Shared.Mail;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -41,11 +42,34 @@ public static class MessageEndpoints
             .ToListAsync();
 
         var summaryPlaceholder = localizer["SummaryPlaceholder"].Value;
-        var mapped = items.Select(m =>
+
+        var parsedSenders = items
+            .Select(m => new { Item = m, Parsed = ParseFromAddress(m.From) })
+            .ToList();
+
+        var senderEmails = parsedSenders
+            .Select(p => EmailNormalizer.Normalize(p.Parsed.Email))
+            .Where(e => e.Length > 0)
+            .ToHashSet(StringComparer.Ordinal);
+
+        var statusByEmail = senderEmails.Count == 0
+            ? new Dictionary<string, AddressStatus>(StringComparer.Ordinal)
+            : await db.Addresses
+                .AsNoTracking()
+                .Where(a => a.UserId == userId && senderEmails.Contains(a.NormalizedEmail))
+                .Select(a => new { a.NormalizedEmail, a.Status })
+                .ToDictionaryAsync(x => x.NormalizedEmail, x => x.Status, StringComparer.Ordinal);
+
+        var mapped = parsedSenders.Select(p =>
         {
-            var (name, email) = ParseFromAddress(m.From);
+            var m = p.Item;
+            var (name, email) = p.Parsed;
+            var normalized = EmailNormalizer.Normalize(email);
+            AddressStatus? senderStatus = normalized.Length > 0 && statusByEmail.TryGetValue(normalized, out var s)
+                ? s
+                : null;
             var labels = m.Labels.Select(l => new MessageLabelResponse(l.Name, l.Color)).ToList();
-            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments, labels);
+            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, senderStatus, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments, labels);
         }).ToList();
 
         return Results.Ok(new PaginatedResponse<MessageListItemResponse>(mapped, page, pageSize, totalCount));

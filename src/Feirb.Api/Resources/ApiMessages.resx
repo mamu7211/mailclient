@@ -189,4 +189,28 @@
   <data name="BodyTooLarge" xml:space="preserve">
     <value>Message body exceeds the maximum allowed size.</value>
   </data>
+  <data name="ContactNotFound" xml:space="preserve">
+    <value>Contact not found.</value>
+  </data>
+  <data name="ContactDeleted" xml:space="preserve">
+    <value>Contact deleted successfully.</value>
+  </data>
+  <data name="ContactDisplayNameRequired" xml:space="preserve">
+    <value>Contact display name is required.</value>
+  </data>
+  <data name="AddressNotFound" xml:space="preserve">
+    <value>Address not found.</value>
+  </data>
+  <data name="AddressDeleted" xml:space="preserve">
+    <value>Address deleted successfully.</value>
+  </data>
+  <data name="AddressLinkedCannotDelete" xml:space="preserve">
+    <value>Address is linked to a contact. Unlink first before deleting.</value>
+  </data>
+  <data name="AddressAlreadyLinked" xml:space="preserve">
+    <value>Address is already linked to a contact.</value>
+  </data>
+  <data name="AddressStatusInvalid" xml:space="preserve">
+    <value>Invalid address status value.</value>
+  </data>
 </root>
