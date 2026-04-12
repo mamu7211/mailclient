@@ -157,6 +157,48 @@ public class ManagedJobTests : IDisposable
         await act.Should().NotThrowAsync();
     }
 
+    [Fact]
+    public async Task LogAsync_WritesLogEntryForCurrentExecutionAsync()
+    {
+        var jobSettingsId = SeedJobSettings();
+        var job = CreateLoggingTestJob();
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var execution = await db.JobExecutions.AsNoTracking()
+            .FirstAsync(e => e.JobSettingsId == jobSettingsId && e.Status == JobExecutionStatus.Success);
+        var logs = await db.JobExecutionLogs.AsNoTracking()
+            .Where(l => l.JobExecutionId == execution.Id)
+            .OrderBy(l => l.Timestamp)
+            .ToListAsync();
+
+        logs.Should().HaveCount(2);
+        logs[0].Level.Should().Be(JobExecutionLogLevel.Info);
+        logs[0].Message.Should().Be("Test info log");
+        logs[1].Level.Should().Be(JobExecutionLogLevel.Warning);
+        logs[1].Message.Should().Be("Test warning log");
+        logs[1].Metadata.Should().Be("{\"key\":\"value\"}");
+    }
+
+    [Fact]
+    public async Task LogAsync_DoesNotInterfereWithJobEntityChangesAsync()
+    {
+        var jobSettingsId = SeedJobSettings();
+        var job = CreateLoggingTestJob();
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var updated = await db.JobSettings.AsNoTracking().FirstAsync(j => j.Id == jobSettingsId);
+        updated.LastStatus.Should().Be(JobExecutionStatus.Success);
+
+        var execution = await db.JobExecutions.AsNoTracking()
+            .FirstAsync(e => e.JobSettingsId == jobSettingsId);
+        execution.Status.Should().Be(JobExecutionStatus.Success);
+        execution.FinishedAt.Should().NotBeNull();
+    }
+
     private Guid SeedJobSettings(bool enabled = false)
     {
         using var db = new FeirbDbContext(_dbOptions);
@@ -180,6 +222,13 @@ public class ManagedJobTests : IDisposable
         return new TestManagedJob(scopeFactory, logger, succeeds, errorMessage);
     }
 
+    private LoggingTestManagedJob CreateLoggingTestJob()
+    {
+        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        var logger = NullLoggerFactory.Instance.CreateLogger<LoggingTestManagedJob>();
+        return new LoggingTestManagedJob(scopeFactory, logger);
+    }
+
     private static IJobExecutionContext CreateJobContext()
     {
         var dataMap = new JobDataMap { { ManagedJob.JobNameKey, "TestJob" } };
@@ -200,6 +249,17 @@ public class ManagedJobTests : IDisposable
             if (!succeeds)
                 throw new InvalidOperationException(errorMessage ?? "Test failure");
             return Task.CompletedTask;
+        }
+    }
+
+    private sealed class LoggingTestManagedJob(
+        IServiceScopeFactory scopeFactory,
+        ILogger logger) : ManagedJob(scopeFactory, logger)
+    {
+        protected override async Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
+        {
+            await LogAsync(JobExecutionLogLevel.Info, "Test info log", cancellationToken: cancellationToken);
+            await LogAsync(JobExecutionLogLevel.Warning, "Test warning log", metadata: "{\"key\":\"value\"}", cancellationToken: cancellationToken);
         }
     }
 }

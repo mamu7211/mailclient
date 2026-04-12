@@ -11,8 +11,7 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
     private const int _consecutiveFailureThreshold = 10;
     private static readonly TimeSpan _staleExecutionCutoff = TimeSpan.FromHours(1);
 
-    private FeirbDbContext? _executionDb;
-    private JobExecution? _currentExecution;
+    private Guid? _currentExecutionId;
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -73,8 +72,7 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         // check reliably prevents concurrent executions across overlapping triggers.
         await db.SaveChangesAsync(context.CancellationToken);
 
-        _executionDb = db;
-        _currentExecution = execution;
+        _currentExecutionId = execution.Id;
 
         try
         {
@@ -113,31 +111,34 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         }
         finally
         {
-            _executionDb = null;
-            _currentExecution = null;
+            _currentExecutionId = null;
         }
     }
 
     protected abstract Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken);
 
-    protected async Task LogAsync(JobExecutionLogLevel level, string message, string? metadata = null)
+    protected async Task LogAsync(
+        JobExecutionLogLevel level, string message, string? metadata = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (_executionDb is null || _currentExecution is null)
+        if (_currentExecutionId is null)
             return;
 
-        _executionDb.JobExecutionLogs.Add(new JobExecutionLog
+        using var logScope = scopeFactory.CreateScope();
+        var logDb = logScope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+
+        logDb.JobExecutionLogs.Add(new JobExecutionLog
         {
             Id = Guid.NewGuid(),
-            JobExecutionId = _currentExecution.Id,
+            JobExecutionId = _currentExecutionId.Value,
             Timestamp = DateTimeOffset.UtcNow,
             Level = level,
             Message = message.Length > 4096 ? message[..4096] : message,
             Metadata = metadata is not null && metadata.Length > 4096 ? metadata[..4096] : metadata,
         });
 
-        await _executionDb.SaveChangesAsync();
+        await logDb.SaveChangesAsync(cancellationToken);
     }
 
     private async Task CheckConsecutiveFailuresAsync(
