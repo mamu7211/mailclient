@@ -10,4 +10,4 @@ public record TestImapRequest(
     [StringLength(256)]
     string? Username,
     string? Password,
-    bool UseTls);
+    TlsMode TlsMode);

@@ -236,7 +236,7 @@ public class ClassificationRuleEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",

@@ -50,6 +50,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.EncryptedPassword).HasMaxLength(1024);
             entity.Property(e => e.FromAddress).HasMaxLength(256);
             entity.Property(e => e.FromName).HasMaxLength(256);
+            entity.Property(e => e.TlsMode).HasConversion<string>().HasMaxLength(32);
         });
 
         modelBuilder.Entity<PasswordResetToken>(entity =>
@@ -77,6 +78,8 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.Property(e => e.SmtpUsername).HasMaxLength(256);
             entity.Property(e => e.SmtpEncryptedPassword).HasMaxLength(1024);
             entity.Property(e => e.BadgeColor).HasMaxLength(9);
+            entity.Property(e => e.ImapTlsMode).HasConversion<string>().HasMaxLength(32);
+            entity.Property(e => e.SmtpTlsMode).HasConversion<string>().HasMaxLength(32);
             entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)

@@ -28,7 +28,7 @@ public static class SystemSettingsEndpoints
         return Results.Ok(new SystemSmtpSettingsResponse(
             settings.Host,
             settings.Port,
-            settings.UseTls,
+            settings.TlsMode,
             settings.RequiresAuth,
             settings.Username,
             settings.FromAddress,
@@ -47,7 +47,7 @@ public static class SystemSettingsEndpoints
 
         settings.Host = request.Host;
         settings.Port = request.Port;
-        settings.UseTls = request.UseTls;
+        settings.TlsMode = request.TlsMode;
         settings.RequiresAuth = request.RequiresAuth;
         settings.Username = request.Username;
         settings.FromAddress = request.FromAddress;
@@ -65,7 +65,7 @@ public static class SystemSettingsEndpoints
         return Results.Ok(new SystemSmtpSettingsResponse(
             settings.Host,
             settings.Port,
-            settings.UseTls,
+            settings.TlsMode,
             settings.RequiresAuth,
             settings.Username,
             settings.FromAddress,

@@ -1,3 +1,5 @@
+using Feirb.Shared.Settings;
+
 namespace Feirb.Api.Data.Entities;
 
 public class Mailbox
@@ -14,14 +16,14 @@ public class Mailbox
     public int ImapPort { get; set; } = 993;
     public required string ImapUsername { get; set; }
     public string? ImapEncryptedPassword { get; set; }
-    public bool ImapUseTls { get; set; } = true;
+    public TlsMode ImapTlsMode { get; set; } = TlsMode.Auto;
 
     // SMTP settings
     public required string SmtpHost { get; set; }
     public int SmtpPort { get; set; } = 587;
     public required string SmtpUsername { get; set; }
     public string? SmtpEncryptedPassword { get; set; }
-    public bool SmtpUseTls { get; set; } = true;
+    public TlsMode SmtpTlsMode { get; set; } = TlsMode.Auto;
     public bool SmtpRequiresAuth { get; set; } = true;
 
     // Sync settings

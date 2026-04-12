@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using Feirb.Api.Data;
 using Feirb.Shared.Admin;
 using Feirb.Shared.Auth;
+using Feirb.Shared.Settings;
 using Feirb.Shared.Setup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -45,7 +46,7 @@ public class SystemSettingsEndpointsTests : IDisposable
         settings.Should().NotBeNull();
         settings!.Host.Should().Be("smtp.example.com");
         settings.Port.Should().Be(587);
-        settings.UseTls.Should().BeTrue();
+        settings.TlsMode.Should().Be(TlsMode.Auto);
         settings.RequiresAuth.Should().BeTrue();
         settings.Username.Should().Be("smtp@example.com");
         settings.FromAddress.Should().Be("admin@example.com");
@@ -88,7 +89,7 @@ public class SystemSettingsEndpointsTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
         var request = new UpdateSystemSmtpSettingsRequest(
-            "new-smtp.example.com", 465, true, false,
+            "new-smtp.example.com", 465, TlsMode.SslOnConnect, false,
             "newuser", "newpass",
             "system@example.com", "Feirb System");
 
@@ -99,7 +100,7 @@ public class SystemSettingsEndpointsTests : IDisposable
         settings.Should().NotBeNull();
         settings!.Host.Should().Be("new-smtp.example.com");
         settings.Port.Should().Be(465);
-        settings.UseTls.Should().BeTrue();
+        settings.TlsMode.Should().Be(TlsMode.SslOnConnect);
         settings.RequiresAuth.Should().BeFalse();
         settings.Username.Should().Be("newuser");
         settings.FromAddress.Should().Be("system@example.com");
@@ -114,7 +115,7 @@ public class SystemSettingsEndpointsTests : IDisposable
 
         // Update without password (should keep existing)
         var request = new UpdateSystemSmtpSettingsRequest(
-            "smtp.example.com", 587, true, true,
+            "smtp.example.com", 587, TlsMode.Auto, true,
             "smtp@example.com", null,
             "admin@example.com", "admin");
 
@@ -149,7 +150,7 @@ public class SystemSettingsEndpointsTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens!.AccessToken);
 
         var request = new UpdateSystemSmtpSettingsRequest(
-            "hacked.example.com", 25, false, false,
+            "hacked.example.com", 25, TlsMode.None, false,
             null, null, null, null);
 
         var response = await _client.PutAsJsonAsync("/api/admin/system-settings/smtp", request);
@@ -163,7 +164,7 @@ public class SystemSettingsEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",

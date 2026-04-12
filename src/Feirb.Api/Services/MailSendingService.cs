@@ -81,7 +81,7 @@ public class MailSendingService(
     private async Task SendViaSmtpAsync(Data.Entities.Mailbox mailbox, MimeMessage message, CancellationToken cancellationToken)
     {
         using var client = new SmtpClient();
-        var smtpOptions = GetSecureSocketOptions(mailbox.SmtpUseTls, mailbox.SmtpPort);
+        var smtpOptions = TlsModeConverter.ToSecureSocketOptions(mailbox.SmtpTlsMode);
         await client.ConnectAsync(mailbox.SmtpHost, mailbox.SmtpPort, smtpOptions, cancellationToken);
 
         if (mailbox.SmtpRequiresAuth && !string.IsNullOrEmpty(mailbox.SmtpEncryptedPassword))
@@ -106,7 +106,7 @@ public class MailSendingService(
         try
         {
             using var client = new ImapClient();
-            var imapOptions = GetSecureSocketOptions(mailbox.ImapUseTls, mailbox.ImapPort);
+            var imapOptions = TlsModeConverter.ToSecureSocketOptions(mailbox.ImapTlsMode);
             await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, imapOptions, cancellationToken);
 
             var protector = dataProtection.CreateProtector(_imapPasswordPurpose);
@@ -136,8 +136,4 @@ public class MailSendingService(
         }
     }
 
-    private static SecureSocketOptions GetSecureSocketOptions(bool useTls, int port) =>
-        useTls
-            ? port is 465 or 993 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls
-            : SecureSocketOptions.None;
 }

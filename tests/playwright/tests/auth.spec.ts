@@ -35,10 +35,7 @@ test.describe.serial("Auth flows", () => {
     await page.locator("#smtpUsername").fill("test@feirb.local");
     await page.locator("#smtpPassword").fill("changeit");
 
-    const useTlsCheckbox = page.locator("#smtpUseTls");
-    if (await useTlsCheckbox.isChecked()) {
-      await useTlsCheckbox.uncheck();
-    }
+    await page.locator("#smtpTlsMode").selectOption("None");
 
     const requiresAuthCheckbox = page.locator("#smtpRequiresAuth");
     if (await requiresAuthCheckbox.isChecked()) {

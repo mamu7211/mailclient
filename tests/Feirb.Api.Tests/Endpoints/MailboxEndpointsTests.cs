@@ -183,8 +183,8 @@ public class MailboxEndpointsTests : IDisposable
 
         var updateRequest = new UpdateMailboxRequest(
             "New Name", "new@test.com", "Display", null,
-            "imap.new.com", 993, "user", null, true,
-            "smtp.new.com", 587, "user", null, true, true);
+            "imap.new.com", 993, "user", null, TlsMode.Auto,
+            "smtp.new.com", 587, "user", null, TlsMode.Auto, true);
         var response = await _client.PutAsJsonAsync($"/api/settings/mailboxes/{id}", updateRequest);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -207,8 +207,8 @@ public class MailboxEndpointsTests : IDisposable
 
         var updateRequest = new UpdateMailboxRequest(
             "Hacked", "hacked@test.com", null, null,
-            "imap.hack.com", 993, "user", "pass", true,
-            "smtp.hack.com", 587, "user", "pass", true, true);
+            "imap.hack.com", 993, "user", "pass", TlsMode.Auto,
+            "smtp.hack.com", 587, "user", "pass", TlsMode.Auto, true);
         var response = await _client.PutAsJsonAsync($"/api/settings/mailboxes/{id}", updateRequest);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -255,7 +255,7 @@ public class MailboxEndpointsTests : IDisposable
     {
         var setupRequest = new CompleteSetupRequest(
             "admin", "admin@example.com", "AdminPassword123!",
-            "smtp.example.com", 587, "smtp@example.com", "smtppass", true, true);
+            "smtp.example.com", 587, "smtp@example.com", "smtppass", TlsMode.Auto, true);
         await _client.PostAsJsonAsync("/api/setup/complete", setupRequest);
 
         var loginResponse = await _client.PostAsJsonAsync("/api/auth/login",
@@ -269,8 +269,8 @@ public class MailboxEndpointsTests : IDisposable
 
     private static CreateMailboxRequest CreateTestRequest(string name, string email) =>
         new(name, email, null, null,
-            "imap.test.com", 993, "user@test.com", "imappass", true,
-            "smtp.test.com", 587, "user@test.com", "smtppass", true, true);
+            "imap.test.com", 993, "user@test.com", "imappass", TlsMode.Auto,
+            "smtp.test.com", 587, "user@test.com", "smtppass", TlsMode.Auto, true);
 
     private async Task<Guid> CreateMailboxAsync(string name, string email)
     {

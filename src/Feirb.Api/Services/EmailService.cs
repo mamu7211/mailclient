@@ -29,7 +29,8 @@ public class EmailService(
         using var client = new SmtpClient();
         try
         {
-            await client.ConnectAsync(settings.Host, settings.Port, settings.UseTls);
+            var tlsOptions = TlsModeConverter.ToSecureSocketOptions(settings.TlsMode);
+            await client.ConnectAsync(settings.Host, settings.Port, tlsOptions);
 
             if (settings.RequiresAuth && settings.Username is not null && settings.EncryptedPassword is not null)
             {

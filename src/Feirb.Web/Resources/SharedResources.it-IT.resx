@@ -240,14 +240,8 @@
   <data name="LabelSmtpPassword" xml:space="preserve">
     <value>Password SMTP</value>
   </data>
-  <data name="LabelSmtpUseTls" xml:space="preserve">
-    <value>Usa TLS/SSL</value>
-  </data>
   <data name="LabelSmtpRequiresAuth" xml:space="preserve">
     <value>Autenticazione richiesta</value>
-  </data>
-  <data name="LabelSmtpUseTlsOff" xml:space="preserve">
-    <value>Crittografia TLS disattivata</value>
   </data>
   <data name="LabelSmtpRequiresAuthOff" xml:space="preserve">
     <value>Nessuna autenticazione</value>
@@ -582,9 +576,6 @@
   <data name="LabelImapPassword" xml:space="preserve">
     <value>Password</value>
   </data>
-  <data name="LabelImapUseTls" xml:space="preserve">
-    <value>Usa TLS</value>
-  </data>
   <data name="LabelSmtpHostMailbox" xml:space="preserve">
     <value>Host SMTP</value>
   </data>
@@ -596,9 +587,6 @@
   </data>
   <data name="LabelSmtpPasswordMailbox" xml:space="preserve">
     <value>Password</value>
-  </data>
-  <data name="LabelSmtpUseTlsMailbox" xml:space="preserve">
-    <value>Usa TLS</value>
   </data>
   <data name="LabelSmtpRequiresAuthMailbox" xml:space="preserve">
     <value>Autenticazione richiesta</value>
@@ -1760,5 +1748,20 @@
   </data>
   <data name="AddressUnlinkFailed" xml:space="preserve">
     <value>Impossibile scollegare l'indirizzo.</value>
+  </data>
+  <data name="LabelTlsMode" xml:space="preserve">
+    <value>Modalità TLS</value>
+  </data>
+  <data name="TlsModeAuto" xml:space="preserve">
+    <value>Automatico (consigliato)</value>
+  </data>
+  <data name="TlsModeSslOnConnect" xml:space="preserve">
+    <value>SSL/TLS</value>
+  </data>
+  <data name="TlsModeStartTls" xml:space="preserve">
+    <value>STARTTLS</value>
+  </data>
+  <data name="TlsModeNone" xml:space="preserve">
+    <value>Nessuno (non crittografato)</value>
   </data>
 </root>

@@ -22,7 +22,7 @@ tests {
   test("should return SMTP settings", function() {
     expect(res.body.host).to.be.a("string");
     expect(res.body.port).to.be.a("number");
-    expect(res.body).to.have.property("useTls");
+    expect(res.body).to.have.property("tlsMode");
     expect(res.body).to.have.property("requiresAuth");
   });
 }

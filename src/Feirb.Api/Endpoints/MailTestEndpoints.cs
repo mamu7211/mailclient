@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using Feirb.Api.Services;
 using Feirb.Shared.Settings;
 using MailKit.Net.Imap;
 using MailKit.Net.Smtp;
@@ -23,7 +24,7 @@ public static class MailTestEndpoints
 
             try
             {
-                var tlsOptions = request.UseTls ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.None;
+                var tlsOptions = TlsModeConverter.ToSecureSocketOptions(request.TlsMode);
                 await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             }
             catch (Exception ex) when (ex is SocketException or IOException)
@@ -62,7 +63,7 @@ public static class MailTestEndpoints
 
             try
             {
-                var tlsOptions = request.UseTls ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.None;
+                var tlsOptions = TlsModeConverter.ToSecureSocketOptions(request.TlsMode);
                 await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             }
             catch (Exception ex) when (ex is SocketException or IOException)

@@ -10,5 +10,5 @@ public record TestSmtpMailboxRequest(
     [StringLength(256)]
     string? Username,
     string? Password,
-    bool UseTls,
+    TlsMode TlsMode,
     bool RequiresAuth);
