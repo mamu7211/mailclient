@@ -18,7 +18,7 @@
             <TableRow><TableCell><code>Name</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Display name</TableCell></TableRow>
             <TableRow><TableCell><code>Email</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Email address (hidden in Mini size)</TableCell></TableRow>
             <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>PersonChipSize</code></TableCell><TableCell><code>Default</code></TableCell><TableCell>Default, Small, Mini</TableCell></TableRow>
-            <TableRow><TableCell><code>Status</code></TableCell><TableCell><code>RecipientStatus</code></TableCell><TableCell><code>None</code></TableCell><TableCell>None (no badge), Known, Unknown, Important, Blocked</TableCell></TableRow>
+            <TableRow><TableCell><code>Status</code></TableCell><TableCell><code>AddressStatus?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>null (no badge), Unknown, Known, Important, Blocked</TableCell></TableRow>
             <TableRow><TableCell><code>StatusTitle</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Tooltip text for the status badge</TableCell></TableRow>
             <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
         </TableBody>
@@ -47,12 +47,12 @@
         </div>
         <div>
             <label class="form-label">Status</label>
-            <select class="form-select form-select-sm" @bind="_status">
-                <option value="@RecipientStatus.None">None (no badge)</option>
-                <option value="@RecipientStatus.Known">Known</option>
-                <option value="@RecipientStatus.Unknown">Unknown</option>
-                <option value="@RecipientStatus.Important">Important</option>
-                <option value="@RecipientStatus.Blocked">Blocked</option>
+            <select class="form-select form-select-sm" value="@(_status?.ToString() ?? "None")" @onchange="OnStatusChanged">
+                <option value="None">None (no badge)</option>
+                <option value="@nameof(AddressStatus.Unknown)">Unknown</option>
+                <option value="@nameof(AddressStatus.Known)">Known</option>
+                <option value="@nameof(AddressStatus.Important)">Important</option>
+                <option value="@nameof(AddressStatus.Blocked)">Blocked</option>
             </select>
         </div>
     </div>
@@ -64,9 +64,13 @@
 
 <Card Class="mb-3 p-4">
     <Heading Level="HeadingLevel.Small">Status Badges</Heading>
-    <p class="text-muted mb-3">The corner badge reflects recipient status with solid colored backgrounds. None renders without a badge (use for chips outside address-book context). Known / Important / Blocked use white icons; Unknown uses a dark icon for contrast against the yellow background. The Important color adapts per theme via <code>--feirb-tertiary</code>.</p>
+    <p class="text-muted mb-3">The corner badge reflects address status. Null renders without a badge (use for chips outside address-book context). Colors come from Bootstrap semantic tokens: Known = success (green), Unknown = info (blue), Important = warning (yellow), Blocked = danger (red).</p>
     <div class="d-flex flex-wrap gap-4">
-        @foreach (var status in new[] { RecipientStatus.None, RecipientStatus.Known, RecipientStatus.Unknown, RecipientStatus.Important, RecipientStatus.Blocked })
+        <div>
+            <span class="badge bg-secondary mb-2">null</span>
+            <PersonChip Name="@_name" Email="@_email" Size="PersonChipSize.Default" />
+        </div>
+        @foreach (var status in Enum.GetValues<AddressStatus>())
         {
             <div>
                 <span class="badge bg-secondary mb-2">@status</span>
@@ -120,7 +124,7 @@
     private string _email = "alice.johnson@example.com";
     private string _avatarTestEmail = "admin@feirb.local";
     private PersonChipSize _size = PersonChipSize.Default;
-    private RecipientStatus _status = RecipientStatus.None;
+    private AddressStatus? _status;
     private ElementReference _codeElement;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -129,13 +133,19 @@
         catch (JSException) { }
     }
 
+    private void OnStatusChanged(ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        _status = value is null or "None" ? null : Enum.Parse<AddressStatus>(value);
+    }
+
     private string CurrentCode
     {
         get
         {
             var sizeStr = _size != PersonChipSize.Default ? $"\n          Size=\"PersonChipSize.{_size}\"" : "";
             var emailStr = !string.IsNullOrEmpty(_email) ? $"\n          Email=\"{_email}\"" : "";
-            var statusStr = _status != RecipientStatus.None ? $"\n          Status=\"RecipientStatus.{_status}\"" : "";
+            var statusStr = _status is not null ? $"\n          Status=\"AddressStatus.{_status}\"" : "";
             return "<" + $"PersonChip Name=\"{_name}\"{emailStr}{sizeStr}{statusStr} />";
         }
     }

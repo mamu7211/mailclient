@@ -47,7 +47,7 @@ public class AddressBookEndpointsTests : IDisposable
     {
         await LoginAsync();
         var request = new CreateContactRequest(
-            "John Doe", "VIP client", true, ["john@example.com", "john.doe@work.com"]);
+            "John Doe", "VIP client", ["john@example.com", "john.doe@work.com"]);
 
         var response = await _client.PostAsJsonAsync("/api/address-book/contacts", request);
 
@@ -55,8 +55,8 @@ public class AddressBookEndpointsTests : IDisposable
         var contact = await response.Content.ReadFromJsonAsync<ContactResponse>();
         contact.Should().NotBeNull();
         contact!.DisplayName.Should().Be("John Doe");
-        contact.IsImportant.Should().BeTrue();
         contact.Addresses.Should().HaveCount(2);
+        contact.Addresses.Should().OnlyContain(a => a.Status == AddressStatus.Known);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class AddressBookEndpointsTests : IDisposable
         await LoginAsync();
         var created = await CreateContactAsync("Original Name");
 
-        var update = new UpdateContactRequest("Updated Name", "Note", false);
+        var update = new UpdateContactRequest("Updated Name", "Note");
         var response = await _client.PutAsJsonAsync($"/api/address-book/contacts/{created.Id}", update);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -136,7 +136,7 @@ public class AddressBookEndpointsTests : IDisposable
         var addressId = temp.Addresses[0].Id;
         await _client.DeleteAsync($"/api/address-book/contacts/{temp.Id}");
 
-        var promote = new PromoteAddressRequest("Promoted Contact", null, false);
+        var promote = new PromoteAddressRequest("Promoted Contact", null, AddressStatus.Known);
         var response = await _client.PostAsJsonAsync($"/api/address-book/addresses/{addressId}/promote", promote);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -194,16 +194,20 @@ public class AddressBookEndpointsTests : IDisposable
     public async Task SearchRecipients_ImportantRanksAboveOthersAsync()
     {
         await LoginAsync();
-        // Create: one important contact, one normal contact
-        await CreateContactAsync("Alice Normal", emails: ["alice@example.com"], isImportant: false);
-        await CreateContactAsync("Alice Important", emails: ["alice2@example.com"], isImportant: true);
+        var normal = await CreateContactAsync("Alice Normal", emails: ["alice@example.com"]);
+        var important = await CreateContactAsync("Alice Important", emails: ["alice2@example.com"]);
+
+        // Promote the second contact's address to Important via UpdateAddress
+        var importantAddress = important.Addresses[0];
+        var updateImportant = new UpdateAddressRequest(importantAddress.DisplayName, AddressStatus.Important);
+        await _client.PutAsJsonAsync($"/api/address-book/addresses/{importantAddress.Id}", updateImportant);
 
         var response = await _client.GetAsync("/api/mail/recipients/search?q=alice");
         var suggestions = await response.Content.ReadFromJsonAsync<List<RecipientSuggestion>>();
 
         suggestions.Should().NotBeNull();
         suggestions.Should().HaveCountGreaterThanOrEqualTo(2);
-        suggestions![0].Status.Should().Be(RecipientStatus.Important);
+        suggestions![0].Status.Should().Be(AddressStatus.Important);
     }
 
     [Fact]
@@ -214,14 +218,14 @@ public class AddressBookEndpointsTests : IDisposable
         await CreateContactAsync("Zed", emails: ["zed@example.com"]);
 
         // Block bob
-        var blocked = new UpdateAddressRequest("Bob", true);
+        var blocked = new UpdateAddressRequest("Bob", AddressStatus.Blocked);
         await _client.PutAsJsonAsync($"/api/address-book/addresses/{contact.Addresses[0].Id}", blocked);
 
         var response = await _client.GetAsync("/api/mail/recipients/search?q=e");
         var suggestions = await response.Content.ReadFromJsonAsync<List<RecipientSuggestion>>();
 
         suggestions.Should().NotBeNull();
-        suggestions!.Last().Status.Should().Be(RecipientStatus.Blocked);
+        suggestions!.Last().Status.Should().Be(AddressStatus.Blocked);
     }
 
     [Fact]
@@ -254,10 +258,9 @@ public class AddressBookEndpointsTests : IDisposable
 
     private async Task<ContactResponse> CreateContactAsync(
         string displayName,
-        IReadOnlyList<string>? emails = null,
-        bool isImportant = false)
+        IReadOnlyList<string>? emails = null)
     {
-        var request = new CreateContactRequest(displayName, null, isImportant, emails);
+        var request = new CreateContactRequest(displayName, null, emails);
         var response = await _client.PostAsJsonAsync("/api/address-book/contacts", request);
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<ContactResponse>())!;

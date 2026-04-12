@@ -6,9 +6,7 @@ public record AddressResponse(
     string? ContactDisplayName,
     string NormalizedEmail,
     string DisplayName,
-    bool IsUnknown,
-    bool IsBlocked,
-    bool IsImportant,
+    AddressStatus Status,
     DateTime FirstSeenAt,
     DateTime LastSeenAt,
     int SeenCount);

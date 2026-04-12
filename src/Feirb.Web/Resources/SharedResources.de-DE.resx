@@ -1689,8 +1689,8 @@
   <data name="ContactDetailNotes" xml:space="preserve">
     <value>Notizen</value>
   </data>
-  <data name="ContactDetailIsImportant" xml:space="preserve">
-    <value>Wichtiger Kontakt</value>
+  <data name="ContactDetailStatusPerAddressHint" xml:space="preserve">
+    <value>Status (bekannt, wichtig, blockiert) wird pro Adresse in den verknüpften Adressen unten gesetzt.</value>
   </data>
   <data name="ContactDetailLinkedAddresses" xml:space="preserve">
     <value>Verknüpfte Adressen</value>
@@ -1701,8 +1701,20 @@
   <data name="AddressDetailDisplayName" xml:space="preserve">
     <value>Anzeigename</value>
   </data>
-  <data name="AddressDetailIsBlocked" xml:space="preserve">
-    <value>Diese Adresse blockieren</value>
+  <data name="AddressDetailStatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="AddressStatusHintUnknown" xml:space="preserve">
+    <value>Diese Adresse wurde automatisch aus ein- oder ausgehenden Mails erfasst und noch nicht geprüft.</value>
+  </data>
+  <data name="AddressStatusHintKnown" xml:space="preserve">
+    <value>Du hast diese Adresse bestätigt. Mails von diesem Absender erscheinen mit einem grünen Badge.</value>
+  </data>
+  <data name="AddressStatusHintImportant" xml:space="preserve">
+    <value>Diese Adresse ist als wichtig markiert. Mails von diesem Absender werden hervorgehoben und in Vorschlägen höher gereiht.</value>
+  </data>
+  <data name="AddressStatusHintBlocked" xml:space="preserve">
+    <value>Diese Adresse ist blockiert. Mails von diesem Absender werden in Vorschlägen am niedrigsten gereiht.</value>
   </data>
   <data name="AddressDetailLinkedContact" xml:space="preserve">
     <value>Verknüpfter Kontakt</value>

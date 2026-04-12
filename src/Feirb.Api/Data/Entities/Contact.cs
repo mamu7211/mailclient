@@ -7,7 +7,6 @@ public class Contact
     public User User { get; set; } = null!;
     public required string DisplayName { get; set; }
     public string? Notes { get; set; }
-    public bool IsImportant { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 

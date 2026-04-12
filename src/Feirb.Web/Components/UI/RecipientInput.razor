@@ -1,4 +1,5 @@
 @namespace Feirb.Web.Components.UI
+@using Feirb.Shared.AddressBook
 @using Feirb.Shared.Mail
 @inject IJSRuntime Js
 @implements IAsyncDisposable
@@ -10,7 +11,7 @@
     {
         var key = $"{recipient.Email}-{GetFlashKey(recipient.Email)}";
         <div @key="key" class="feirb-recipient-token @(_flashingEmails.Contains(recipient.Email) ? "feirb-recipient-flash" : "")">
-            <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Size="PersonChipSize.Mini" />
+            <PersonChip Name="@(recipient.Name ?? recipient.Email)" Email="@recipient.Email" Status="@recipient.Status" Size="PersonChipSize.Mini" />
             <button type="button" class="feirb-recipient-remove" @onclick="() => RemoveRecipientAsync(recipient)"
                     @onclick:stopPropagation="true" aria-label="Remove @(recipient.Name ?? recipient.Email)">
                 <Icon Name="x" Size="IconSize.Small" />
@@ -35,7 +36,7 @@
                 <button type="button" class="feirb-recipient-suggestion"
                         @onmousedown="() => SelectSuggestionAsync(suggestion)"
                         @onmousedown:preventDefault="true">
-                    <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Size="PersonChipSize.Mini" />
+                    <PersonChip Name="@suggestion.Name" Email="@suggestion.Email" Status="@suggestion.Status" Size="PersonChipSize.Mini" />
                 </button>
             }
         </div>
@@ -198,7 +199,7 @@
             c.Email.Equals(value, StringComparison.OrdinalIgnoreCase)
             || (c.Name?.Equals(value, StringComparison.OrdinalIgnoreCase) ?? false));
 
-        var entry = match ?? new RecipientEntry(null, value.Trim());
+        var entry = match ?? new RecipientEntry(null, value.Trim(), null);
 
         // Avoid duplicates — flash existing chip instead
         if (Recipients.Any(r => r.Email.Equals(entry.Email, StringComparison.OrdinalIgnoreCase)))

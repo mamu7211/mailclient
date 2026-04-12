@@ -45,9 +45,9 @@
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>Recipient status — controls the corner badge icon.</summary>
+    /// <summary>Address status — controls the corner badge icon. Null = no badge.</summary>
     [Parameter]
-    public RecipientStatus Status { get; set; } = RecipientStatus.None;
+    public AddressStatus? Status { get; set; }
 
     /// <summary>Accessible title for the status badge.</summary>
     [Parameter]
@@ -66,10 +66,10 @@
 
         (_statusIcon, _statusClass) = Status switch
         {
-            RecipientStatus.Known => ("check-circle-fill", "known"),
-            RecipientStatus.Unknown => ("question-circle-fill", "unknown"),
-            RecipientStatus.Important => ("exclamation-circle-fill", "important"),
-            RecipientStatus.Blocked => ("x-circle-fill", "blocked"),
+            AddressStatus.Known => ("check-circle-fill", "known"),
+            AddressStatus.Unknown => ("question-circle-fill", "unknown"),
+            AddressStatus.Important => ("exclamation-circle-fill", "important"),
+            AddressStatus.Blocked => ("x-circle-fill", "blocked"),
             _ => (null, "none"),
         };
         _statusTitle = StatusTitle;

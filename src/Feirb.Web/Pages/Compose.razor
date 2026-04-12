@@ -231,7 +231,7 @@ else
                 $"/api/mail/recipients/search?q={encoded}");
             return suggestions is null
                 ? []
-                : suggestions.Select(s => new RecipientEntry(s.DisplayName, s.Email)).ToList();
+                : suggestions.Select(s => new RecipientEntry(s.DisplayName, s.Email, s.Status)).ToList();
         }
         catch
         {

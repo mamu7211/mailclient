@@ -1689,8 +1689,8 @@
   <data name="ContactDetailNotes" xml:space="preserve">
     <value>Notes</value>
   </data>
-  <data name="ContactDetailIsImportant" xml:space="preserve">
-    <value>Contact important</value>
+  <data name="ContactDetailStatusPerAddressHint" xml:space="preserve">
+    <value>Le statut (connu, important, bloqué) se définit par adresse dans la liste ci-dessous.</value>
   </data>
   <data name="ContactDetailLinkedAddresses" xml:space="preserve">
     <value>Adresses liées</value>
@@ -1701,8 +1701,20 @@
   <data name="AddressDetailDisplayName" xml:space="preserve">
     <value>Nom affiché</value>
   </data>
-  <data name="AddressDetailIsBlocked" xml:space="preserve">
-    <value>Bloquer cette adresse</value>
+  <data name="AddressDetailStatusLabel" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="AddressStatusHintUnknown" xml:space="preserve">
+    <value>Cette adresse a été capturée automatiquement depuis un e-mail entrant ou sortant et n'a pas encore été examinée.</value>
+  </data>
+  <data name="AddressStatusHintKnown" xml:space="preserve">
+    <value>Vous avez confirmé cette adresse. Les e-mails de cet expéditeur apparaissent avec un badge vert.</value>
+  </data>
+  <data name="AddressStatusHintImportant" xml:space="preserve">
+    <value>Cette adresse est marquée comme importante. Les e-mails de cet expéditeur sont mis en avant et mieux classés dans les suggestions.</value>
+  </data>
+  <data name="AddressStatusHintBlocked" xml:space="preserve">
+    <value>Cette adresse est bloquée. Les e-mails de cet expéditeur sont classés en dernier dans les suggestions.</value>
   </data>
   <data name="AddressDetailLinkedContact" xml:space="preserve">
     <value>Contact lié</value>

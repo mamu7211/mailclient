@@ -1689,8 +1689,8 @@
   <data name="ContactDetailNotes" xml:space="preserve">
     <value>Note</value>
   </data>
-  <data name="ContactDetailIsImportant" xml:space="preserve">
-    <value>Contatto importante</value>
+  <data name="ContactDetailStatusPerAddressHint" xml:space="preserve">
+    <value>Lo stato (conosciuto, importante, bloccato) si imposta per indirizzo nell'elenco degli indirizzi collegati.</value>
   </data>
   <data name="ContactDetailLinkedAddresses" xml:space="preserve">
     <value>Indirizzi collegati</value>
@@ -1701,8 +1701,20 @@
   <data name="AddressDetailDisplayName" xml:space="preserve">
     <value>Nome visualizzato</value>
   </data>
-  <data name="AddressDetailIsBlocked" xml:space="preserve">
-    <value>Blocca questo indirizzo</value>
+  <data name="AddressDetailStatusLabel" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="AddressStatusHintUnknown" xml:space="preserve">
+    <value>Questo indirizzo è stato acquisito automaticamente da un'e-mail in entrata o in uscita e non è ancora stato esaminato.</value>
+  </data>
+  <data name="AddressStatusHintKnown" xml:space="preserve">
+    <value>Hai confermato questo indirizzo. Le e-mail da questo mittente appaiono con un badge verde.</value>
+  </data>
+  <data name="AddressStatusHintImportant" xml:space="preserve">
+    <value>Questo indirizzo è contrassegnato come importante. Le e-mail da questo mittente sono evidenziate e classificate più in alto nei suggerimenti.</value>
+  </data>
+  <data name="AddressStatusHintBlocked" xml:space="preserve">
+    <value>Questo indirizzo è bloccato. Le e-mail da questo mittente sono classificate per ultime nei suggerimenti.</value>
   </data>
   <data name="AddressDetailLinkedContact" xml:space="preserve">
     <value>Contatto collegato</value>

@@ -40,10 +40,7 @@ else
                 <label for="contactNotes" class="form-label">@L["ContactDetailNotes"]</label>
                 <InputTextArea id="contactNotes" class="form-control" rows="4" @bind-Value="_model.Notes" data-testid="contact-notes" />
             </div>
-            <div class="form-check mb-3">
-                <InputCheckbox id="contactImportant" class="form-check-input" @bind-Value="_model.IsImportant" data-testid="contact-is-important" />
-                <label for="contactImportant" class="form-check-label">@L["ContactDetailIsImportant"]</label>
-            </div>
+            <p class="text-muted small mb-0">@L["ContactDetailStatusPerAddressHint"]</p>
         </TrackedEditForm>
     </ContentSection>
 
@@ -111,7 +108,6 @@ else
                 {
                     DisplayName = _contact.DisplayName,
                     Notes = _contact.Notes,
-                    IsImportant = _contact.IsImportant,
                 };
                 BreadcrumbOverride.SetLastSegmentLabel(_contact.DisplayName);
             }
@@ -131,7 +127,7 @@ else
         if (_contact is null) return false;
         try
         {
-            var request = new UpdateContactRequest(_model.DisplayName!, _model.Notes, _model.IsImportant);
+            var request = new UpdateContactRequest(_model.DisplayName!, _model.Notes);
             var response = await Http.PutAsJsonAsync($"/api/address-book/contacts/{Id}", request);
             if (response.IsSuccessStatusCode)
             {
@@ -188,7 +184,5 @@ else
 
         [System.ComponentModel.DataAnnotations.StringLength(2048)]
         public string? Notes { get; set; }
-
-        public bool IsImportant { get; set; }
     }
 }

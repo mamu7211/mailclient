@@ -61,7 +61,6 @@ public static class AddressBookEndpoints
             .Select(c => new ContactListItem(
                 c.Id,
                 c.DisplayName,
-                c.IsImportant,
                 c.Addresses.Count,
                 c.Addresses.OrderBy(a => a.NormalizedEmail).Select(a => a.NormalizedEmail).FirstOrDefault(),
                 c.UpdatedAt))
@@ -106,7 +105,6 @@ public static class AddressBookEndpoints
             UserId = userId,
             DisplayName = request.DisplayName.Trim(),
             Notes = request.Notes?.Trim(),
-            IsImportant = request.IsImportant,
             CreatedAt = now,
             UpdatedAt = now,
         };
@@ -132,7 +130,7 @@ public static class AddressBookEndpoints
                         ContactId = contact.Id,
                         NormalizedEmail = normalized,
                         DisplayName = request.DisplayName.Trim(),
-                        IsUnknown = false,
+                        Status = AddressStatus.Known,
                         FirstSeenAt = now,
                         LastSeenAt = now,
                         SeenCount = 0,
@@ -141,7 +139,8 @@ public static class AddressBookEndpoints
                 else
                 {
                     existing.ContactId = contact.Id;
-                    existing.IsUnknown = false;
+                    if (existing.Status == AddressStatus.Unknown)
+                        existing.Status = AddressStatus.Known;
                 }
             }
         }
@@ -172,14 +171,7 @@ public static class AddressBookEndpoints
 
         contact.DisplayName = request.DisplayName.Trim();
         contact.Notes = request.Notes?.Trim();
-        contact.IsImportant = request.IsImportant;
         contact.UpdatedAt = DateTime.UtcNow;
-
-        foreach (var addr in contact.Addresses)
-        {
-            if (addr.IsUnknown)
-                addr.IsUnknown = false;
-        }
 
         await db.SaveChangesAsync();
         return Results.Ok(ToContactResponse(contact));
@@ -238,9 +230,7 @@ public static class AddressBookEndpoints
                 a.Contact != null ? a.Contact.DisplayName : null,
                 a.NormalizedEmail,
                 a.DisplayName,
-                a.IsUnknown,
-                a.IsBlocked,
-                a.Contact != null && a.Contact.IsImportant,
+                a.Status,
                 a.FirstSeenAt,
                 a.LastSeenAt,
                 a.SeenCount))
@@ -282,10 +272,11 @@ public static class AddressBookEndpoints
         if (address is null)
             return Results.NotFound(new { message = localizer["AddressNotFound"].Value });
 
+        if (!Enum.IsDefined(request.Status))
+            return Results.BadRequest(new { message = localizer["AddressStatusInvalid"].Value });
+
         address.DisplayName = request.DisplayName.Trim();
-        address.IsBlocked = request.IsBlocked;
-        if (address.IsUnknown)
-            address.IsUnknown = false;
+        address.Status = request.Status;
 
         await db.SaveChangesAsync();
         return Results.Ok(ToAddressResponse(address));
@@ -329,6 +320,9 @@ public static class AddressBookEndpoints
         if (address.ContactId is not null)
             return Results.Conflict(new { message = localizer["AddressAlreadyLinked"].Value });
 
+        if (request.Status is not (AddressStatus.Known or AddressStatus.Important))
+            return Results.BadRequest(new { message = localizer["AddressStatusInvalid"].Value });
+
         var now = DateTime.UtcNow;
         var contact = new Contact
         {
@@ -336,13 +330,12 @@ public static class AddressBookEndpoints
             UserId = userId,
             DisplayName = request.DisplayName.Trim(),
             Notes = request.Notes?.Trim(),
-            IsImportant = request.IsImportant,
             CreatedAt = now,
             UpdatedAt = now,
         };
         db.Contacts.Add(contact);
         address.ContactId = contact.Id;
-        address.IsUnknown = false;
+        address.Status = request.Status;
 
         await db.SaveChangesAsync();
 
@@ -374,7 +367,6 @@ public static class AddressBookEndpoints
             return Results.NotFound(new { message = localizer["ContactNotFound"].Value });
 
         address.ContactId = contact.Id;
-        address.IsUnknown = false;
         await db.SaveChangesAsync();
 
         var reloaded = await db.Addresses.AsNoTracking()
@@ -436,16 +428,16 @@ public static class AddressBookEndpoints
                 (a.Contact != null && a.Contact.DisplayName.ToLower().Contains(term)));
         }
 
-        // Rank: Important (5) → Known linked (4) → Known orphan (3) → Unknown (2) → Blocked (1), then Recency
+        // Rank: Important (5) > Known (3) > Unknown (2) > Blocked (1), then Recency
         var items = await query
             .Select(a => new
             {
                 Address = a,
                 Rank =
-                    a.IsBlocked ? 1 :
-                    (a.Contact != null && a.Contact.IsImportant) ? 5 :
-                    (a.Contact != null) ? 4 :
-                    a.IsUnknown ? 2 : 3,
+                    a.Status == AddressStatus.Important ? 5 :
+                    a.Status == AddressStatus.Known ? 3 :
+                    a.Status == AddressStatus.Unknown ? 2 :
+                    1,
             })
             .OrderByDescending(x => x.Rank)
             .ThenByDescending(x => x.Address.LastSeenAt)
@@ -456,7 +448,7 @@ public static class AddressBookEndpoints
             .Select(x => new RecipientSuggestion(
                 x.Address.Contact != null ? x.Address.Contact.DisplayName : x.Address.DisplayName,
                 x.Address.NormalizedEmail,
-                StatusFor(x.Address)))
+                x.Address.Status))
             .ToList();
 
         return Results.Ok(results);
@@ -475,27 +467,19 @@ public static class AddressBookEndpoints
     }
 
     private static ContactResponse ToContactResponse(Contact c) =>
-        new(c.Id, c.DisplayName, c.Notes, c.IsImportant, c.CreatedAt, c.UpdatedAt,
+        new(c.Id, c.DisplayName, c.Notes, c.CreatedAt, c.UpdatedAt,
             c.Addresses
                 .OrderBy(a => a.NormalizedEmail)
                 .Select(a => new AddressResponse(
                     a.Id, a.ContactId, c.DisplayName, a.NormalizedEmail, a.DisplayName,
-                    a.IsUnknown, a.IsBlocked, c.IsImportant,
+                    a.Status,
                     a.FirstSeenAt, a.LastSeenAt, a.SeenCount))
                 .ToList());
 
     private static AddressResponse ToAddressResponse(Address a) =>
         new(a.Id, a.ContactId, a.Contact?.DisplayName, a.NormalizedEmail, a.DisplayName,
-            a.IsUnknown, a.IsBlocked, a.Contact?.IsImportant ?? false,
+            a.Status,
             a.FirstSeenAt, a.LastSeenAt, a.SeenCount);
-
-    private static RecipientStatus StatusFor(Address a)
-    {
-        if (a.IsBlocked) return RecipientStatus.Blocked;
-        if (a.Contact?.IsImportant == true) return RecipientStatus.Important;
-        if (a.IsUnknown) return RecipientStatus.Unknown;
-        return RecipientStatus.Known;
-    }
 
     private static Guid GetCurrentUserId(HttpContext httpContext) =>
         Guid.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);

@@ -36,9 +36,13 @@ else
                 <InputText id="addressDisplayName" class="form-control" @bind-Value="_model.DisplayName" data-testid="address-display-name" />
                 <ValidationMessage For="() => _model.DisplayName" />
             </div>
-            <div class="form-check mb-3">
-                <InputCheckbox id="addressIsBlocked" class="form-check-input" @bind-Value="_model.IsBlocked" data-testid="address-is-blocked" />
-                <label for="addressIsBlocked" class="form-check-label">@L["AddressDetailIsBlocked"]</label>
+            <div class="mb-3">
+                <label class="form-label">@L["AddressDetailStatusLabel"]</label>
+                <ToggleButtonGroup Items="_statusItems"
+                                   SelectedId="@_model.StatusId"
+                                   SelectedIdChanged="OnStatusChanged"
+                                   For="() => _model.StatusId" />
+                <HelpHint>@StatusHint</HelpHint>
             </div>
         </TrackedEditForm>
     </ContentSection>
@@ -71,9 +75,32 @@ else
     private FormModel _model = new();
     private ToolbarAction[] _toolbarActions = [];
 
+    private IReadOnlyList<ToggleButtonItem> _statusItems = [];
+
     protected override async Task OnInitializedAsync()
     {
+        _statusItems =
+        [
+            new(nameof(AddressStatus.Unknown), L["AddressBookStatusUnknown"]),
+            new(nameof(AddressStatus.Known), L["AddressBookStatusKnown"]),
+            new(nameof(AddressStatus.Important), L["AddressBookStatusImportant"]),
+            new(nameof(AddressStatus.Blocked), L["AddressBookStatusBlocked"]),
+        ];
         await LoadAsync();
+    }
+
+    private string StatusHint => _model.Status switch
+    {
+        AddressStatus.Known => L["AddressStatusHintKnown"],
+        AddressStatus.Important => L["AddressStatusHintImportant"],
+        AddressStatus.Blocked => L["AddressStatusHintBlocked"],
+        _ => L["AddressStatusHintUnknown"],
+    };
+
+    private void OnStatusChanged(string id)
+    {
+        _model.StatusId = id;
+        _model.Status = Enum.Parse<AddressStatus>(id);
     }
 
     private async Task LoadAsync()
@@ -87,7 +114,8 @@ else
                 _model = new FormModel
                 {
                     DisplayName = _address.DisplayName,
-                    IsBlocked = _address.IsBlocked,
+                    Status = _address.Status,
+                    StatusId = _address.Status.ToString(),
                 };
                 BreadcrumbOverride.SetLastSegmentLabel(_address.NormalizedEmail);
             }
@@ -132,7 +160,7 @@ else
     {
         try
         {
-            var request = new UpdateAddressRequest(_model.DisplayName!, _model.IsBlocked);
+            var request = new UpdateAddressRequest(_model.DisplayName!, _model.Status);
             var response = await Http.PutAsJsonAsync($"/api/address-book/addresses/{Id}", request);
             if (response.IsSuccessStatusCode)
             {
@@ -177,7 +205,7 @@ else
         if (_address is null) return;
         try
         {
-            var request = new PromoteAddressRequest(_address.DisplayName, null, false);
+            var request = new PromoteAddressRequest(_address.DisplayName, null, AddressStatus.Known);
             var response = await Http.PostAsJsonAsync($"/api/address-book/addresses/{Id}/promote", request);
             if (response.IsSuccessStatusCode)
             {
@@ -228,6 +256,8 @@ else
         [System.ComponentModel.DataAnnotations.StringLength(256)]
         public string? DisplayName { get; set; }
 
-        public bool IsBlocked { get; set; }
+        public AddressStatus Status { get; set; } = AddressStatus.Unknown;
+
+        public string StatusId { get; set; } = nameof(AddressStatus.Unknown);
     }
 }

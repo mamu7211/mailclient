@@ -1,5 +1,6 @@
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
+using Feirb.Shared.AddressBook;
 using Feirb.Shared.Mail;
 using Microsoft.EntityFrameworkCore;
 using MimeKit;
@@ -68,8 +69,9 @@ public class AddressExtractor : IAddressExtractor
             {
                 row.LastSeenAt = now;
                 row.SeenCount++;
-                if (markAsKnown && row.IsUnknown)
-                    row.IsUnknown = false;
+                // Only promote Unknown -> Known. Never override Important or Blocked.
+                if (markAsKnown && row.Status == AddressStatus.Unknown)
+                    row.Status = AddressStatus.Known;
             }
             else
             {
@@ -79,8 +81,7 @@ public class AddressExtractor : IAddressExtractor
                     UserId = userId,
                     NormalizedEmail = normalized,
                     DisplayName = displayName,
-                    IsUnknown = !markAsKnown,
-                    IsBlocked = false,
+                    Status = markAsKnown ? AddressStatus.Known : AddressStatus.Unknown,
                     FirstSeenAt = now,
                     LastSeenAt = now,
                     SeenCount = 1,

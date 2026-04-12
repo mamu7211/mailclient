@@ -210,4 +210,7 @@
   <data name="AddressAlreadyLinked" xml:space="preserve">
     <value>Adresse ist bereits mit einem Kontakt verknüpft.</value>
   </data>
+  <data name="AddressStatusInvalid" xml:space="preserve">
+    <value>Ungültiger Adress-Status-Wert.</value>
+  </data>
 </root>

@@ -27,7 +27,6 @@
                 <TableColumn>@L["AddressBookColumnName"]</TableColumn>
                 <TableColumn>@L["AddressBookColumnEmail"]</TableColumn>
                 <TableColumn Width="6rem">@L["AddressBookColumnAddresses"]</TableColumn>
-                <TableColumn Width="8rem">@L["AddressBookColumnStatus"]</TableColumn>
             </TableHeader>
             <TableBody>
                 @foreach (var contact in _contacts.Items)
@@ -36,21 +35,10 @@
                         <TableCell>
                             <PersonChip Name="@contact.DisplayName"
                                         Email="@contact.PrimaryEmail"
-                                        Size="PersonChipSize.Small"
-                                        Status="@(contact.IsImportant ? RecipientStatus.Important : RecipientStatus.Known)" />
+                                        Size="PersonChipSize.Small" />
                         </TableCell>
                         <TableCell>@(contact.PrimaryEmail ?? string.Empty)</TableCell>
                         <TableCell>@contact.AddressCount</TableCell>
-                        <TableCell>
-                            @if (contact.IsImportant)
-                            {
-                                <span class="badge bg-warning text-dark">@L["AddressBookStatusImportant"]</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">@L["AddressBookStatusKnown"]</span>
-                            }
-                        </TableCell>
                     </TableRow>
                 }
             </TableBody>
@@ -92,7 +80,7 @@
                             <PersonChip Name="@addr.DisplayName"
                                         Email="@addr.NormalizedEmail"
                                         Size="PersonChipSize.Mini"
-                                        Status="@StatusForAddress(addr)" />
+                                        Status="@addr.Status" />
                         </TableCell>
                         <TableCell>
                             @if (addr.ContactDisplayName is not null)
@@ -104,7 +92,7 @@
                                 <span class="text-muted small">@L["AddressDetailNoContact"]</span>
                             }
                         </TableCell>
-                        <TableCell>@StatusLabel(addr)</TableCell>
+                        <TableCell>@StatusLabel(addr.Status)</TableCell>
                         <TableCell>@addr.SeenCount</TableCell>
                         <TableCell>@addr.LastSeenAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</TableCell>
                     </TableRow>
@@ -188,19 +176,11 @@
     private void NavigateToAddress(Guid id) =>
         Navigation.NavigateTo($"/address-book/addresses/{id}");
 
-    private RecipientStatus StatusForAddress(AddressResponse a)
+    private string StatusLabel(AddressStatus s) => s switch
     {
-        if (a.IsBlocked) return RecipientStatus.Blocked;
-        if (a.IsImportant) return RecipientStatus.Important;
-        if (a.IsUnknown) return RecipientStatus.Unknown;
-        return RecipientStatus.Known;
-    }
-
-    private string StatusLabel(AddressResponse a) => StatusForAddress(a) switch
-    {
-        RecipientStatus.Blocked => L["AddressBookStatusBlocked"],
-        RecipientStatus.Important => L["AddressBookStatusImportant"],
-        RecipientStatus.Unknown => L["AddressBookStatusUnknown"],
+        AddressStatus.Blocked => L["AddressBookStatusBlocked"],
+        AddressStatus.Important => L["AddressBookStatusImportant"],
+        AddressStatus.Unknown => L["AddressBookStatusUnknown"],
         _ => L["AddressBookStatusKnown"]
     };
 }

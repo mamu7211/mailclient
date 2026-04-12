@@ -1,3 +1,5 @@
+using Feirb.Shared.AddressBook;
+
 namespace Feirb.Api.Data.Entities;
 
 public class Address
@@ -9,8 +11,7 @@ public class Address
     public Contact? Contact { get; set; }
     public required string NormalizedEmail { get; set; }
     public required string DisplayName { get; set; }
-    public bool IsUnknown { get; set; } = true;
-    public bool IsBlocked { get; set; }
+    public AddressStatus Status { get; set; } = AddressStatus.Unknown;
     public DateTime FirstSeenAt { get; set; }
     public DateTime LastSeenAt { get; set; }
     public int SeenCount { get; set; }
