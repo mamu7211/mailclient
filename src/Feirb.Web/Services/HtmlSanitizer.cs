@@ -6,11 +6,13 @@ namespace Feirb.Web.Services;
 /// Sanitizes HTML for incoming (received) mail display.
 ///
 /// Extends the shared base (<see cref="HtmlSanitizerBase"/>) with:
-///   - data: URI scheme — allowed for inline images already embedded in mail.
+///   - data: URI scheme — enabled at scheme level but restricted via FilterUrl
+///     to img tags only; data: URIs on other elements (e.g., a href) are
+///     stripped to prevent phishing.
 ///   - Blocked media tags (video, audio, source, picture, link) — prevents
 ///     auto-loading external media content in the browser.
-///   - External image URL filter — only data: URIs pass on img tags;
-///     remote image URLs are stripped to prevent tracking pixels.
+///   - External image URL filter — remote image URLs are stripped to prevent
+///     tracking pixels.
 /// </summary>
 public static class HtmlSanitizer
 {
@@ -23,7 +25,8 @@ public static class HtmlSanitizer
     {
         var sanitizer = HtmlSanitizerBase.CreateBaseSanitizer();
 
-        // Allow data: URIs for inline images already embedded in the mail body.
+        // Allow data: scheme so the FilterUrl callback can selectively permit
+        // data: URIs on img tags while stripping them everywhere else.
         sanitizer.AllowedSchemes.Add("data");
 
         // Block tags that auto-load external media content in the browser.
@@ -33,14 +36,25 @@ public static class HtmlSanitizer
         sanitizer.AllowedTags.Remove("picture");
         sanitizer.AllowedTags.Remove("link");
 
-        // Block external image sources — only allow data: URIs on img tags
-        // to prevent tracking pixels and remote content loading.
+        // Filter URLs: allow data: URIs only on img src (inline images),
+        // block all external URLs on img tags (tracking pixel protection),
+        // and strip data: URIs on all other elements (phishing prevention).
         sanitizer.FilterUrl += (_, e) =>
         {
-            if (e.OriginalUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
-                return;
+            var isDataUri = e.OriginalUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase);
+            var isImgTag = string.Equals(e.Tag.LocalName, "img", StringComparison.OrdinalIgnoreCase);
 
-            // Block external URLs on img tags
+            if (isDataUri)
+            {
+                // Allow data: URIs only on img tags (inline images);
+                // strip on all other elements (e.g., a href) to prevent phishing.
+                if (!isImgTag)
+                    e.SanitizedUrl = null;
+
+                return;
+            }
+
+            // Block external URLs on img tags (tracking pixel protection)
             if (string.Equals(e.Tag.LocalName, "img", StringComparison.OrdinalIgnoreCase))
                 e.SanitizedUrl = null;
         };

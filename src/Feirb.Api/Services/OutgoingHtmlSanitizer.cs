@@ -6,8 +6,9 @@ namespace Feirb.Api.Services;
 /// Sanitizes HTML for outgoing (composed) mail.
 ///
 /// Extends the shared base (<see cref="HtmlSanitizerBase"/>) with:
-///   - data: URI scheme — allowed so users can embed inline images
-///     (e.g., pasted screenshots) in composed messages.
+///   - data: URI scheme — enabled at scheme level but restricted via FilterUrl
+///     to img tags only (for user-pasted screenshots); data: URIs on other
+///     elements (e.g., a href) are stripped to prevent phishing.
 /// </summary>
 public static class OutgoingHtmlSanitizer
 {
@@ -20,8 +21,22 @@ public static class OutgoingHtmlSanitizer
     {
         var sanitizer = HtmlSanitizerBase.CreateBaseSanitizer();
 
-        // Outgoing mail may contain user-pasted inline images as data: URIs.
+        // Allow data: scheme so the FilterUrl callback can selectively permit
+        // data: URIs on img tags while stripping them everywhere else.
         sanitizer.AllowedSchemes.Add("data");
+
+        // Allow data: URIs only on img tags for user-pasted inline images;
+        // strip data: URIs on all other elements to prevent phishing vectors.
+        sanitizer.FilterUrl += (_, e) =>
+        {
+            if (!e.OriginalUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var isImgTag = string.Equals(e.Tag.LocalName, "img", StringComparison.OrdinalIgnoreCase);
+
+            if (!isImgTag)
+                e.SanitizedUrl = null;
+        };
 
         return sanitizer;
     }
