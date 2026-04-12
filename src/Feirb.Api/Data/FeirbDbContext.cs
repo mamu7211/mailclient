@@ -23,6 +23,7 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
     public DbSet<Avatar> Avatars => Set<Avatar>();
     public DbSet<Contact> Contacts => Set<Contact>();
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<JobExecutionLog> JobExecutionLogs => Set<JobExecutionLog>();
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -198,6 +199,21 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
             entity.HasOne(e => e.JobSettings)
                 .WithMany(j => j.Executions)
                 .HasForeignKey(e => e.JobSettingsId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<JobExecutionLog>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.JobExecutionId);
+            entity.Property(e => e.Level)
+                .HasConversion<string>()
+                .HasMaxLength(20);
+            entity.Property(e => e.Message).HasMaxLength(4096);
+            entity.Property(e => e.Metadata).HasMaxLength(4096);
+            entity.HasOne(e => e.JobExecution)
+                .WithMany(je => je.Logs)
+                .HasForeignKey(e => e.JobExecutionId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
