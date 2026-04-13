@@ -1327,31 +1327,31 @@
     <value>Toutes les heures</value>
   </data>
   <data name="JobDetailPageTitle" xml:space="preserve">
-    <value>Parametres du job</value>
+    <value>Paramètres du job</value>
   </data>
   <data name="JobDetailSubtitle" xml:space="preserve">
-    <value>Configurer la planification et voir l'historique des executions</value>
+    <value>Configurer la planification et voir l'historique des exécutions</value>
   </data>
   <data name="JobDetailHelp" xml:space="preserve">
-    <value>Modifier la planification cron, activer ou desactiver le job, declencher une execution manuelle et consulter les executions passees.</value>
+    <value>Modifier la planification cron, activer ou désactiver le job, déclencher une exécution manuelle et consulter les exécutions passées.</value>
   </data>
   <data name="JobDetailSectionSchedule" xml:space="preserve">
     <value>Planification</value>
   </data>
   <data name="JobDetailSectionScheduleSubtitle" xml:space="preserve">
-    <value>Configurer quand ce job s'execute</value>
+    <value>Configurer quand ce job s'exécute</value>
   </data>
   <data name="JobDetailSectionHistory" xml:space="preserve">
-    <value>Historique des executions</value>
+    <value>Historique des exécutions</value>
   </data>
   <data name="JobDetailSectionHistorySubtitle" xml:space="preserve">
-    <value>Executions passees de ce job</value>
+    <value>Exécutions passées de ce job</value>
   </data>
   <data name="ColumnTimestamp" xml:space="preserve">
     <value>Horodatage</value>
   </data>
   <data name="ColumnDuration" xml:space="preserve">
-    <value>Duree</value>
+    <value>Durée</value>
   </data>
   <data name="ColumnStatus" xml:space="preserve">
     <value>Statut</value>
@@ -1360,64 +1360,64 @@
     <value>Erreur</value>
   </data>
   <data name="JobDetailNoExecutions" xml:space="preserve">
-    <value>Aucune execution enregistree pour le moment.</value>
+    <value>Aucune exécution enregistrée pour le moment.</value>
   </data>
   <data name="ButtonRunNow" xml:space="preserve">
-    <value>Executer maintenant</value>
+    <value>Exécuter maintenant</value>
   </data>
   <data name="JobRunNowSuccess" xml:space="preserve">
-    <value>Job declenche avec succes.</value>
+    <value>Job déclenché avec succès.</value>
   </data>
   <data name="JobRunNowFailed" xml:space="preserve">
-    <value>Impossible de declencher le job.</value>
+    <value>Impossible de déclencher le job.</value>
   </data>
   <data name="JobDetailLoadFailed" xml:space="preserve">
-    <value>Impossible de charger les details du job.</value>
+    <value>Impossible de charger les détails du job.</value>
   </data>
   <data name="JobDetailNotFound" xml:space="preserve">
     <value>Job introuvable.</value>
   </data>
   <data name="JobDetailExecutionsLoadFailed" xml:space="preserve">
-    <value>Impossible de charger l'historique des executions.</value>
+    <value>Impossible de charger l'historique des exécutions.</value>
   </data>
   <data name="JobDetailRunning" xml:space="preserve">
     <value>En cours...</value>
   </data>
   <data name="ExecutionDetailPageTitle" xml:space="preserve">
-    <value>Details de l'execution</value>
+    <value>Détails de l'exécution</value>
   </data>
   <data name="ExecutionDetailSubtitle" xml:space="preserve">
-    <value>Entrees de journal pour cette execution de tache</value>
+    <value>Entrées de journal pour cette exécution de tâche</value>
   </data>
   <data name="ExecutionDetailHelp" xml:space="preserve">
-    <value>Consultez les entrees de journal detaillees produites lors de cette execution. Chaque entree indique l'horodatage, le niveau de gravite et le message.</value>
+    <value>Consultez les entrées de journal détaillées produites lors de cette exécution. Chaque entrée indique l'horodatage, le niveau de gravité et le message.</value>
   </data>
   <data name="ExecutionDetailSectionHeader" xml:space="preserve">
-    <value>Resume de l'execution</value>
+    <value>Résumé de l'exécution</value>
   </data>
   <data name="ExecutionDetailSectionHeaderSubtitle" xml:space="preserve">
-    <value>Apercu de cette execution</value>
+    <value>Aperçu de cette exécution</value>
   </data>
   <data name="ExecutionDetailSectionLogs" xml:space="preserve">
-    <value>Entrees de journal</value>
+    <value>Entrées de journal</value>
   </data>
   <data name="ExecutionDetailSectionLogsSubtitle" xml:space="preserve">
-    <value>Messages produits pendant l'execution</value>
+    <value>Messages produits pendant l'exécution</value>
   </data>
   <data name="ExecutionDetailNotFound" xml:space="preserve">
     <value>Execution introuvable.</value>
   </data>
   <data name="ExecutionDetailLoadFailed" xml:space="preserve">
-    <value>Echec du chargement des details de l'execution.</value>
+    <value>Échec du chargement des détails de l'exécution.</value>
   </data>
   <data name="ExecutionDetailLogsLoadFailed" xml:space="preserve">
-    <value>Echec du chargement des journaux d'execution.</value>
+    <value>Échec du chargement des journaux d'exécution.</value>
   </data>
   <data name="ExecutionDetailNoLogs" xml:space="preserve">
-    <value>Aucune entree de journal pour cette execution.</value>
+    <value>Aucune entrée de journal pour cette exécution.</value>
   </data>
   <data name="ExecutionDetailDuration" xml:space="preserve">
-    <value>Duree</value>
+    <value>Durée</value>
   </data>
   <data name="ColumnLevel" xml:space="preserve">
     <value>Niveau</value>

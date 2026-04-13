@@ -31,9 +31,13 @@
         </div>
     </div>
 }
+else if (_notFound)
+{
+    <StatusMessage Icon="question-circle" Title="@L["ExecutionDetailNotFound"]" Message="@L["ExecutionDetailNotFound"]" />
+}
 else if (_execution is null)
 {
-    <StatusMessage Icon="question-circle" Title="@L["ExecutionDetailNotFound"]" Message="@L["ExecutionDetailLoadFailed"]" />
+    <StatusMessage Icon="exclamation-triangle" Title="@L["ExecutionDetailLoadFailed"]" Message="@L["ExecutionDetailLoadFailed"]" />
 }
 else
 {
@@ -121,6 +125,7 @@ else
     private JobExecutionResponse? _execution;
     private PaginatedJobExecutionLogsResponse? _logs;
     private bool _isLoading = true;
+    private bool _notFound;
     private bool _logsLoading;
     private string? _errorMessage;
     private int _logsPage = 1;
@@ -152,14 +157,15 @@ else
     {
         try
         {
-            var executions = await Http.GetFromJsonAsync<PaginatedJobExecutionsResponse>(
-                $"/api/jobs/{JobId}/executions?page=1&pageSize=100");
-
-            _execution = executions?.Items.FirstOrDefault(e => e.Id == ExecutionId);
+            var response = await Http.GetAsync($"/api/jobs/{JobId}/executions/{ExecutionId}");
+            if (response.IsSuccessStatusCode)
+            {
+                _execution = await response.Content.ReadFromJsonAsync<JobExecutionResponse>();
+            }
 
             if (_execution is null)
             {
-                _errorMessage = L["ExecutionDetailNotFound"];
+                _notFound = true;
             }
             else
             {

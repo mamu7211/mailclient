@@ -82,7 +82,9 @@ else if (_model is not null)
                 <TableBody>
                     @foreach (var exec in _executions.Items)
                     {
-                        <TableRow OnClick="() => NavigateToExecution(exec.Id)">
+                        <TableRow OnClick="() => NavigateToExecution(exec.Id)"
+                                  tabindex="0"
+                                  OnKeyDown="@(e => { if (e.Key is "Enter" or " ") NavigateToExecution(exec.Id); })">
                             <TableCell>
                                 <DateTimeChip Value="exec.StartedAt" />
                             </TableCell>

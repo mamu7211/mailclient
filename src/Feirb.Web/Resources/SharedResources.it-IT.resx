@@ -1390,7 +1390,7 @@
     <value>Voci di registro per questa esecuzione del processo</value>
   </data>
   <data name="ExecutionDetailHelp" xml:space="preserve">
-    <value>Visualizza le voci di registro dettagliate prodotte durante questa esecuzione. Ogni voce mostra il timestamp, il livello di gravita e il messaggio.</value>
+    <value>Visualizza le voci di registro dettagliate prodotte durante questa esecuzione. Ogni voce mostra il timestamp, il livello di gravità e il messaggio.</value>
   </data>
   <data name="ExecutionDetailSectionHeader" xml:space="preserve">
     <value>Riepilogo esecuzione</value>

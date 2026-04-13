@@ -135,6 +135,9 @@
   <data name="JobNotFound" xml:space="preserve">
     <value>Job non trovato.</value>
   </data>
+  <data name="ExecutionNotFound" xml:space="preserve">
+    <value>Esecuzione non trovata.</value>
+  </data>
   <data name="JobConcurrencyConflict" xml:space="preserve">
     <value>Il job è stato modificato da un altro utente. Ricaricare e riprovare.</value>
   </data>

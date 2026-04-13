@@ -114,6 +114,32 @@ public class JobService(
         return new PaginatedJobExecutionsResponse(items, totalCount, page, pageSize);
     }
 
+    public async Task<JobExecutionResponse?> GetExecutionByIdAsync(
+        Guid jobId, Guid executionId, Guid userId, bool isAdmin,
+        CancellationToken cancellationToken = default)
+    {
+        var job = await db.JobSettings.AsNoTracking()
+            .FirstOrDefaultAsync(j => j.Id == jobId, cancellationToken);
+
+        if (job is null)
+            return null;
+
+        if (!isAdmin && (job.UserId == null || job.UserId != userId))
+            return null;
+
+        var execution = await db.JobExecutions.AsNoTracking()
+            .Where(e => e.Id == executionId && e.JobSettingsId == jobId)
+            .Select(e => new JobExecutionResponse(
+                e.Id,
+                e.StartedAt,
+                e.FinishedAt,
+                e.Status.ToString(),
+                e.Error))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return execution;
+    }
+
     public async Task<PaginatedJobExecutionLogsResponse?> GetExecutionLogsAsync(
         Guid jobId, Guid executionId, Guid userId, bool isAdmin, int page, int pageSize,
         CancellationToken cancellationToken = default)
@@ -124,7 +150,7 @@ public class JobService(
         if (job is null)
             return null;
 
-        if (!isAdmin && job.UserId != userId && job.UserId != null)
+        if (!isAdmin && (job.UserId == null || job.UserId != userId))
             return null;
 
         var executionExists = await db.JobExecutions.AsNoTracking()
