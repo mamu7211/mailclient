@@ -6,7 +6,7 @@ namespace Feirb.Api.Services;
 public class ImapSyncJob(IServiceScopeFactory scopeFactory, ILogger<ImapSyncJob> logger)
     : ManagedJob(scopeFactory, logger)
 {
-    protected override async Task RunAsync(
+    protected override async Task<JobRunResult> RunAsync(
         IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(jobSettings);
@@ -14,10 +14,11 @@ public class ImapSyncJob(IServiceScopeFactory scopeFactory, ILogger<ImapSyncJob>
         if (jobSettings.ResourceId is not { } mailboxId)
         {
             logger.LogWarning("ImapSyncJob '{JobName}' has no ResourceId, skipping", jobSettings.JobName);
-            return;
+            return JobRunResult.Succeeded;
         }
 
         var syncService = serviceProvider.GetRequiredService<IImapSyncService>();
         await syncService.SyncMailboxAsync(mailboxId, cancellationToken);
+        return JobRunResult.Succeeded;
     }
 }

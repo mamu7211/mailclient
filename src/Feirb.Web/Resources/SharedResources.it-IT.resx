@@ -1383,6 +1383,48 @@
   <data name="JobDetailRunning" xml:space="preserve">
     <value>In esecuzione...</value>
   </data>
+  <data name="ExecutionDetailPageTitle" xml:space="preserve">
+    <value>Dettagli esecuzione</value>
+  </data>
+  <data name="ExecutionDetailSubtitle" xml:space="preserve">
+    <value>Voci di registro per questa esecuzione del processo</value>
+  </data>
+  <data name="ExecutionDetailHelp" xml:space="preserve">
+    <value>Visualizza le voci di registro dettagliate prodotte durante questa esecuzione. Ogni voce mostra il timestamp, il livello di gravita e il messaggio.</value>
+  </data>
+  <data name="ExecutionDetailSectionHeader" xml:space="preserve">
+    <value>Riepilogo esecuzione</value>
+  </data>
+  <data name="ExecutionDetailSectionHeaderSubtitle" xml:space="preserve">
+    <value>Panoramica di questa esecuzione</value>
+  </data>
+  <data name="ExecutionDetailSectionLogs" xml:space="preserve">
+    <value>Voci di registro</value>
+  </data>
+  <data name="ExecutionDetailSectionLogsSubtitle" xml:space="preserve">
+    <value>Messaggi prodotti durante l'esecuzione</value>
+  </data>
+  <data name="ExecutionDetailNotFound" xml:space="preserve">
+    <value>Esecuzione non trovata.</value>
+  </data>
+  <data name="ExecutionDetailLoadFailed" xml:space="preserve">
+    <value>Impossibile caricare i dettagli dell'esecuzione.</value>
+  </data>
+  <data name="ExecutionDetailLogsLoadFailed" xml:space="preserve">
+    <value>Impossibile caricare i registri di esecuzione.</value>
+  </data>
+  <data name="ExecutionDetailNoLogs" xml:space="preserve">
+    <value>Nessuna voce di registro per questa esecuzione.</value>
+  </data>
+  <data name="ExecutionDetailDuration" xml:space="preserve">
+    <value>Durata</value>
+  </data>
+  <data name="ColumnLevel" xml:space="preserve">
+    <value>Livello</value>
+  </data>
+  <data name="ColumnMessage" xml:space="preserve">
+    <value>Messaggio</value>
+  </data>
   <data name="CronInputInvalid" xml:space="preserve">
     <value>Espressione cron Quartz non valida.</value>
   </data>

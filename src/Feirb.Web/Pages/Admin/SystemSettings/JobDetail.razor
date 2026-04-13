@@ -72,7 +72,7 @@ else if (_model is not null)
         }
         else
         {
-            <Table>
+            <Table Hover>
                 <TableHeader>
                     <TableColumn Width="12rem">@L["ColumnTimestamp"]</TableColumn>
                     <TableColumn Width="8rem">@L["ColumnDuration"]</TableColumn>
@@ -82,7 +82,7 @@ else if (_model is not null)
                 <TableBody>
                     @foreach (var exec in _executions.Items)
                     {
-                        <TableRow>
+                        <TableRow OnClick="() => NavigateToExecution(exec.Id)">
                             <TableCell>
                                 <DateTimeChip Value="exec.StartedAt" />
                             </TableCell>
@@ -309,6 +309,9 @@ else if (_model is not null)
         _execPage = 1;
         await LoadExecutionsAsync();
     }
+
+    private void NavigateToExecution(Guid executionId) =>
+        Navigation.NavigateTo($"/admin/jobs/{Id}/executions/{executionId}");
 
     private static string FormatDuration(DateTimeOffset start, DateTimeOffset? end)
     {

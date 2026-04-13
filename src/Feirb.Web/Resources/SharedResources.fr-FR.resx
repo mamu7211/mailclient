@@ -1383,6 +1383,48 @@
   <data name="JobDetailRunning" xml:space="preserve">
     <value>En cours...</value>
   </data>
+  <data name="ExecutionDetailPageTitle" xml:space="preserve">
+    <value>Details de l'execution</value>
+  </data>
+  <data name="ExecutionDetailSubtitle" xml:space="preserve">
+    <value>Entrees de journal pour cette execution de tache</value>
+  </data>
+  <data name="ExecutionDetailHelp" xml:space="preserve">
+    <value>Consultez les entrees de journal detaillees produites lors de cette execution. Chaque entree indique l'horodatage, le niveau de gravite et le message.</value>
+  </data>
+  <data name="ExecutionDetailSectionHeader" xml:space="preserve">
+    <value>Resume de l'execution</value>
+  </data>
+  <data name="ExecutionDetailSectionHeaderSubtitle" xml:space="preserve">
+    <value>Apercu de cette execution</value>
+  </data>
+  <data name="ExecutionDetailSectionLogs" xml:space="preserve">
+    <value>Entrees de journal</value>
+  </data>
+  <data name="ExecutionDetailSectionLogsSubtitle" xml:space="preserve">
+    <value>Messages produits pendant l'execution</value>
+  </data>
+  <data name="ExecutionDetailNotFound" xml:space="preserve">
+    <value>Execution introuvable.</value>
+  </data>
+  <data name="ExecutionDetailLoadFailed" xml:space="preserve">
+    <value>Echec du chargement des details de l'execution.</value>
+  </data>
+  <data name="ExecutionDetailLogsLoadFailed" xml:space="preserve">
+    <value>Echec du chargement des journaux d'execution.</value>
+  </data>
+  <data name="ExecutionDetailNoLogs" xml:space="preserve">
+    <value>Aucune entree de journal pour cette execution.</value>
+  </data>
+  <data name="ExecutionDetailDuration" xml:space="preserve">
+    <value>Duree</value>
+  </data>
+  <data name="ColumnLevel" xml:space="preserve">
+    <value>Niveau</value>
+  </data>
+  <data name="ColumnMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
   <data name="CronInputInvalid" xml:space="preserve">
     <value>Expression cron Quartz invalide.</value>
   </data>

@@ -158,6 +158,37 @@ public class ManagedJobTests : IDisposable
     }
 
     [Fact]
+    public async Task Execute_RunReturnsFailure_RecordsFailedStatusAsync()
+    {
+        var jobSettingsId = SeedJobSettings();
+        var job = CreateResultTestJob(JobRunResult.Failure("All items failed"));
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var execution = await db.JobExecutions.AsNoTracking().FirstAsync(e => e.JobSettingsId == jobSettingsId);
+        execution.Status.Should().Be(JobExecutionStatus.Failed);
+        execution.Error.Should().Be("All items failed");
+
+        var updated = await db.JobSettings.AsNoTracking().FirstAsync(j => j.Id == jobSettingsId);
+        updated.LastStatus.Should().Be(JobExecutionStatus.Failed);
+    }
+
+    [Fact]
+    public async Task Execute_RunReturnsSuccess_RecordsSuccessStatusAsync()
+    {
+        var jobSettingsId = SeedJobSettings();
+        var job = CreateResultTestJob(JobRunResult.Succeeded);
+
+        await job.Execute(CreateJobContext());
+
+        using var db = new FeirbDbContext(_dbOptions);
+        var execution = await db.JobExecutions.AsNoTracking().FirstAsync(e => e.JobSettingsId == jobSettingsId);
+        execution.Status.Should().Be(JobExecutionStatus.Success);
+        execution.Error.Should().BeNull();
+    }
+
+    [Fact]
     public async Task LogAsync_WritesLogEntryForCurrentExecutionAsync()
     {
         var jobSettingsId = SeedJobSettings();
@@ -222,6 +253,13 @@ public class ManagedJobTests : IDisposable
         return new TestManagedJob(scopeFactory, logger, succeeds, errorMessage);
     }
 
+    private ResultTestManagedJob CreateResultTestJob(JobRunResult result)
+    {
+        var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        var logger = NullLoggerFactory.Instance.CreateLogger<ResultTestManagedJob>();
+        return new ResultTestManagedJob(scopeFactory, logger, result);
+    }
+
     private LoggingTestManagedJob CreateLoggingTestJob()
     {
         var scopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -244,22 +282,32 @@ public class ManagedJobTests : IDisposable
         bool succeeds,
         string? errorMessage) : ManagedJob(scopeFactory, logger)
     {
-        protected override Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
+        protected override Task<JobRunResult> RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
         {
             if (!succeeds)
                 throw new InvalidOperationException(errorMessage ?? "Test failure");
-            return Task.CompletedTask;
+            return Task.FromResult(JobRunResult.Succeeded);
         }
+    }
+
+    private sealed class ResultTestManagedJob(
+        IServiceScopeFactory scopeFactory,
+        ILogger logger,
+        JobRunResult result) : ManagedJob(scopeFactory, logger)
+    {
+        protected override Task<JobRunResult> RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken) =>
+            Task.FromResult(result);
     }
 
     private sealed class LoggingTestManagedJob(
         IServiceScopeFactory scopeFactory,
         ILogger logger) : ManagedJob(scopeFactory, logger)
     {
-        protected override async Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
+        protected override async Task<JobRunResult> RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
         {
             await LogAsync(JobExecutionLogLevel.Info, "Test info log", cancellationToken: cancellationToken);
             await LogAsync(JobExecutionLogLevel.Warning, "Test warning log", metadata: "{\"key\":\"value\"}", cancellationToken: cancellationToken);
+            return JobRunResult.Succeeded;
         }
     }
 }
