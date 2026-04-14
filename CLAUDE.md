@@ -162,6 +162,8 @@ Shell scripts in `.claude/skills/dev-harness/` for autonomous app interaction:
 - Endpoint groups: `/api/mail`, `/api/folders`, `/api/settings`, `/api/ai`
 - Return `Results<T>` types for explicit HTTP response modeling
 - All request/response DTOs in `Feirb.Shared`
+- **Data belongs on the server, not in the client.** If the frontend needs specific data, create a dedicated API endpoint that returns exactly that data. Never fetch a broad list and filter client-side — it breaks at pagination boundaries, wastes bandwidth, and couples the UI to assumptions about data volume.
+- **Every endpoint must enforce authorization.** No endpoint may return data the requesting user is not authorized to see. Prefer dedicated endpoints for admin and user contexts when the requirements differ. When a shared endpoint avoids duplication, it must filter server-side based on the authenticated user — admin sees all, regular users see only their own data. Authorization is never optional or deferred.
 
 ## LLM Integration
 
