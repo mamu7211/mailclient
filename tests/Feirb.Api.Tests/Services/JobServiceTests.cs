@@ -198,7 +198,7 @@ public class JobServiceTests : IDisposable
         var jobName = job.JobName;
 
         var sut = CreateService(scheduler: mockScheduler);
-        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", false, rowVersion);
+        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", false, null, rowVersion);
         var result = await sut.UpdateAsync(jobId, request, _adminUserId, isAdmin: true);
 
         result.Should().NotBeNull();
@@ -213,7 +213,7 @@ public class JobServiceTests : IDisposable
         using var db = new FeirbDbContext(_dbOptions);
         var rowVersion = db.JobSettings.First().RowVersion;
 
-        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", true, rowVersion);
+        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", true, null, rowVersion);
         var result = await _sut.UpdateAsync(jobId, request, _regularUserId, isAdmin: false);
 
         result.Should().BeNull();

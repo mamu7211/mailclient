@@ -216,10 +216,4 @@
   <data name="AddressStatusInvalid" xml:space="preserve">
     <value>Valore di stato indirizzo non valido.</value>
   </data>
-  <data name="JobSettingsNotFound" xml:space="preserve">
-    <value>Impostazioni del job non trovate.</value>
-  </data>
-  <data name="RetentionDaysMustBePositive" xml:space="preserve">
-    <value>I giorni di conservazione devono essere un numero positivo.</value>
-  </data>
 </root>

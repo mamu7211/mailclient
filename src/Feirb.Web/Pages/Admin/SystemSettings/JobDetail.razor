@@ -1,5 +1,6 @@
 @page "/admin/jobs/{Id:guid}"
 @attribute [Authorize(Policy = "RequireAdmin")]
+@using System.Text.Json
 @using Feirb.Shared.Admin.Jobs
 @using Feirb.Web.Services
 @inject HttpClient Http
@@ -55,6 +56,18 @@ else if (_model is not null)
                     @bind-Value="_model.Enabled"
                     For="() => _model.Enabled" />
         </ContentSection>
+
+        @if (_job?.JobType == "log-retention-cleanup")
+        {
+            <ContentSection Icon="gear" Title="@L["JobDetailSectionConfiguration"]" Subtitle="@L["JobDetailSectionConfigurationSubtitle"]">
+                <div class="mb-3">
+                    <label for="retentionDays" class="form-label">@L["JobRetentionDaysLabel"]</label>
+                    <InputNumber id="retentionDays" class="form-control" style="max-width: 12rem;"
+                                 @bind-Value="_model.RetentionDays" data-testid="retention-days" />
+                    <div class="form-text">@L["JobRetentionDaysHelp"]</div>
+                </div>
+            </ContentSection>
+        }
     </TrackedEditForm>
 
     <ContentSection Icon="clock-history" Title="@L["JobDetailSectionHistory"]" Subtitle="@L["JobDetailSectionHistorySubtitle"]">
@@ -184,7 +197,12 @@ else if (_model is not null)
                 return;
             }
 
-            _model = new JobFormModel { Cron = _job.Cron, Enabled = _job.Enabled };
+            _model = new JobFormModel
+            {
+                Cron = _job.Cron,
+                Enabled = _job.Enabled,
+                RetentionDays = ParseRetentionDays(_job.Configuration),
+            };
 
             var matchingPreset = _presetCrons.FirstOrDefault(p => p.Value == _job.Cron);
             _selectedPreset = matchingPreset.Key ?? "custom";
@@ -228,7 +246,8 @@ else if (_model is not null)
         try
         {
             var effectiveCron = _presetCrons.TryGetValue(_selectedPreset, out var cron) ? cron : _model.Cron;
-            var request = new UpdateJobSettingsRequest(effectiveCron!, _model.Enabled, _job.RowVersion);
+            var configuration = BuildConfiguration(_job, _model);
+            var request = new UpdateJobSettingsRequest(effectiveCron!, _model.Enabled, configuration, _job.RowVersion);
             var response = await Http.PutAsJsonAsync($"/api/jobs/{Id}", request);
 
             if (response.IsSuccessStatusCode)
@@ -338,12 +357,40 @@ else if (_model is not null)
     private static string Truncate(string text, int maxLength) =>
         text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength), "...");
 
+    private static int ParseRetentionDays(string? configuration)
+    {
+        if (string.IsNullOrEmpty(configuration))
+            return 30;
+
+        try
+        {
+            using var doc = JsonDocument.Parse(configuration);
+            if (doc.RootElement.TryGetProperty("retentionDays", out var element)
+                && element.TryGetInt32(out var days) && days > 0)
+                return days;
+        }
+        catch (JsonException) { }
+
+        return 30;
+    }
+
+    private static string? BuildConfiguration(JobSettingsResponse job, JobFormModel model)
+    {
+        if (job.JobType == "log-retention-cleanup")
+            return JsonSerializer.Serialize(new { retentionDays = model.RetentionDays });
+
+        return job.Configuration;
+    }
+
     private sealed class JobFormModel
     {
         [System.ComponentModel.DataAnnotations.Required]
         public string? Cron { get; set; }
 
         public bool Enabled { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Range(1, 3650)]
+        public int RetentionDays { get; set; } = 30;
     }
 
     private sealed record ErrorResponse(string Message);

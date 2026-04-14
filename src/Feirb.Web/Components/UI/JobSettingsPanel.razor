@@ -179,7 +179,7 @@ else
         _isSaving = true;
         try
         {
-            var request = new UpdateJobSettingsRequest(cron, enabled, job.RowVersion);
+            var request = new UpdateJobSettingsRequest(cron, enabled, job.Configuration, job.RowVersion);
             var response = await Http.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
 
             if (response.IsSuccessStatusCode)

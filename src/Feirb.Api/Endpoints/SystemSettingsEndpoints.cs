@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Feirb.Api.Data;
 using Feirb.Api.Resources;
 using Feirb.Shared.Admin;
@@ -10,15 +9,11 @@ namespace Feirb.Api.Endpoints;
 
 public static class SystemSettingsEndpoints
 {
-    private const string _logRetentionCleanupJobType = "log-retention-cleanup";
-    private const int _defaultRetentionDays = 30;
 
     public static RouteGroupBuilder MapSystemSettingsEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/smtp", GetSmtpSettingsAsync);
         group.MapPut("/smtp", UpdateSmtpSettingsAsync);
-        group.MapGet("/job-retention", GetJobRetentionSettingsAsync);
-        group.MapPut("/job-retention", UpdateJobRetentionSettingsAsync);
         return group;
     }
 
@@ -75,52 +70,5 @@ public static class SystemSettingsEndpoints
             settings.Username,
             settings.FromAddress,
             settings.FromName));
-    }
-
-    private static async Task<IResult> GetJobRetentionSettingsAsync(
-        FeirbDbContext db,
-        IStringLocalizer<ApiMessages> localizer)
-    {
-        var job = await db.JobSettings
-            .FirstOrDefaultAsync(j => j.JobType == _logRetentionCleanupJobType);
-
-        var retentionDays = _defaultRetentionDays;
-        if (job?.Configuration is not null)
-        {
-            try
-            {
-                using var doc = JsonDocument.Parse(job.Configuration);
-                if (doc.RootElement.TryGetProperty("retentionDays", out var element)
-                    && element.TryGetInt32(out var days)
-                    && days > 0)
-                {
-                    retentionDays = days;
-                }
-            }
-            catch (JsonException) { }
-        }
-
-        return Results.Ok(new JobRetentionSettingsResponse(retentionDays));
-    }
-
-    private static async Task<IResult> UpdateJobRetentionSettingsAsync(
-        UpdateJobRetentionSettingsRequest request,
-        FeirbDbContext db,
-        IStringLocalizer<ApiMessages> localizer)
-    {
-        if (request.RetentionDays < 1)
-            return Results.BadRequest(new { message = localizer["RetentionDaysMustBePositive"].Value });
-
-        var job = await db.JobSettings
-            .FirstOrDefaultAsync(j => j.JobType == _logRetentionCleanupJobType);
-
-        if (job is null)
-            return Results.NotFound(new { message = localizer["JobSettingsNotFound"].Value });
-
-        job.Configuration = JsonSerializer.Serialize(new { retentionDays = request.RetentionDays });
-        job.RowVersion = Guid.NewGuid();
-        await db.SaveChangesAsync();
-
-        return Results.Ok(new JobRetentionSettingsResponse(request.RetentionDays));
     }
 }

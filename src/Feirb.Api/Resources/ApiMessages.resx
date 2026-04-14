@@ -216,10 +216,4 @@
   <data name="AddressStatusInvalid" xml:space="preserve">
     <value>Invalid address status value.</value>
   </data>
-  <data name="JobSettingsNotFound" xml:space="preserve">
-    <value>Job settings not found.</value>
-  </data>
-  <data name="RetentionDaysMustBePositive" xml:space="preserve">
-    <value>Retention days must be a positive number.</value>
-  </data>
 </root>

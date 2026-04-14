@@ -81,7 +81,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
-        var request = new UpdateJobSettingsRequest("0 */5 * * * ?", true, job.RowVersion);
+        var request = new UpdateJobSettingsRequest("0 */5 * * * ?", true, job.Configuration, job.RowVersion);
         var response = await _client.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -100,7 +100,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var jobs = await _client.GetFromJsonAsync<List<JobSettingsResponse>>("/api/jobs");
         var job = jobs![0];
 
-        var request = new UpdateJobSettingsRequest("not-a-cron", false, job.RowVersion);
+        var request = new UpdateJobSettingsRequest("not-a-cron", false, job.Configuration, job.RowVersion);
         var response = await _client.PutAsJsonAsync($"/api/jobs/{job.Id}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -112,7 +112,7 @@ public class JobSettingsEndpointsTests : IDisposable
         var tokens = await SetupAndLoginAsAdminAsync();
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
 
-        var request = new UpdateJobSettingsRequest("0 * * * * ?", true, Guid.Empty);
+        var request = new UpdateJobSettingsRequest("0 * * * * ?", true, null, Guid.Empty);
         var response = await _client.PutAsJsonAsync($"/api/jobs/{Guid.NewGuid()}", request);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
