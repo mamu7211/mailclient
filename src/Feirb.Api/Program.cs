@@ -82,6 +82,7 @@ builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete
 builder.Services.AddManagedJobInfrastructure();
 builder.Services.AddManagedJob<ImapSyncJob>("imap-sync");
 builder.Services.AddManagedJob<ClassificationJob>("classification");
+builder.Services.AddManagedJob<LogRetentionCleanupJob>("log-retention-cleanup");
 
 // AI / LLM — OllamaSharp via Aspire service discovery
 // Connection string name follows Aspire convention: "{ollama-resource}-{model-name}" (tag stripped)

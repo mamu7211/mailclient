@@ -42,10 +42,9 @@ public class JobSettingsEndpointsTests : IDisposable
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var jobs = await response.Content.ReadFromJsonAsync<List<JobSettingsResponse>>();
         jobs.Should().NotBeNull();
-        jobs.Should().ContainSingle();
-        jobs![0].JobName.Should().Be("Classification");
-        jobs[0].Enabled.Should().BeFalse();
-        jobs[0].Cron.Should().Be("0 * * * * ?");
+        jobs.Should().HaveCount(2);
+        jobs.Should().Contain(j => j.JobName == "Classification" && !j.Enabled && j.Cron == "0 * * * * ?");
+        jobs.Should().Contain(j => j.JobName == "Log Retention Cleanup" && j.Enabled && j.Cron == "0 0 3 * * ?");
     }
 
     [Fact]
@@ -68,8 +67,9 @@ public class JobSettingsEndpointsTests : IDisposable
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var jobs = await response.Content.ReadFromJsonAsync<List<JobSettingsResponse>>();
         jobs.Should().NotBeNull();
-        jobs.Should().ContainSingle();
-        jobs![0].JobName.Should().Be("Classification");
+        jobs.Should().HaveCount(2);
+        jobs.Should().Contain(j => j.JobName == "Classification");
+        jobs.Should().Contain(j => j.JobName == "Log Retention Cleanup");
     }
 
     [Fact]

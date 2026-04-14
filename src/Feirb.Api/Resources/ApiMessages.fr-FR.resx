@@ -216,4 +216,10 @@
   <data name="AddressStatusInvalid" xml:space="preserve">
     <value>Valeur de statut d'adresse invalide.</value>
   </data>
+  <data name="JobSettingsNotFound" xml:space="preserve">
+    <value>Paramètres du job introuvables.</value>
+  </data>
+  <data name="RetentionDaysMustBePositive" xml:space="preserve">
+    <value>Les jours de rétention doivent être un nombre positif.</value>
+  </data>
 </root>
