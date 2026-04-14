@@ -82,6 +82,9 @@
             "admin/user-management" => L["BreadcrumbUserManagement"],
             "admin/outgoing-smtp" => L["BreadcrumbOutgoingSmtp"],
             "admin/jobs" => L["BreadcrumbJobs"],
+            _ when fullPath.StartsWith("admin/jobs/", StringComparison.Ordinal)
+                && fullPath.Contains("/executions", StringComparison.Ordinal)
+                && segment == "executions" => L["JobDetailSectionHistory"],
             "admin/llm-settings" => L["BreadcrumbLlmSettings"],
             "admin/llm-settings/system-prompt" => L["BreadcrumbSystemPrompt"],
             "mail" => L["BreadcrumbMail"],
@@ -103,6 +106,9 @@
             "mail" => "/mail/inbox",
             "address-book/contacts" => "/address-book",
             "address-book/addresses" => "/address-book",
+            _ when fullPath.StartsWith("admin/jobs/", StringComparison.Ordinal)
+                && fullPath.EndsWith("/executions", StringComparison.Ordinal)
+                => $"/{fullPath[..fullPath.LastIndexOf("/executions", StringComparison.Ordinal)]}",
             _ => $"/{fullPath}"
         };
 

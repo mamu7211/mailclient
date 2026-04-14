@@ -1383,6 +1383,48 @@
   <data name="JobDetailRunning" xml:space="preserve">
     <value>Running...</value>
   </data>
+  <data name="ExecutionDetailPageTitle" xml:space="preserve">
+    <value>Execution Detail</value>
+  </data>
+  <data name="ExecutionDetailSubtitle" xml:space="preserve">
+    <value>Log entries for this job execution</value>
+  </data>
+  <data name="ExecutionDetailHelp" xml:space="preserve">
+    <value>View the detailed log entries produced during this job execution. Each entry shows the timestamp, severity level, and message.</value>
+  </data>
+  <data name="ExecutionDetailSectionHeader" xml:space="preserve">
+    <value>Execution Summary</value>
+  </data>
+  <data name="ExecutionDetailSectionHeaderSubtitle" xml:space="preserve">
+    <value>Overview of this execution run</value>
+  </data>
+  <data name="ExecutionDetailSectionLogs" xml:space="preserve">
+    <value>Log Entries</value>
+  </data>
+  <data name="ExecutionDetailSectionLogsSubtitle" xml:space="preserve">
+    <value>Messages produced during execution</value>
+  </data>
+  <data name="ExecutionDetailNotFound" xml:space="preserve">
+    <value>Execution not found.</value>
+  </data>
+  <data name="ExecutionDetailLoadFailed" xml:space="preserve">
+    <value>Failed to load execution details.</value>
+  </data>
+  <data name="ExecutionDetailLogsLoadFailed" xml:space="preserve">
+    <value>Failed to load execution logs.</value>
+  </data>
+  <data name="ExecutionDetailNoLogs" xml:space="preserve">
+    <value>No log entries for this execution.</value>
+  </data>
+  <data name="ExecutionDetailDuration" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="ColumnLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="ColumnMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
   <data name="CronInputInvalid" xml:space="preserve">
     <value>Invalid Quartz cron expression.</value>
   </data>

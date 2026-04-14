@@ -228,7 +228,7 @@ public class JobSettingsSchedulerTests : IDisposable
     private sealed class TestClassificationJob(IServiceScopeFactory scopeFactory, ILogger logger)
         : ManagedJob(scopeFactory, logger)
     {
-        protected override Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken) =>
-            Task.CompletedTask;
+        protected override Task<JobRunResult> RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken) =>
+            Task.FromResult(JobRunResult.Succeeded);
     }
 }

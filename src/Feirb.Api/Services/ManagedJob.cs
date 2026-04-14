@@ -76,14 +76,22 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
 
         try
         {
-            await RunAsync(scope.ServiceProvider, jobSettings, context.CancellationToken);
-            execution.Status = JobExecutionStatus.Success;
+            var result = await RunAsync(scope.ServiceProvider, jobSettings, context.CancellationToken);
+            execution.Status = result.Status;
+            execution.Error = result.Error is not null && result.Error.Length > 4096
+                ? result.Error[..4096]
+                : result.Error;
             execution.FinishedAt = DateTimeOffset.UtcNow;
 
             jobSettings.LastRunAt = execution.FinishedAt;
-            jobSettings.LastStatus = JobExecutionStatus.Success;
+            jobSettings.LastStatus = result.Status;
 
             await db.SaveChangesAsync(context.CancellationToken);
+
+            if (result.Status == JobExecutionStatus.Failed)
+            {
+                await CheckConsecutiveFailuresAsync(db, jobSettings, scope.ServiceProvider);
+            }
         }
         catch (OperationCanceledException) when (context.CancellationToken.IsCancellationRequested)
         {
@@ -115,7 +123,7 @@ public abstract class ManagedJob(IServiceScopeFactory scopeFactory, ILogger logg
         }
     }
 
-    protected abstract Task RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken);
+    protected abstract Task<JobRunResult> RunAsync(IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken);
 
     protected async Task LogAsync(
         JobExecutionLogLevel level, string message, string? metadata = null, CancellationToken cancellationToken = default)

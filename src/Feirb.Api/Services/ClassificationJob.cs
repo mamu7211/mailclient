@@ -10,7 +10,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
 {
     private const int _defaultBatchSize = 10;
 
-    protected override async Task RunAsync(
+    protected override async Task<JobRunResult> RunAsync(
         IServiceProvider serviceProvider, JobSettings jobSettings, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(jobSettings);
@@ -50,7 +50,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         if (pendingItems.Count == 0)
         {
             logger.LogDebug("No pending classification queue items found");
-            return;
+            return JobRunResult.Succeeded;
         }
 
         logger.LogInformation("Processing {Count} classification queue items", pendingItems.Count);
@@ -133,6 +133,11 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         logger.LogInformation(
             "Classification complete: {Classified} classified, {Failed} failed, {Skipped} skipped",
             classified, failed, skipped);
+
+        if (classified == 0 && failed > 0)
+            return JobRunResult.Failure($"All {failed} item(s) failed classification");
+
+        return JobRunResult.Succeeded;
     }
 
     private static async Task ApplyLabelsAsync(

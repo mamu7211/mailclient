@@ -1,0 +1,249 @@
+@page "/admin/jobs/{JobId:guid}/executions/{ExecutionId:guid}"
+@attribute [Authorize(Policy = "RequireAdmin")]
+@using Feirb.Shared.Admin.Jobs
+@using Feirb.Web.Services
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResources> L
+@inject ToolbarStateService ToolbarState
+@inject BreadcrumbOverrideService BreadcrumbOverride
+@implements IDisposable
+
+<PageTitle>@L["ExecutionDetailPageTitle"] - Feirb</PageTitle>
+
+<InfoHeader Title="@L["ExecutionDetailPageTitle"]" Icon="journal-text" Subtitle="@L["ExecutionDetailSubtitle"]">
+    <HelpContent>@L["ExecutionDetailHelp"]</HelpContent>
+</InfoHeader>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible py-2" role="alert">
+        @_errorMessage
+        <button type="button" class="btn-close" @onclick="() => _errorMessage = null"></button>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <div class="text-center py-5">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else if (_notFound)
+{
+    <StatusMessage Icon="question-circle" Title="@L["ExecutionDetailNotFound"]" Message="@L["ExecutionDetailNotFound"]" />
+}
+else if (_execution is null)
+{
+    <StatusMessage Icon="exclamation-triangle" Title="@L["ExecutionDetailLoadFailed"]" Message="@L["ExecutionDetailLoadFailed"]" />
+}
+else
+{
+    <ContentSection Icon="info-circle" Title="@L["ExecutionDetailSectionHeader"]" Subtitle="@L["ExecutionDetailSectionHeaderSubtitle"]">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="text-muted small">@L["ColumnTimestamp"]</div>
+                <DateTimeChip Value="_execution.StartedAt" />
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">@L["ExecutionDetailDuration"]</div>
+                <span style="font-size: 0.875rem;">@FormatDuration(_execution.StartedAt, _execution.FinishedAt)</span>
+            </div>
+            <div class="col-md-3">
+                <div class="text-muted small">@L["ColumnStatus"]</div>
+                <span class="badge @GetStatusBadgeClass(_execution.Status)">@_execution.Status</span>
+            </div>
+            @if (!string.IsNullOrEmpty(_execution.Error))
+            {
+                <div class="col-md-3">
+                    <div class="text-muted small">@L["ColumnError"]</div>
+                    <span class="text-danger" style="font-size: 0.8rem;" title="@_execution.Error">
+                        @Truncate(_execution.Error, 120)
+                    </span>
+                </div>
+            }
+        </div>
+    </ContentSection>
+
+    <ContentSection Icon="journal-text" Title="@L["ExecutionDetailSectionLogs"]" Subtitle="@L["ExecutionDetailSectionLogsSubtitle"]">
+        @if (_logsLoading)
+        {
+            <div class="text-center py-3">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        else if (_logs is null || _logs.Items.Count == 0)
+        {
+            <p class="text-muted">@L["ExecutionDetailNoLogs"]</p>
+        }
+        else
+        {
+            <Table>
+                <TableHeader>
+                    <TableColumn Width="12rem">@L["ColumnTimestamp"]</TableColumn>
+                    <TableColumn Width="6rem">@L["ColumnLevel"]</TableColumn>
+                    <TableColumn Width="1fr">@L["ColumnMessage"]</TableColumn>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var log in _logs.Items)
+                    {
+                        <TableRow>
+                            <TableCell>
+                                <DateTimeChip Value="log.Timestamp" />
+                            </TableCell>
+                            <TableCell>
+                                <span class="badge @GetLevelBadgeClass(log.Level)">@log.Level</span>
+                            </TableCell>
+                            <TableCell>
+                                <span style="font-size: 0.875rem; word-break: break-word;">@log.Message</span>
+                            </TableCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+            <Pagination CurrentPage="_logsPage" TotalPages="_logsTotalPages"
+                        CurrentPageChanged="OnLogsPageChangedAsync"
+                        PageSize="_logsPageSize" PageSizeChanged="OnLogsPageSizeChangedAsync"
+                        PreviousLabel="@L["PaginationPrevious"]"
+                        NextLabel="@L["PaginationNext"]"
+                        PerPageLabel="@L["PaginationPerPage"]" />
+        }
+    </ContentSection>
+}
+
+@code {
+    [Parameter]
+    public Guid JobId { get; set; }
+
+    [Parameter]
+    public Guid ExecutionId { get; set; }
+
+    private JobExecutionResponse? _execution;
+    private PaginatedJobExecutionLogsResponse? _logs;
+    private bool _isLoading = true;
+    private bool _notFound;
+    private bool _logsLoading;
+    private string? _errorMessage;
+    private int _logsPage = 1;
+    private int _logsPageSize = 50;
+    private int _logsTotalPages;
+
+    private ToolbarAction[] _toolbarActions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _toolbarActions =
+        [
+            new ToolbarAction(L["ButtonCancel"], ButtonVariant.Warning,
+                () => { Navigation.NavigateTo($"/admin/jobs/{JobId}"); return Task.CompletedTask; }, "x-lg"),
+        ];
+        ToolbarState.AddActions(_toolbarActions);
+
+        await LoadExecutionAsync();
+        await LoadLogsAsync();
+    }
+
+    public void Dispose()
+    {
+        ToolbarState.RemoveActions(_toolbarActions);
+        BreadcrumbOverride.Clear();
+    }
+
+    private async Task LoadExecutionAsync()
+    {
+        try
+        {
+            var response = await Http.GetAsync($"/api/jobs/{JobId}/executions/{ExecutionId}");
+            if (response.IsSuccessStatusCode)
+            {
+                _execution = await response.Content.ReadFromJsonAsync<JobExecutionResponse>();
+            }
+
+            if (_execution is null)
+            {
+                _notFound = true;
+            }
+            else
+            {
+                BreadcrumbOverride.SetLastSegmentLabel(
+                    _execution.StartedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            }
+        }
+        catch
+        {
+            _errorMessage = L["ExecutionDetailLoadFailed"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadLogsAsync()
+    {
+        _logsLoading = true;
+        try
+        {
+            _logs = await Http.GetFromJsonAsync<PaginatedJobExecutionLogsResponse>(
+                $"/api/jobs/{JobId}/executions/{ExecutionId}/logs?page={_logsPage}&pageSize={_logsPageSize}");
+            if (_logs is not null)
+                _logsTotalPages = (int)Math.Ceiling((double)_logs.TotalCount / _logsPageSize);
+        }
+        catch
+        {
+            _errorMessage = L["ExecutionDetailLogsLoadFailed"];
+        }
+        finally
+        {
+            _logsLoading = false;
+        }
+    }
+
+    private async Task OnLogsPageChangedAsync(int page)
+    {
+        _logsPage = page;
+        await LoadLogsAsync();
+    }
+
+    private async Task OnLogsPageSizeChangedAsync(int pageSize)
+    {
+        _logsPageSize = pageSize;
+        _logsPage = 1;
+        await LoadLogsAsync();
+    }
+
+    private static string FormatDuration(DateTimeOffset start, DateTimeOffset? end)
+    {
+        if (end is null)
+            return "...";
+
+        var duration = end.Value - start;
+        return duration.TotalSeconds < 60
+            ? $"{duration.TotalSeconds:F1}s"
+            : duration.TotalMinutes < 60
+                ? $"{(int)duration.TotalMinutes}m {duration.Seconds}s"
+                : $"{(int)duration.TotalHours}h {duration.Minutes}m";
+    }
+
+    private static string GetStatusBadgeClass(string status) => status switch
+    {
+        "Success" => "bg-success",
+        "Cancelled" => "bg-warning",
+        _ => "bg-danger",
+    };
+
+    private static string GetLevelBadgeClass(string level) => level switch
+    {
+        "Info" => "bg-info",
+        "Warning" => "bg-warning text-dark",
+        "Error" => "bg-danger",
+        _ => "bg-secondary",
+    };
+
+    private static string Truncate(string text, int maxLength) =>
+        text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength), "...");
+}

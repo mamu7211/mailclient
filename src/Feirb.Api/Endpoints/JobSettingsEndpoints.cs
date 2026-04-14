@@ -16,6 +16,8 @@ public static class JobSettingsEndpoints
         group.MapPut("/{id:guid}", UpdateJobAsync);
         group.MapPost("/{id:guid}/run", TriggerJobRunAsync);
         group.MapGet("/{id:guid}/executions", GetJobExecutionsAsync);
+        group.MapGet("/{id:guid}/executions/{executionId:guid}", GetJobExecutionByIdAsync);
+        group.MapGet("/{id:guid}/executions/{executionId:guid}/logs", GetJobExecutionLogsAsync);
         group.MapGet("/by-resource/{resourceType}/{resourceId:guid}", GetJobsByResourceAsync);
         return group;
     }
@@ -98,6 +100,42 @@ public static class JobSettingsEndpoints
         var result = await jobService.GetExecutionsAsync(id, userId, isAdmin, page, pageSize);
         if (result is null)
             return Results.NotFound(new { message = localizer["JobNotFound"].Value });
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetJobExecutionByIdAsync(
+        Guid id,
+        Guid executionId,
+        HttpContext httpContext,
+        IJobService jobService,
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        var result = await jobService.GetExecutionByIdAsync(id, executionId, userId, isAdmin);
+        if (result is null)
+            return Results.NotFound(new { message = localizer["ExecutionNotFound"].Value });
+
+        return Results.Ok(result);
+    }
+
+    private static async Task<IResult> GetJobExecutionLogsAsync(
+        Guid id,
+        Guid executionId,
+        int page,
+        int pageSize,
+        HttpContext httpContext,
+        IJobService jobService,
+        IStringLocalizer<ApiMessages> localizer)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 50;
+        if (pageSize > 100) pageSize = 100;
+
+        var (userId, isAdmin) = GetAuthContext(httpContext);
+        var result = await jobService.GetExecutionLogsAsync(id, executionId, userId, isAdmin, page, pageSize);
+        if (result is null)
+            return Results.NotFound(new { message = localizer["ExecutionNotFound"].Value });
 
         return Results.Ok(result);
     }

@@ -1383,6 +1383,48 @@
   <data name="JobDetailRunning" xml:space="preserve">
     <value>Laeuft...</value>
   </data>
+  <data name="ExecutionDetailPageTitle" xml:space="preserve">
+    <value>Ausfuehrungsdetails</value>
+  </data>
+  <data name="ExecutionDetailSubtitle" xml:space="preserve">
+    <value>Protokolleintraege dieser Aufgabenausfuehrung</value>
+  </data>
+  <data name="ExecutionDetailHelp" xml:space="preserve">
+    <value>Detaillierte Protokolleintraege dieser Aufgabenausfuehrung anzeigen. Jeder Eintrag zeigt Zeitstempel, Schweregrad und Nachricht.</value>
+  </data>
+  <data name="ExecutionDetailSectionHeader" xml:space="preserve">
+    <value>Zusammenfassung</value>
+  </data>
+  <data name="ExecutionDetailSectionHeaderSubtitle" xml:space="preserve">
+    <value>Ueberblick ueber diese Ausfuehrung</value>
+  </data>
+  <data name="ExecutionDetailSectionLogs" xml:space="preserve">
+    <value>Protokolleintraege</value>
+  </data>
+  <data name="ExecutionDetailSectionLogsSubtitle" xml:space="preserve">
+    <value>Waehrend der Ausfuehrung erzeugte Nachrichten</value>
+  </data>
+  <data name="ExecutionDetailNotFound" xml:space="preserve">
+    <value>Ausfuehrung nicht gefunden.</value>
+  </data>
+  <data name="ExecutionDetailLoadFailed" xml:space="preserve">
+    <value>Ausfuehrungsdetails konnten nicht geladen werden.</value>
+  </data>
+  <data name="ExecutionDetailLogsLoadFailed" xml:space="preserve">
+    <value>Ausfuehrungsprotokolle konnten nicht geladen werden.</value>
+  </data>
+  <data name="ExecutionDetailNoLogs" xml:space="preserve">
+    <value>Keine Protokolleintraege fuer diese Ausfuehrung.</value>
+  </data>
+  <data name="ExecutionDetailDuration" xml:space="preserve">
+    <value>Dauer</value>
+  </data>
+  <data name="ColumnLevel" xml:space="preserve">
+    <value>Stufe</value>
+  </data>
+  <data name="ColumnMessage" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
   <data name="CronInputInvalid" xml:space="preserve">
     <value>Ungueltiger Quartz-Cron-Ausdruck.</value>
   </data>
