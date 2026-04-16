@@ -207,7 +207,8 @@ public class JobService(
 
         job.Cron = request.Cron;
         job.Enabled = request.Enabled;
-        job.Configuration = request.Configuration;
+        if (request.Configuration is not null)
+            job.Configuration = request.Configuration;
         job.RowVersion = Guid.NewGuid();
 
         await db.SaveChangesAsync(cancellationToken);

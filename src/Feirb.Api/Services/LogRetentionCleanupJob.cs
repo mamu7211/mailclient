@@ -24,9 +24,12 @@ public class LogRetentionCleanupJob(IServiceScopeFactory scopeFactory, ILogger<L
             $"Starting cleanup: deleting executions older than {retentionDays} days (before {cutoff:u})",
             cancellationToken: cancellationToken);
 
-        // Delete old executions — cascade delete removes their logs automatically
+        // StartedAt is indexed; include it in the predicate so Postgres can use the index
+        // to narrow the delete set. Safe because FinishedAt >= StartedAt for any completed run.
         var deletedCount = await db.JobExecutions
-            .Where(e => e.FinishedAt != null && e.FinishedAt < cutoff)
+            .Where(e => e.StartedAt < cutoff
+                && e.FinishedAt != null
+                && e.FinishedAt < cutoff)
             .ExecuteDeleteAsync(cancellationToken);
 
         await LogAsync(JobExecutionLogLevel.Info,
