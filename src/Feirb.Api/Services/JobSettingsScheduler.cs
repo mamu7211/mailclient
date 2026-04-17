@@ -31,6 +31,7 @@ public class JobSettingsScheduler(
             var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
 
             await RecoverOrphanedExecutionsAsync(db, stoppingToken);
+            await RecoverStuckClassificationItemsAsync(db, stoppingToken);
 
             var jobs = await db.JobSettings
                 .Where(j => j.Enabled)
@@ -162,6 +163,26 @@ public class JobSettingsScheduler(
 
         logger.LogWarning(
             "Recovered {Count} orphaned job execution(s) interrupted by app restart", orphaned.Count);
+    }
+
+    private async Task RecoverStuckClassificationItemsAsync(FeirbDbContext db, CancellationToken cancellationToken)
+    {
+        var stuckItems = await db.ClassificationQueueItems
+            .Where(q => q.Status == ClassificationQueueItemStatus.Processing)
+            .ToListAsync(cancellationToken);
+
+        if (stuckItems.Count == 0)
+            return;
+
+        foreach (var item in stuckItems)
+        {
+            item.Status = ClassificationQueueItemStatus.Pending;
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        logger.LogWarning(
+            "Reset {Count} classification queue item(s) from Processing to Pending on startup", stuckItems.Count);
     }
 
     private static JobKey GetJobKey(string jobName) => new($"managed-{jobName}", _groupName);

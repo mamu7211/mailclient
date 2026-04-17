@@ -224,6 +224,40 @@ public class JobSettingsSchedulerTests : IDisposable
     }
 
     [Fact]
+    public async Task ExecuteAsync_ResetsStuckClassificationQueueItemsAsync()
+    {
+        SeedJobSettings("job-a", "classification", enabled: true);
+        var stuckId = SeedClassificationQueueItem(ClassificationQueueItemStatus.Processing);
+        var pendingId = SeedClassificationQueueItem(ClassificationQueueItemStatus.Pending);
+
+        var schedulerRequested = new TaskCompletionSource();
+        _schedulerFactory.GetScheduler(Arg.Any<CancellationToken>())
+            .Returns(_quartzScheduler)
+            .AndDoes(_ => schedulerRequested.TrySetResult());
+
+        var sut = CreateScheduler(withClassificationJob: true);
+        await sut.StartAsync(CancellationToken.None);
+        await schedulerRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        CachedMessageClassificationQueueItem? recovered = null;
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            using var verifyDb = new FeirbDbContext(_dbOptions);
+            recovered = await verifyDb.ClassificationQueueItems.FindAsync(stuckId);
+            if (recovered?.Status == ClassificationQueueItemStatus.Pending) break;
+            await Task.Delay(50);
+        }
+        await sut.StopAsync(CancellationToken.None);
+
+        using var finalDb = new FeirbDbContext(_dbOptions);
+        var stuck = await finalDb.ClassificationQueueItems.FindAsync(stuckId);
+        var pending = await finalDb.ClassificationQueueItems.FindAsync(pendingId);
+
+        stuck!.Status.Should().Be(ClassificationQueueItemStatus.Pending);
+        pending!.Status.Should().Be(ClassificationQueueItemStatus.Pending);
+    }
+
+    [Fact]
     public async Task ExecuteAsync_LeavesCompletedExecutionsAloneAsync()
     {
         var jobId = SeedJobSettings("job-a", "classification", enabled: true);
@@ -275,6 +309,23 @@ public class JobSettingsSchedulerTests : IDisposable
             Description = $"Test job {jobName}",
             Cron = "0 * * * * ?",
             Enabled = enabled,
+        });
+        db.SaveChanges();
+        return id;
+    }
+
+    private Guid SeedClassificationQueueItem(ClassificationQueueItemStatus status)
+    {
+        using var db = new FeirbDbContext(_dbOptions);
+        var id = Guid.NewGuid();
+        db.ClassificationQueueItems.Add(new CachedMessageClassificationQueueItem
+        {
+            Id = id,
+            CachedMessageId = Guid.NewGuid(),
+            Status = status,
+            Ordinal = 0,
+            AttemptNumber = 1,
+            CreatedAt = DateTimeOffset.UtcNow,
         });
         db.SaveChanges();
         return id;
