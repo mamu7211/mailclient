@@ -1341,6 +1341,18 @@
   <data name="JobDetailSectionScheduleSubtitle" xml:space="preserve">
     <value>Konfigurieren, wann dieser Job ausgefuehrt wird</value>
   </data>
+  <data name="JobDetailSectionConfiguration" xml:space="preserve">
+    <value>Konfiguration</value>
+  </data>
+  <data name="JobDetailSectionConfigurationSubtitle" xml:space="preserve">
+    <value>Job-spezifische Einstellungen</value>
+  </data>
+  <data name="JobRetentionDaysLabel" xml:space="preserve">
+    <value>Aufbewahrungstage</value>
+  </data>
+  <data name="JobRetentionDaysHelp" xml:space="preserve">
+    <value>Job-Ausfuehrungen und deren Logs, die aelter als diese Anzahl an Tagen sind, werden geloescht.</value>
+  </data>
   <data name="JobDetailSectionHistory" xml:space="preserve">
     <value>Ausfuehrungsverlauf</value>
   </data>

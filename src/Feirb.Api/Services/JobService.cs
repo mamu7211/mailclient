@@ -207,6 +207,8 @@ public class JobService(
 
         job.Cron = request.Cron;
         job.Enabled = request.Enabled;
+        if (request.Configuration is not null)
+            job.Configuration = request.Configuration;
         job.RowVersion = Guid.NewGuid();
 
         await db.SaveChangesAsync(cancellationToken);
@@ -292,6 +294,7 @@ public class JobService(
             job.LastStatus?.ToString(),
             job.ResourceId,
             job.ResourceType,
+            job.Configuration,
             job.RowVersion,
             job.Executions
                 .OrderByDescending(e => e.StartedAt)

@@ -11,5 +11,6 @@ public record JobSettingsResponse(
     string? LastStatus,
     Guid? ResourceId,
     string? ResourceType,
+    string? Configuration,
     Guid RowVersion,
     List<JobExecutionResponse> RecentExecutions);

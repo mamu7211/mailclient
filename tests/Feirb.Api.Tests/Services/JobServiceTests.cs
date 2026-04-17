@@ -198,12 +198,26 @@ public class JobServiceTests : IDisposable
         var jobName = job.JobName;
 
         var sut = CreateService(scheduler: mockScheduler);
-        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", false, rowVersion);
+        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", false, null, rowVersion);
         var result = await sut.UpdateAsync(jobId, request, _adminUserId, isAdmin: true);
 
         result.Should().NotBeNull();
         result!.Enabled.Should().BeFalse();
         await mockScheduler.Received(1).UnscheduleJobAsync(jobName);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithNullConfiguration_PreservesExistingConfigurationAsync()
+    {
+        var jobId = SeedUserJob(_adminUserId, configuration: "{\"retentionDays\":60}");
+        using var db = new FeirbDbContext(_dbOptions);
+        var rowVersion = db.JobSettings.First(j => j.Id == jobId).RowVersion;
+
+        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", true, null, rowVersion);
+        var result = await _sut.UpdateAsync(jobId, request, _adminUserId, isAdmin: true);
+
+        result.Should().NotBeNull();
+        result!.Configuration.Should().Be("{\"retentionDays\":60}");
     }
 
     [Fact]
@@ -213,7 +227,7 @@ public class JobServiceTests : IDisposable
         using var db = new FeirbDbContext(_dbOptions);
         var rowVersion = db.JobSettings.First().RowVersion;
 
-        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", true, rowVersion);
+        var request = new Feirb.Shared.Admin.Jobs.UpdateJobSettingsRequest("0 */5 * * * ?", true, null, rowVersion);
         var result = await _sut.UpdateAsync(jobId, request, _regularUserId, isAdmin: false);
 
         result.Should().BeNull();
@@ -235,7 +249,7 @@ public class JobServiceTests : IDisposable
         return db.JobSettings.First().Id;
     }
 
-    private Guid SeedUserJob(Guid userId, string jobType = "test-job")
+    private Guid SeedUserJob(Guid userId, string jobType = "test-job", string? configuration = null)
     {
         using var db = new FeirbDbContext(_dbOptions);
         var job = new JobSettings
@@ -247,6 +261,7 @@ public class JobServiceTests : IDisposable
             Cron = "0 * * * * ?",
             Enabled = true,
             UserId = userId,
+            Configuration = configuration,
         };
         db.JobSettings.Add(job);
         db.SaveChanges();

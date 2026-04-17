@@ -185,6 +185,17 @@ public class FeirbDbContext(DbContextOptions<FeirbDbContext> options) : DbContex
                 Configuration = """{"batchSize":10}""",
                 RowVersion = new Guid("00000000-0000-0000-0000-000000000001"),
             });
+            entity.HasData(new JobSettings
+            {
+                Id = new Guid("b2c3d4e5-f6a7-8901-bcde-f12345678901"),
+                JobName = "Log Retention Cleanup",
+                JobType = "log-retention-cleanup",
+                Description = "Deletes old job execution logs based on configurable retention threshold.",
+                Cron = "0 0 3 * * ?",
+                Enabled = true,
+                Configuration = """{"retentionDays":30}""",
+                RowVersion = new Guid("00000000-0000-0000-0000-000000000002"),
+            });
         });
 
         modelBuilder.Entity<JobExecution>(entity =>
