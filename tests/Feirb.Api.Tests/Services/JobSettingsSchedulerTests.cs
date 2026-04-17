@@ -1,6 +1,7 @@
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
 using Feirb.Api.Services;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -187,6 +188,66 @@ public class JobSettingsSchedulerTests : IDisposable
             Arg.Any<IJobDetail>(), Arg.Any<ITrigger>(), Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_MarksOrphanedExecutionsAsFailedOnStartupAsync()
+    {
+        var jobId = SeedJobSettings("job-a", "classification", enabled: true);
+        var orphanStarted = DateTimeOffset.UtcNow.AddMinutes(-5);
+        var orphanId = SeedJobExecution(jobId, startedAt: orphanStarted, finishedAt: null, status: JobExecutionStatus.Success);
+
+        var schedulerRequested = new TaskCompletionSource();
+        _schedulerFactory.GetScheduler(Arg.Any<CancellationToken>())
+            .Returns(_quartzScheduler)
+            .AndDoes(_ => schedulerRequested.TrySetResult());
+
+        var sut = CreateScheduler(withClassificationJob: true);
+        await sut.StartAsync(CancellationToken.None);
+        await schedulerRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        JobExecution? recovered = null;
+        JobSettings? updatedJob = null;
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            using var verifyDb = new FeirbDbContext(_dbOptions);
+            recovered = await verifyDb.JobExecutions.FindAsync(orphanId);
+            updatedJob = await verifyDb.JobSettings.FindAsync(jobId);
+            if (recovered?.FinishedAt is not null) break;
+            await Task.Delay(50);
+        }
+        await sut.StopAsync(CancellationToken.None);
+
+        recovered.Should().NotBeNull();
+        recovered!.Status.Should().Be(JobExecutionStatus.Failed);
+        recovered.FinishedAt.Should().NotBeNull();
+        recovered.Error.Should().Contain("interrupted");
+        updatedJob!.LastStatus.Should().Be(JobExecutionStatus.Failed);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_LeavesCompletedExecutionsAloneAsync()
+    {
+        var jobId = SeedJobSettings("job-a", "classification", enabled: true);
+        var completedId = SeedJobExecution(
+            jobId,
+            startedAt: DateTimeOffset.UtcNow.AddMinutes(-10),
+            finishedAt: DateTimeOffset.UtcNow.AddMinutes(-9),
+            status: JobExecutionStatus.Success);
+
+        var completed = new TaskCompletionSource();
+        _quartzScheduler.ScheduleJob(Arg.Any<IJobDetail>(), Arg.Any<ITrigger>(), Arg.Any<CancellationToken>())
+            .ReturnsForAnyArgs(DateTimeOffset.UtcNow)
+            .AndDoes(_ => completed.TrySetResult());
+
+        var sut = CreateScheduler(withClassificationJob: true);
+        await sut.StartAsync(CancellationToken.None);
+        await completed.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await sut.StopAsync(CancellationToken.None);
+
+        using var verifyDb = new FeirbDbContext(_dbOptions);
+        var unchanged = await verifyDb.JobExecutions.FindAsync(completedId);
+        unchanged!.Status.Should().Be(JobExecutionStatus.Success);
+    }
+
     // --- Helpers ---
 
     private JobSettingsScheduler CreateScheduler(bool withClassificationJob)
@@ -202,12 +263,13 @@ public class JobSettingsSchedulerTests : IDisposable
             NullLoggerFactory.Instance.CreateLogger<JobSettingsScheduler>());
     }
 
-    private void SeedJobSettings(string jobName, string jobType, bool enabled)
+    private Guid SeedJobSettings(string jobName, string jobType, bool enabled)
     {
         using var db = new FeirbDbContext(_dbOptions);
+        var id = Guid.NewGuid();
         db.JobSettings.Add(new JobSettings
         {
-            Id = Guid.NewGuid(),
+            Id = id,
             JobName = jobName,
             JobType = jobType,
             Description = $"Test job {jobName}",
@@ -215,6 +277,23 @@ public class JobSettingsSchedulerTests : IDisposable
             Enabled = enabled,
         });
         db.SaveChanges();
+        return id;
+    }
+
+    private Guid SeedJobExecution(Guid jobSettingsId, DateTimeOffset startedAt, DateTimeOffset? finishedAt, JobExecutionStatus status)
+    {
+        using var db = new FeirbDbContext(_dbOptions);
+        var id = Guid.NewGuid();
+        db.JobExecutions.Add(new JobExecution
+        {
+            Id = id,
+            JobSettingsId = jobSettingsId,
+            StartedAt = startedAt,
+            FinishedAt = finishedAt,
+            Status = status,
+        });
+        db.SaveChanges();
+        return id;
     }
 
     private static ManagedJobRegistry CreateRegistryWithClassification()
