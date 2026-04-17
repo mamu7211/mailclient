@@ -1,0 +1,82 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="StatusBanner" Icon="info-circle" Subtitle="Page-level status banner with icon and message" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>Page-level banner that reports state context to the user. Maps variants to Bootstrap <code>alert-*</code> classes. Use at the top of a page, between the <code>InfoHeader</code> and the page content, to surface conditions that affect how the page data should be interpreted (e.g. paused background jobs, pending work).</p>
+    <Table Size="TableSize.Small">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Variant</code></TableCell><TableCell><code>StatusBannerVariant</code></TableCell><TableCell><code>Info</code></TableCell><TableCell>Visual variant: Info, Warning, Danger, Success</TableCell></TableRow>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string</code></TableCell><TableCell>required</TableCell><TableCell>Bootstrap Icon name without <code>bi-</code> prefix</TableCell></TableRow>
+            <TableRow><TableCell><code>ChildContent</code></TableCell><TableCell><code>RenderFragment</code></TableCell><TableCell>required</TableCell><TableCell>Banner message content</TableCell></TableRow>
+            <TableRow><TableCell><code>Class</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Extra CSS classes</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <div class="row g-2 mb-3">
+        <div class="col-md-4">
+            <label class="form-label">Variant</label>
+            <select class="form-select form-select-sm" @bind="_variant">
+                <option value="@StatusBannerVariant.Info">Info</option>
+                <option value="@StatusBannerVariant.Warning">Warning</option>
+                <option value="@StatusBannerVariant.Danger">Danger</option>
+                <option value="@StatusBannerVariant.Success">Success</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Icon</label>
+            <input type="text" class="form-control form-control-sm" @bind="_icon" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Message</label>
+            <input type="text" class="form-control form-control-sm" @bind="_message" />
+        </div>
+    </div>
+    <div class="showcase-preview-area">
+        <StatusBanner Variant="_variant" Icon="@_icon">@_message</StatusBanner>
+    </div>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Variants</Heading>
+    <StatusBanner Variant="StatusBannerVariant.Info" Icon="hourglass-split">Unclassified mails: 12</StatusBanner>
+    <StatusBanner Variant="StatusBannerVariant.Warning" Icon="pause-circle">Classification job is stopped — 12 mails unclassified</StatusBanner>
+    <StatusBanner Variant="StatusBannerVariant.Danger" Icon="exclamation-triangle">Sync failed for 2 mailboxes.</StatusBanner>
+    <StatusBanner Variant="StatusBannerVariant.Success" Icon="check-circle">All mailboxes are in sync.</StatusBanner>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private StatusBannerVariant _variant = StatusBannerVariant.Info;
+    private string _icon = "hourglass-split";
+    private string _message = "Unclassified mails: 12";
+    private ElementReference _codeElement;
+    private string? _lastHighlightedCode;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var code = CurrentCode;
+        if (code == _lastHighlightedCode) return;
+        _lastHighlightedCode = code;
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, code); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode =>
+        $"""<StatusBanner Variant="StatusBannerVariant.{_variant}" Icon="{_icon}">{_message}</StatusBanner>""";
+}

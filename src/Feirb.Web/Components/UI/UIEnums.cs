@@ -70,3 +70,12 @@ public enum MailCardMode
     Small,
     Row
 }
+
+/// <summary>Visual variant for <see cref="StatusBanner"/>. Maps to Bootstrap <c>alert-*</c> classes.</summary>
+public enum StatusBannerVariant
+{
+    Info,
+    Warning,
+    Danger,
+    Success
+}

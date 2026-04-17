@@ -1,0 +1,37 @@
+@namespace Feirb.Web.Components.UI
+
+@* Page-level status banner with icon and message. Maps variants to Bootstrap alert classes. *@
+<div class="alert @VariantCss feirb-status-banner @Class" role="alert" @attributes="AdditionalAttributes">
+    <Icon Name="@Icon" Class="feirb-status-banner-icon" />
+    <span class="feirb-status-banner-content">@ChildContent</span>
+</div>
+
+@code {
+    /// <summary>Visual variant. Maps to Bootstrap <c>alert-*</c> classes.</summary>
+    [Parameter]
+    public StatusBannerVariant Variant { get; set; } = StatusBannerVariant.Info;
+
+    /// <summary>Bootstrap Icon name without the <c>bi-</c> prefix.</summary>
+    [Parameter, EditorRequired]
+    public string Icon { get; set; } = "";
+
+    /// <summary>Banner message content.</summary>
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>Additional HTML attributes (e.g. <c>data-testid</c>).</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string VariantCss => Variant switch
+    {
+        StatusBannerVariant.Warning => "alert-warning",
+        StatusBannerVariant.Danger => "alert-danger",
+        StatusBannerVariant.Success => "alert-success",
+        _ => "alert-info",
+    };
+}

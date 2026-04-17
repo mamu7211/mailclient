@@ -14,4 +14,5 @@ public record MessageListItemResponse(
     DateTimeOffset Date,
     bool IsRead,
     bool HasAttachments,
-    List<MessageLabelResponse> Labels);
+    List<MessageLabelResponse> Labels,
+    ClassificationStatus ClassificationStatus);
