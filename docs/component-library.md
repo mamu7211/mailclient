@@ -88,6 +88,49 @@ Icon-only circular button. Requires `AriaLabel` for WCAG AA.
 | `Title` | `string?` | `null` | Tooltip (falls back to AriaLabel) |
 | `Class` | `string?` | `null` | Extra CSS classes |
 
+## DropdownButton
+
+Trigger button that opens a small action menu on click. Use when a single action has two or three closely-related variants and you want to keep the toolbar/page header compact (e.g. *Preview* vs *Apply Now* on a Classify action). The menu closes on outside click, Escape, or after an item is selected.
+
+```razor
+<DropdownButton Label="Classify" Icon="magic" Items="_classifyItems" />
+
+@code {
+    private IReadOnlyList<DropdownButtonItem> _classifyItems =
+    [
+        new("Preview", EventCallback.Factory.Create(this, OpenPreview), Icon: "eye"),
+        new("Apply Now", EventCallback.Factory.Create(this, OpenApply), Icon: "check-lg"),
+    ];
+}
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Label` | `string?` | `null` | Trigger button text (omit for icon-only) |
+| `Icon` | `string?` | `null` | Bootstrap Icon name on the trigger (without `bi-` prefix) |
+| `Variant` | `ButtonVariant` | `Primary` | Trigger visual variant |
+| `Size` | `ButtonSize` | `Medium` | Trigger size |
+| `Disabled` | `bool` | `false` | Disables the trigger and prevents the menu from opening |
+| `Items` | `IReadOnlyList<DropdownButtonItem>` (required) | — | Menu items |
+| `Title` | `string?` | `null` | Tooltip on the trigger |
+| `TestId` | `string?` | `null` | `data-testid` on the trigger button |
+| `MenuTestId` | `string?` | `null` | `data-testid` on the menu container |
+| `Class` | `string?` | `null` | Extra CSS classes on the wrapper |
+
+### DropdownButtonItem Record
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `Label` | `string` (required) | — | Display text |
+| `OnClick` | `EventCallback` (required) | — | Async callback fired when the item is selected |
+| `Icon` | `string?` | `null` | Bootstrap Icon name without `bi-` prefix |
+| `Disabled` | `bool` | `false` | Disabled item — rendered greyed-out and not clickable |
+| `TestId` | `string?` | `null` | `data-testid` on the menu item button |
+
+**Primitives used:** `Button` (trigger), `Icon` (caret + item icons)
+
+**Accessibility:** Trigger has `aria-haspopup="menu"` and `aria-expanded` reflecting open state. The menu has `role="menu"` and items have `role="menuitem"`.
+
 ## Card
 
 Minimal card container.

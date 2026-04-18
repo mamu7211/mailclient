@@ -1,0 +1,110 @@
+@using Feirb.Web.Components.UI
+@inject IJSRuntime JS
+
+<InfoHeader Title="DropdownButton" Icon="caret-down-square" Subtitle="Trigger button that opens a small action menu on click" />
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Info</Heading>
+    <p>A trigger button (with optional icon and label) that reveals a list of action items below it. Use it whenever a single action would have multiple closely-related variants (e.g. <em>Preview</em> vs <em>Apply</em>) and you want to keep the toolbar/page header compact.</p>
+    <p class="text-muted mb-0">The menu closes on outside click, Escape, or after an item is selected. Selecting a disabled item is a no-op.</p>
+    <Table Size="TableSize.Small" Class="mt-3">
+        <TableHeader>
+            <TableColumn>Parameter</TableColumn>
+            <TableColumn>Type</TableColumn>
+            <TableColumn>Default</TableColumn>
+            <TableColumn>Description</TableColumn>
+        </TableHeader>
+        <TableBody>
+            <TableRow><TableCell><code>Label</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Text on the trigger button</TableCell></TableRow>
+            <TableRow><TableCell><code>Icon</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell>Bootstrap Icon name on the trigger</TableCell></TableRow>
+            <TableRow><TableCell><code>Variant</code></TableCell><TableCell><code>ButtonVariant</code></TableCell><TableCell><code>Primary</code></TableCell><TableCell>Trigger button variant</TableCell></TableRow>
+            <TableRow><TableCell><code>Size</code></TableCell><TableCell><code>ButtonSize</code></TableCell><TableCell><code>Medium</code></TableCell><TableCell>Trigger button size</TableCell></TableRow>
+            <TableRow><TableCell><code>Disabled</code></TableCell><TableCell><code>bool</code></TableCell><TableCell><code>false</code></TableCell><TableCell>Disables the trigger and prevents the menu from opening</TableCell></TableRow>
+            <TableRow><TableCell><code>Items</code></TableCell><TableCell><code>IReadOnlyList&lt;DropdownButtonItem&gt;</code></TableCell><TableCell>&#8212;</TableCell><TableCell>Menu items</TableCell></TableRow>
+            <TableRow><TableCell><code>TestId</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell><code>data-testid</code> on the trigger button</TableCell></TableRow>
+            <TableRow><TableCell><code>MenuTestId</code></TableCell><TableCell><code>string?</code></TableCell><TableCell><code>null</code></TableCell><TableCell><code>data-testid</code> on the menu container</TableCell></TableRow>
+        </TableBody>
+    </Table>
+</Card>
+
+<Card Class="mb-3 p-4">
+    <Heading Level="HeadingLevel.Small">Preview</Heading>
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+        <label class="form-label mb-0">Variant:</label>
+        <select class="form-select form-select-sm w-auto" @bind="_variant">
+            <option value="@ButtonVariant.Primary">Primary</option>
+            <option value="@ButtonVariant.Secondary">Secondary</option>
+            <option value="@ButtonVariant.Danger">Danger</option>
+            <option value="@ButtonVariant.Warning">Warning</option>
+        </select>
+        <label class="form-label mb-0">Size:</label>
+        <select class="form-select form-select-sm w-auto" @bind="_size">
+            <option value="@ButtonSize.Small">Small</option>
+            <option value="@ButtonSize.Medium">Medium</option>
+            <option value="@ButtonSize.Large">Large</option>
+        </select>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="ddDisabled" @bind="_disabled" />
+            <label class="form-check-label" for="ddDisabled">Disabled</label>
+        </div>
+    </div>
+    <div class="showcase-preview-area">
+        <DropdownButton Label="Classify"
+                        Icon="magic"
+                        Variant="@_variant"
+                        Size="@_size"
+                        Disabled="@_disabled"
+                        Items="_items" />
+        <p class="text-muted mt-3 mb-0">Last action: <strong>@_lastAction</strong></p>
+    </div>
+</Card>
+
+<Card Class="p-4">
+    <Heading Level="HeadingLevel.Small">Code</Heading>
+    <pre><code class="language-xml" @ref="_codeElement"></code></pre>
+</Card>
+
+@code {
+    private ButtonVariant _variant = ButtonVariant.Primary;
+    private ButtonSize _size = ButtonSize.Medium;
+    private bool _disabled;
+    private string _lastAction = "(none)";
+    private ElementReference _codeElement;
+
+    private IReadOnlyList<DropdownButtonItem> _items = [];
+
+    protected override void OnInitialized()
+    {
+        _items =
+        [
+            new("Preview", EventCallback.Factory.Create(this, () => _lastAction = "Preview"), Icon: "eye"),
+            new("Apply Now", EventCallback.Factory.Create(this, () => _lastAction = "Apply Now"), Icon: "check-lg"),
+        ];
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try { await JS.InvokeVoidAsync("highlightCode", _codeElement, CurrentCode); }
+        catch (JSException) { }
+    }
+
+    private string CurrentCode
+    {
+        get
+        {
+            var attrs = " Label=\"Classify\" Icon=\"magic\"";
+            if (_variant != ButtonVariant.Primary) attrs += $" Variant=\"ButtonVariant.{_variant}\"";
+            if (_size != ButtonSize.Medium) attrs += $" Size=\"ButtonSize.{_size}\"";
+            if (_disabled) attrs += " Disabled=\"true\"";
+            return "<DropdownButton" + attrs + " Items=\"_items\" />\n" +
+                   "\n" +
+                   "@code {\n" +
+                   "    private IReadOnlyList<DropdownButtonItem> _items =\n" +
+                   "    [\n" +
+                   "        new(\"Preview\", EventCallback.Factory.Create(this, OnPreview), Icon: \"eye\"),\n" +
+                   "        new(\"Apply Now\", EventCallback.Factory.Create(this, OnApply), Icon: \"check-lg\"),\n" +
+                   "    ];\n" +
+                   "}";
+        }
+    }
+}

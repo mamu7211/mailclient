@@ -1857,4 +1857,67 @@
   <data name="ClassificationNotClassified" xml:space="preserve">
     <value>Not classified</value>
   </data>
+  <data name="ClassifyToolbarLabel" xml:space="preserve">
+    <value>Classify</value>
+  </data>
+  <data name="ClassifyMenuPreview" xml:space="preserve">
+    <value>Preview</value>
+  </data>
+  <data name="ClassifyMenuApplyNow" xml:space="preserve">
+    <value>Apply Now</value>
+  </data>
+  <data name="ClassifyPreviewTitle" xml:space="preserve">
+    <value>Classification Preview</value>
+  </data>
+  <data name="ClassifyApplyTitle" xml:space="preserve">
+    <value>Apply Classification</value>
+  </data>
+  <data name="ClassifyNoRulesTitle" xml:space="preserve">
+    <value>No classification rules</value>
+  </data>
+  <data name="ClassifyNoRulesMessage" xml:space="preserve">
+    <value>No classification rules configured. Create rules in Settings &gt; Classification.</value>
+  </data>
+  <data name="ClassifyNoRulesGoToSettings" xml:space="preserve">
+    <value>Go to Classification Settings</value>
+  </data>
+  <data name="ClassifyApplyConfirmWithLabels" xml:space="preserve">
+    <value>The following labels will be applied:</value>
+  </data>
+  <data name="ClassifyApplyConfirmEmpty" xml:space="preserve">
+    <value>The classifier did not match any labels. Apply anyway to mark this mail as classified?</value>
+  </data>
+  <data name="ClassifyPreviewNoLabels" xml:space="preserve">
+    <value>No labels matched.</value>
+  </data>
+  <data name="ClassifyPreviewLabelsHeading" xml:space="preserve">
+    <value>Recognized Labels</value>
+  </data>
+  <data name="ClassifyPreviewSystemPromptHeading" xml:space="preserve">
+    <value>System Prompt</value>
+  </data>
+  <data name="ClassifyPreviewUserPromptHeading" xml:space="preserve">
+    <value>User Prompt</value>
+  </data>
+  <data name="ClassifyPreviewRawResponseHeading" xml:space="preserve">
+    <value>Raw LLM Response</value>
+  </data>
+  <data name="ClassifyErrorPrefix" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="ClassifyToastApplied" xml:space="preserve">
+    <value>Classification applied.</value>
+  </data>
+  <data name="ClassifyToastRequestFailed" xml:space="preserve">
+    <value>Could not classify the message. Please try again.</value>
+  </data>
+  <data name="ClassifyButtonClose" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="ClassifyButtonApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="ClassifyServiceUnavailable" xml:space="preserve">
+    <value>AI service unavailable. Try again later.</value>
+  </data>
 </root>
