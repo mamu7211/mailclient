@@ -67,3 +67,5 @@ tests/playwright/dist/
 
 # Claude Code runtime state
 .claude/scheduled_tasks.lock
+.claude/worktrees/
+.claude/settings.local.json
