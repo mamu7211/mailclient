@@ -1,7 +1,9 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
 using Feirb.Api.Resources;
+using Feirb.Api.Services;
 using Feirb.Shared.AddressBook;
 using Feirb.Shared.Mail;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ public static class MessageEndpoints
     {
         group.MapGet("/messages", ListMessagesAsync);
         group.MapGet("/messages/{id:guid}", GetMessageAsync);
+        group.MapPost("/messages/{id:guid}/classify", ClassifyMessageAsync);
         return group;
     }
 
@@ -221,6 +224,140 @@ public static class MessageEndpoints
 
     private static MessageAddressResponse ToAddressResponse((string Name, string Email) parsed) =>
         new(parsed.Name, parsed.Email);
+
+    private static async Task<IResult> ClassifyMessageAsync(
+        Guid id,
+        HttpContext httpContext,
+        FeirbDbContext db,
+        IClassificationService classificationService,
+        IStringLocalizer<ApiMessages> localizer,
+        CancellationToken cancellationToken,
+        bool dryRun = true)
+    {
+        var userId = GetCurrentUserId(httpContext);
+
+        var message = await db.CachedMessages
+            .Include(m => m.Mailbox)
+            .Include(m => m.Labels)
+            .FirstOrDefaultAsync(m => m.Id == id && m.Mailbox.UserId == userId, cancellationToken);
+
+        if (message is null)
+            return Results.NotFound(new { message = localizer["MessageNotFound"].Value });
+
+        var detailed = await classificationService.ClassifyDetailedAsync(message, cancellationToken);
+
+        // Empty rules/labels: skipped — return success with empty labels so the UI
+        // can show the "No classification rules configured" help text.
+        if (detailed.IsSkipped)
+        {
+            return Results.Ok(new ClassifyMessageResponse(
+                Success: true,
+                Labels: [],
+                Applied: false,
+                Error: null,
+                Prompt: dryRun && detailed.Prompt is not null
+                    ? new ClassifyPrompt(detailed.Prompt.System, detailed.Prompt.User)
+                    : null,
+                RawResponse: dryRun ? detailed.RawResponse : null));
+        }
+
+        // Hard failure: surface the error and skip applying.
+        if (!detailed.Success)
+        {
+            return Results.Ok(new ClassifyMessageResponse(
+                Success: false,
+                Labels: [],
+                Applied: false,
+                Error: detailed.Error ?? localizer["ClassificationFailed"].Value,
+                Prompt: dryRun && detailed.Prompt is not null
+                    ? new ClassifyPrompt(detailed.Prompt.System, detailed.Prompt.User)
+                    : null,
+                RawResponse: dryRun ? detailed.RawResponse : null));
+        }
+
+        var labelNames = ParseLabelNames(detailed.Result);
+
+        var applied = false;
+        if (!dryRun && labelNames.Count > 0)
+        {
+            await ApplyLabelsAsync(db, message, labelNames, cancellationToken);
+            applied = true;
+        }
+
+        if (!dryRun)
+        {
+            // Mirror the job: persist a ClassificationResult marker even for empty-label
+            // outcomes so the message is considered classified.
+            db.ClassificationResults.Add(new ClassificationResult
+            {
+                Id = Guid.NewGuid(),
+                CachedMessageId = message.Id,
+                Result = detailed.Result ?? "[]",
+                ClassifiedAt = DateTimeOffset.UtcNow,
+            });
+
+            // If the message was queued (e.g. Pending/Failed), drop the queue item so it
+            // won't be re-classified by the background job.
+            var queueItem = await db.ClassificationQueueItems
+                .FirstOrDefaultAsync(q => q.CachedMessageId == message.Id, cancellationToken);
+            if (queueItem is not null)
+                db.ClassificationQueueItems.Remove(queueItem);
+
+            await db.SaveChangesAsync(cancellationToken);
+            applied = true;
+        }
+
+        return Results.Ok(new ClassifyMessageResponse(
+            Success: true,
+            Labels: labelNames,
+            Applied: applied,
+            Error: null,
+            Prompt: dryRun && detailed.Prompt is not null
+                ? new ClassifyPrompt(detailed.Prompt.System, detailed.Prompt.User)
+                : null,
+            RawResponse: dryRun ? detailed.RawResponse : null));
+    }
+
+    private static IReadOnlyList<string> ParseLabelNames(string? resultJson)
+    {
+        if (string.IsNullOrWhiteSpace(resultJson))
+            return [];
+
+        try
+        {
+            var parsed = JsonSerializer.Deserialize<string[]>(resultJson) ?? [];
+            return parsed.Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static async Task ApplyLabelsAsync(
+        FeirbDbContext db,
+        CachedMessage message,
+        IReadOnlyList<string> labelNames,
+        CancellationToken cancellationToken)
+    {
+        var normalized = labelNames.Select(n => n.ToLowerInvariant()).ToArray();
+        var matchingLabels = await db.Labels
+            .Where(l => l.UserId == message.Mailbox.UserId && normalized.Contains(l.Name))
+            .ToListAsync(cancellationToken);
+
+        if (!db.Entry(message).Collection(m => m.Labels).IsLoaded)
+        {
+            await db.Entry(message).Collection(m => m.Labels).LoadAsync(cancellationToken);
+        }
+
+        foreach (var label in matchingLabels)
+        {
+            if (!message.Labels.Any(l => l.Id == label.Id))
+            {
+                message.Labels.Add(label);
+            }
+        }
+    }
 
     private static Guid GetCurrentUserId(HttpContext httpContext)
     {

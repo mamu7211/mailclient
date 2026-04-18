@@ -216,4 +216,7 @@
   <data name="AddressStatusInvalid" xml:space="preserve">
     <value>Valeur de statut d'adresse invalide.</value>
   </data>
+  <data name="ClassificationFailed" xml:space="preserve">
+    <value>Échec de la classification.</value>
+  </data>
 </root>

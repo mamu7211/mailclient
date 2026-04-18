@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Feirb.Api.Data;
 using Feirb.Api.Data.Entities;
+using Feirb.Api.Services;
 using Feirb.Shared.Auth;
 using Feirb.Shared.Mail;
 using Feirb.Shared.Settings;
@@ -16,12 +17,20 @@ namespace Feirb.Api.Tests.Endpoints;
 
 public class MessageEndpointsTests : IDisposable
 {
-    private readonly WebApplicationFactory<Program> _factory;
-    private readonly HttpClient _client;
+    private WebApplicationFactory<Program> _factory;
+    private HttpClient _client;
 
     public MessageEndpointsTests()
     {
         _factory = TestWebApplicationFactory.Create($"TestDb-{Guid.NewGuid()}");
+        _client = _factory.CreateClient();
+    }
+
+    private void RecreateFactoryWith(IClassificationService overrideService)
+    {
+        _client.Dispose();
+        _factory.Dispose();
+        _factory = TestWebApplicationFactory.Create($"TestDb-{Guid.NewGuid()}", overrideService);
         _client = _factory.CreateClient();
     }
 
@@ -428,6 +437,290 @@ public class MessageEndpointsTests : IDisposable
             ClassifiedAt = DateTimeOffset.UtcNow,
         });
         await db.SaveChangesAsync();
+    }
+
+    // --- Classify endpoint tests ---
+
+    [Fact]
+    public async Task ClassifyMessage_Unauthenticated_ReturnsUnauthorizedAsync()
+    {
+        var response = await _client.PostAsync($"/api/mail/messages/{Guid.NewGuid()}/classify", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_NotFound_Returns404Async()
+    {
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{Guid.NewGuid()}/classify?dryRun=true", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_OtherUserMessage_Returns404Async()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(true, """["work"]""", null,
+                new ClassificationPrompt("sys", "user"), """["work"]"""));
+        RecreateFactoryWith(stub);
+
+        var adminTokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminTokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Admin Box", "admin@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Hello", "from@test.com", DateTimeOffset.UtcNow)]);
+
+        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequest("user4", "user4@test.com", "Password123!"));
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequest("user4", "Password123!"));
+        var userTokens = await loginResponse.Content.ReadFromJsonAsync<TokenResponse>();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userTokens!.AccessToken);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=true", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_DryRunDefault_ReturnsPreviewWithPromptAndRawResponseAsync()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(
+                Success: true,
+                Result: """["work","newsletter"]""",
+                Error: null,
+                Prompt: new ClassificationPrompt("system-prompt", "user-prompt"),
+                RawResponse: """["work","newsletter"]"""));
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        body.Should().NotBeNull();
+        body!.Success.Should().BeTrue();
+        body.Applied.Should().BeFalse();
+        body.Labels.Should().BeEquivalentTo(new[] { "work", "newsletter" });
+        body.Error.Should().BeNull();
+        body.Prompt.Should().NotBeNull();
+        body.Prompt!.System.Should().Be("system-prompt");
+        body.Prompt.User.Should().Be("user-prompt");
+        body.RawResponse.Should().Be("""["work","newsletter"]""");
+
+        // No ClassificationResult should have been persisted
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        (await db.ClassificationResults.AnyAsync(r => r.CachedMessageId == ids[0])).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_ApplyMode_AppliesLabelsAndPersistsResultAsync()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(
+                Success: true,
+                Result: """["work"]""",
+                Error: null,
+                Prompt: new ClassificationPrompt("sys", "user"),
+                RawResponse: """["work"]"""));
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+        await SeedLabelsForCurrentUserAsync(("work", "#FF0000"), ("personal", "#00FF00"));
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=false", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        body!.Success.Should().BeTrue();
+        body.Applied.Should().BeTrue();
+        body.Labels.Should().BeEquivalentTo(new[] { "work" });
+        body.Prompt.Should().BeNull();
+        body.RawResponse.Should().BeNull();
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        var msg = await db.CachedMessages.Include(m => m.Labels).FirstAsync(m => m.Id == ids[0]);
+        msg.Labels.Should().ContainSingle().Which.Name.Should().Be("work");
+        (await db.ClassificationResults.AnyAsync(r => r.CachedMessageId == ids[0])).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_ApplyMode_RemovesQueueItemAsync()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(true, """["work"]""", null,
+                new ClassificationPrompt("sys", "user"), """["work"]"""));
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+        await SeedLabelsForCurrentUserAsync(("work", "#FF0000"));
+        await SeedQueueItemAsync(ids[0], ClassificationQueueItemStatus.Failed);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=false", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        (await db.ClassificationQueueItems.AnyAsync(q => q.CachedMessageId == ids[0])).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_NoRulesOrLabels_ReturnsEmptyLabelsAsync()
+    {
+        var stub = new StubClassificationService(ClassificationDetailedResult.Skipped);
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=true", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        body!.Success.Should().BeTrue();
+        body.Labels.Should().BeEmpty();
+        body.Applied.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_AiUnavailable_ReturnsSkippedAsync()
+    {
+        // Service-level skipped (HttpRequestException etc.) is surfaced with success=true and empty labels
+        var stub = new StubClassificationService(ClassificationDetailedResult.Skipped);
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=false", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        body!.Success.Should().BeTrue();
+        body.Labels.Should().BeEmpty();
+        body.Applied.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_HardFailure_ReturnsErrorAsync()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(
+                Success: false,
+                Result: null,
+                Error: "Failed to parse LLM response",
+                Prompt: new ClassificationPrompt("sys", "user"),
+                RawResponse: "garbage"));
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=true", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        body!.Success.Should().BeFalse();
+        body.Error.Should().Contain("Failed to parse");
+        body.Labels.Should().BeEmpty();
+        body.Prompt.Should().NotBeNull();
+        body.RawResponse.Should().Be("garbage");
+    }
+
+    [Fact]
+    public async Task ClassifyMessage_AppliesLabelsAdditively_WhenAlreadyLabeledAsync()
+    {
+        var stub = new StubClassificationService(
+            new ClassificationDetailedResult(true, """["work"]""", null,
+                new ClassificationPrompt("sys", "user"), """["work"]"""));
+        RecreateFactoryWith(stub);
+
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var ids = await SeedMessagesAsync(mailboxId, [("Subject", "from@test.com", DateTimeOffset.UtcNow)]);
+        await SeedLabelsForCurrentUserAsync(("work", "#FF0000"), ("existing", "#000000"));
+        await SeedLabelsOnMessageByNameAsync(ids[0], "existing");
+
+        var response = await _client.PostAsync($"/api/mail/messages/{ids[0]}/classify?dryRun=false", content: null);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        var msg = await db.CachedMessages.Include(m => m.Labels).FirstAsync(m => m.Id == ids[0]);
+        msg.Labels.Select(l => l.Name).Should().BeEquivalentTo(new[] { "work", "existing" });
+    }
+
+    private async Task SeedLabelsForCurrentUserAsync(params (string Name, string Color)[] labels)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        var user = await db.Users.FirstAsync();
+        foreach (var (name, color) in labels)
+        {
+            db.Labels.Add(new Label
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Name = name,
+                Color = color,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            });
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+    private async Task SeedLabelsOnMessageByNameAsync(Guid messageId, string labelName)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+        var message = await db.CachedMessages.Include(m => m.Labels).FirstAsync(m => m.Id == messageId);
+        var label = await db.Labels.FirstAsync(l => l.Name == labelName);
+        message.Labels.Add(label);
+        await db.SaveChangesAsync();
+    }
+
+    private sealed class StubClassificationService(ClassificationDetailedResult result) : IClassificationService
+    {
+        public Task<ClassificationServiceResult> ClassifyAsync(CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(result.IsSkipped
+                ? ClassificationServiceResult.Skipped
+                : new ClassificationServiceResult(result.Success, result.Result, result.Error));
+
+        public Task<ClassificationDetailedResult> ClassifyDetailedAsync(CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(result);
     }
 
     private async Task<Guid> SeedMessageWithAttachmentAsync(Guid mailboxId)

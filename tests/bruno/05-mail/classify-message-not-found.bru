@@ -1,0 +1,21 @@
+meta {
+  name: Classify Message - Not Found
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/mail/messages/00000000-0000-0000-0000-000000000000/classify?dryRun=true
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("should return 404", function() {
+    expect(res.status).to.equal(404);
+  });
+}
