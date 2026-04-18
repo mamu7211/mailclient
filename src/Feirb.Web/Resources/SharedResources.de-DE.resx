@@ -1839,4 +1839,22 @@
   <data name="RelativeTimeDaysAgo" xml:space="preserve">
     <value>vor {0} T.</value>
   </data>
+  <data name="InboxBannerUnclassifiedCount" xml:space="preserve">
+    <value>Nicht klassifizierte Mails: {0}</value>
+  </data>
+  <data name="InboxBannerJobStopped" xml:space="preserve">
+    <value>Klassifizierungs-Job ist gestoppt</value>
+  </data>
+  <data name="InboxBannerJobStoppedWithCount" xml:space="preserve">
+    <value>Klassifizierungs-Job ist gestoppt — {0} nicht klassifizierte Mails</value>
+  </data>
+  <data name="ClassificationOngoing" xml:space="preserve">
+    <value>Klassifizierung läuft…</value>
+  </data>
+  <data name="ClassificationFailed" xml:space="preserve">
+    <value>Klassifizierung fehlgeschlagen</value>
+  </data>
+  <data name="ClassificationNotClassified" xml:space="preserve">
+    <value>Nicht klassifiziert</value>
+  </data>
 </root>

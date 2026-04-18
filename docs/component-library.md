@@ -491,6 +491,25 @@ Centered empty/error state display with icon, title, message, and optional actio
 
 Use for empty lists, 404 pages, and loading failures. For inline errors inside forms, use Bootstrap alert classes or `ValidationMessage`.
 
+## StatusBanner
+
+Page-level banner with icon and message. Maps variants to Bootstrap `alert-*` classes. Use at the top of a page to surface conditions that affect how the page data should be interpreted (e.g. paused background jobs, pending work).
+
+```razor
+<StatusBanner Variant="StatusBannerVariant.Warning" Icon="pause-circle">
+    @L["InboxBannerJobStoppedWithCount", pendingCount]
+</StatusBanner>
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Variant` | `StatusBannerVariant` | `Info` | Visual variant: `Info`, `Warning`, `Danger`, `Success` |
+| `Icon` | `string` (required) | — | Bootstrap Icon name without `bi-` prefix |
+| `ChildContent` | `RenderFragment` (required) | — | Banner message content |
+| `Class` | `string?` | `null` | Extra CSS classes |
+
+Banner is not dismissible — auto-clears when the underlying condition changes. For transient user feedback (save/delete), use `NotificationService` instead.
+
 ## RecipientInput
 
 Tokenizing input for email recipients with PersonChip tokens, paste-splitting, and autocomplete. Used in Compose.

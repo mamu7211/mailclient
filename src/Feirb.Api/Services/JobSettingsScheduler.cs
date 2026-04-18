@@ -1,4 +1,5 @@
 using Feirb.Api.Data;
+using Feirb.Api.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 
@@ -28,6 +29,9 @@ public class JobSettingsScheduler(
 
             using var scope = scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+
+            await RecoverOrphanedExecutionsAsync(db, stoppingToken);
+            await RecoverStuckClassificationItemsAsync(db, stoppingToken);
 
             var jobs = await db.JobSettings
                 .Where(j => j.Enabled)
@@ -124,6 +128,61 @@ public class JobSettingsScheduler(
         await scheduler.ScheduleJob(job, trigger, cancellationToken);
         logger.LogDebug("Scheduled managed job '{JobName}' (type '{JobType}') with cron '{Cron}'",
             jobName, jobType, cronExpression);
+    }
+
+    private async Task RecoverOrphanedExecutionsAsync(FeirbDbContext db, CancellationToken cancellationToken)
+    {
+        var orphaned = await db.JobExecutions
+            .Where(e => e.FinishedAt == null)
+            .ToListAsync(cancellationToken);
+
+        if (orphaned.Count == 0)
+            return;
+
+        var now = DateTimeOffset.UtcNow;
+        var affectedJobIds = orphaned.Select(e => e.JobSettingsId).Distinct().ToList();
+
+        foreach (var execution in orphaned)
+        {
+            execution.Status = JobExecutionStatus.Failed;
+            execution.Error = "Execution interrupted (app restart)";
+            execution.FinishedAt = now;
+        }
+
+        var affectedJobs = await db.JobSettings
+            .Where(j => affectedJobIds.Contains(j.Id))
+            .ToListAsync(cancellationToken);
+
+        foreach (var job in affectedJobs)
+        {
+            job.LastRunAt = now;
+            job.LastStatus = JobExecutionStatus.Failed;
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        logger.LogWarning(
+            "Recovered {Count} orphaned job execution(s) interrupted by app restart", orphaned.Count);
+    }
+
+    private async Task RecoverStuckClassificationItemsAsync(FeirbDbContext db, CancellationToken cancellationToken)
+    {
+        var stuckItems = await db.ClassificationQueueItems
+            .Where(q => q.Status == ClassificationQueueItemStatus.Processing)
+            .ToListAsync(cancellationToken);
+
+        if (stuckItems.Count == 0)
+            return;
+
+        foreach (var item in stuckItems)
+        {
+            item.Status = ClassificationQueueItemStatus.Pending;
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        logger.LogWarning(
+            "Reset {Count} classification queue item(s) from Processing to Pending on startup", stuckItems.Count);
     }
 
     private static JobKey GetJobKey(string jobName) => new($"managed-{jobName}", _groupName);

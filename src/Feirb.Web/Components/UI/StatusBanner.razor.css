@@ -1,0 +1,16 @@
+.feirb-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.625rem 0.875rem;
+}
+
+.feirb-status-banner-content {
+    flex: 1;
+    line-height: 1.4;
+}
+
+::deep .feirb-status-banner-icon {
+    flex-shrink: 0;
+}

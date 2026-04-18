@@ -13,7 +13,7 @@
         </div>
         @if (!string.IsNullOrEmpty(Summary))
         {
-            <span class="feirb-mail-subject-chip-summary">@Summary</span>
+            <span class="feirb-mail-subject-chip-summary @SummaryClass">@Summary</span>
         }
     </div>
 </div>
@@ -26,6 +26,10 @@
     /// <summary>AI-generated summary text.</summary>
     [Parameter]
     public string? Summary { get; set; }
+
+    /// <summary>Additional CSS class applied to the summary span (e.g. <c>text-danger</c>).</summary>
+    [Parameter]
+    public string? SummaryClass { get; set; }
 
     /// <summary>Whether the mail has been read.</summary>
     [Parameter]

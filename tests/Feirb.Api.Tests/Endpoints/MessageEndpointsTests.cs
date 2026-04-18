@@ -41,7 +41,7 @@ public class MessageEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/messages");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result.Should().NotBeNull();
         result!.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
@@ -64,7 +64,7 @@ public class MessageEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/messages");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result!.Items.Should().HaveCount(3);
         result.Items[0].Subject.Should().Be("New Message");
         result.Items[1].Subject.Should().Be("Mid Message");
@@ -87,7 +87,7 @@ public class MessageEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/messages?page=2&pageSize=2");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result!.Items.Should().HaveCount(2);
         result.Page.Should().Be(2);
         result.PageSize.Should().Be(2);
@@ -110,7 +110,7 @@ public class MessageEndpointsTests : IDisposable
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userTokens!.AccessToken);
 
         var response = await _client.GetAsync("/api/mail/messages");
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result!.Items.Should().BeEmpty();
     }
 
@@ -197,7 +197,7 @@ public class MessageEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/messages");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result!.Items.Should().HaveCount(1);
         result.Items[0].Labels.Should().HaveCount(2);
         result.Items[0].Labels[0].Name.Should().Be("Newsletter");
@@ -217,9 +217,101 @@ public class MessageEndpointsTests : IDisposable
         var response = await _client.GetAsync("/api/mail/messages");
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<PaginatedResponse<MessageListItemResponse>>();
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
         result!.Items.Should().HaveCount(1);
         result.Items[0].Labels.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task ListMessages_NoQueueOrResult_ReturnsNotClassifiedAsync()
+    {
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        await SeedMessagesAsync(mailboxId, [("Message", "sender@test.com", DateTimeOffset.UtcNow)]);
+
+        var response = await _client.GetAsync("/api/mail/messages");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
+        result!.Items[0].ClassificationStatus.Should().Be(ClassificationStatus.NotClassified);
+        result.PendingCount.Should().Be(0);
+        result.JobPaused.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ListMessages_WithQueueAndResult_ReturnsCorrectStatusesAsync()
+    {
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        var mailboxId = await CreateMailboxAsync("Test", "test@test.com");
+        var messageIds = await SeedMessagesAsync(mailboxId, [
+            ("Pending", "sender@test.com", DateTimeOffset.UtcNow.AddMinutes(-5)),
+            ("Processing", "sender@test.com", DateTimeOffset.UtcNow.AddMinutes(-4)),
+            ("Failed", "sender@test.com", DateTimeOffset.UtcNow.AddMinutes(-3)),
+            ("Classified", "sender@test.com", DateTimeOffset.UtcNow.AddMinutes(-2)),
+            ("NotClassified", "sender@test.com", DateTimeOffset.UtcNow.AddMinutes(-1)),
+        ]);
+
+        await SeedQueueItemAsync(messageIds[0], ClassificationQueueItemStatus.Pending);
+        await SeedQueueItemAsync(messageIds[1], ClassificationQueueItemStatus.Processing);
+        await SeedQueueItemAsync(messageIds[2], ClassificationQueueItemStatus.Failed);
+        await SeedClassificationResultAsync(messageIds[3]);
+
+        var response = await _client.GetAsync("/api/mail/messages");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
+        var bySubject = result!.Items.ToDictionary(i => i.Subject, i => i.ClassificationStatus);
+        bySubject["Pending"].Should().Be(ClassificationStatus.Pending);
+        bySubject["Processing"].Should().Be(ClassificationStatus.Processing);
+        bySubject["Failed"].Should().Be(ClassificationStatus.Failed);
+        bySubject["Classified"].Should().Be(ClassificationStatus.Classified);
+        bySubject["NotClassified"].Should().Be(ClassificationStatus.NotClassified);
+        result.PendingCount.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task ListMessages_PendingCount_ExcludesOtherUsersAsync()
+    {
+        var adminTokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", adminTokens.AccessToken);
+
+        var adminMailboxId = await CreateMailboxAsync("Admin", "admin@test.com");
+        var adminMessageIds = await SeedMessagesAsync(adminMailboxId, [("Admin", "admin@test.com", DateTimeOffset.UtcNow)]);
+        await SeedQueueItemAsync(adminMessageIds[0], ClassificationQueueItemStatus.Pending);
+
+        await _client.PostAsJsonAsync("/api/auth/register", new RegisterRequest("user2", "user2@test.com", "Password123!"));
+        var loginResponse = await _client.PostAsJsonAsync("/api/auth/login", new LoginRequest("user2", "Password123!"));
+        var userTokens = await loginResponse.Content.ReadFromJsonAsync<TokenResponse>();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userTokens!.AccessToken);
+
+        var response = await _client.GetAsync("/api/mail/messages");
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
+        result!.PendingCount.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task ListMessages_JobEnabled_ReturnsJobPausedFalseAsync()
+    {
+        var tokens = await SetupAndLoginAsAdminAsync();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokens.AccessToken);
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+            var job = await db.JobSettings.FirstAsync(j => j.JobName == "Classification");
+            job.Enabled = true;
+            await db.SaveChangesAsync();
+        }
+
+        var response = await _client.GetAsync("/api/mail/messages");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var result = await response.Content.ReadFromJsonAsync<MessageListResponse>();
+        result!.JobPaused.Should().BeFalse();
     }
 
     // --- Helper Methods ---
@@ -303,6 +395,38 @@ public class MessageEndpointsTests : IDisposable
             message.Labels.Add(label);
         }
 
+        await db.SaveChangesAsync();
+    }
+
+    private async Task SeedQueueItemAsync(Guid messageId, ClassificationQueueItemStatus status)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+
+        db.ClassificationQueueItems.Add(new CachedMessageClassificationQueueItem
+        {
+            Id = Guid.NewGuid(),
+            CachedMessageId = messageId,
+            Status = status,
+            Ordinal = 0,
+            AttemptNumber = 0,
+            CreatedAt = DateTimeOffset.UtcNow,
+        });
+        await db.SaveChangesAsync();
+    }
+
+    private async Task SeedClassificationResultAsync(Guid messageId)
+    {
+        using var scope = _factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<FeirbDbContext>();
+
+        db.ClassificationResults.Add(new ClassificationResult
+        {
+            Id = Guid.NewGuid(),
+            CachedMessageId = messageId,
+            Result = "{}",
+            ClassifiedAt = DateTimeOffset.UtcNow,
+        });
         await db.SaveChangesAsync();
     }
 

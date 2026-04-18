@@ -12,6 +12,7 @@
 
         <MailSubjectChip Subject="@Subject"
                          Summary="@(Mode is MailCardMode.Medium or MailCardMode.Small ? Summary : null)"
+                         SummaryClass="@SummaryClass"
                          IsRead="IsRead"
                          HasAttachments="false" />
 
@@ -50,6 +51,10 @@
     /// <summary>Mail summary text (shown in Medium mode).</summary>
     [Parameter]
     public string? Summary { get; set; }
+
+    /// <summary>Additional CSS class applied to the summary text.</summary>
+    [Parameter]
+    public string? SummaryClass { get; set; }
 
     /// <summary>Mail labels to display.</summary>
     [Parameter]

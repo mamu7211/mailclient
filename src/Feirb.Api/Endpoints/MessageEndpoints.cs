@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Feirb.Api.Data;
+using Feirb.Api.Data.Entities;
 using Feirb.Api.Resources;
 using Feirb.Shared.AddressBook;
 using Feirb.Shared.Mail;
@@ -60,6 +61,24 @@ public static class MessageEndpoints
                 .Select(a => new { a.NormalizedEmail, a.Status })
                 .ToDictionaryAsync(x => x.NormalizedEmail, x => x.Status, StringComparer.Ordinal);
 
+        var pageMessageIds = items.Select(m => m.Id).ToList();
+
+        var queueStatusByMessageId = pageMessageIds.Count == 0
+            ? new Dictionary<Guid, ClassificationQueueItemStatus>()
+            : await db.ClassificationQueueItems
+                .AsNoTracking()
+                .Where(q => pageMessageIds.Contains(q.CachedMessageId))
+                .Select(q => new { q.CachedMessageId, q.Status })
+                .ToDictionaryAsync(x => x.CachedMessageId, x => x.Status);
+
+        var classifiedMessageIds = pageMessageIds.Count == 0
+            ? new HashSet<Guid>()
+            : (await db.ClassificationResults
+                .AsNoTracking()
+                .Where(r => pageMessageIds.Contains(r.CachedMessageId))
+                .Select(r => r.CachedMessageId)
+                .ToListAsync()).ToHashSet();
+
         var mapped = parsedSenders.Select(p =>
         {
             var m = p.Item;
@@ -69,10 +88,45 @@ public static class MessageEndpoints
                 ? s
                 : null;
             var labels = m.Labels.Select(l => new MessageLabelResponse(l.Name, l.Color)).ToList();
-            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, senderStatus, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments, labels);
+            var classificationStatus = ResolveClassificationStatus(m.Id, queueStatusByMessageId, classifiedMessageIds);
+            return new MessageListItemResponse(m.Id, m.MailboxName, m.BadgeColor, name, email, senderStatus, m.Subject, summaryPlaceholder, m.Date, IsRead: false, m.HasAttachments, labels, classificationStatus);
         }).ToList();
 
-        return Results.Ok(new PaginatedResponse<MessageListItemResponse>(mapped, page, pageSize, totalCount));
+        var pendingCount = await db.ClassificationQueueItems
+            .AsNoTracking()
+            .Where(q => q.CachedMessage.Mailbox.UserId == userId
+                && (q.Status == ClassificationQueueItemStatus.Pending || q.Status == ClassificationQueueItemStatus.Processing))
+            .CountAsync();
+
+        var jobPaused = !await db.JobSettings
+            .AsNoTracking()
+            .Where(j => j.JobName == "Classification")
+            .Select(j => j.Enabled)
+            .FirstOrDefaultAsync();
+
+        return Results.Ok(new MessageListResponse(mapped, page, pageSize, totalCount, pendingCount, jobPaused));
+    }
+
+    private static ClassificationStatus ResolveClassificationStatus(
+        Guid messageId,
+        Dictionary<Guid, ClassificationQueueItemStatus> queueStatusByMessageId,
+        HashSet<Guid> classifiedMessageIds)
+    {
+        if (queueStatusByMessageId.TryGetValue(messageId, out var queueStatus))
+        {
+            return queueStatus switch
+            {
+                ClassificationQueueItemStatus.Pending => ClassificationStatus.Pending,
+                ClassificationQueueItemStatus.Processing => ClassificationStatus.Processing,
+                ClassificationQueueItemStatus.Failed => ClassificationStatus.Failed,
+                ClassificationQueueItemStatus.Classified => ClassificationStatus.Classified,
+                _ => ClassificationStatus.NotClassified,
+            };
+        }
+
+        return classifiedMessageIds.Contains(messageId)
+            ? ClassificationStatus.Classified
+            : ClassificationStatus.NotClassified;
     }
 
     private static (string Name, string Email) ParseFromAddress(string from)
