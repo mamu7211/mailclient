@@ -76,7 +76,7 @@ public static class SetupEndpoints
             var tlsOptions = TlsModeConverter.ToSecureSocketOptions(request.TlsMode);
             await client.ConnectAsync(request.Host, request.Port, tlsOptions);
             if (request.RequiresAuth)
-                await client.AuthenticateAsync(request.Username, request.Password);
+                await client.AuthenticateAsync(request.Username ?? string.Empty, request.Password ?? string.Empty);
             await client.DisconnectAsync(quit: true);
             return Results.Ok(new TestSmtpResponse(true, null));
         }
