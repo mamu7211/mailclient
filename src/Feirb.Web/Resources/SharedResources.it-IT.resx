@@ -1857,4 +1857,67 @@
   <data name="ClassificationNotClassified" xml:space="preserve">
     <value>Non classificata</value>
   </data>
+  <data name="ClassifyToolbarLabel" xml:space="preserve">
+    <value>Classifica</value>
+  </data>
+  <data name="ClassifyMenuPreview" xml:space="preserve">
+    <value>Anteprima</value>
+  </data>
+  <data name="ClassifyMenuApplyNow" xml:space="preserve">
+    <value>Applica ora</value>
+  </data>
+  <data name="ClassifyPreviewTitle" xml:space="preserve">
+    <value>Anteprima classificazione</value>
+  </data>
+  <data name="ClassifyApplyTitle" xml:space="preserve">
+    <value>Applica classificazione</value>
+  </data>
+  <data name="ClassifyNoRulesTitle" xml:space="preserve">
+    <value>Nessuna regola di classificazione</value>
+  </data>
+  <data name="ClassifyNoRulesMessage" xml:space="preserve">
+    <value>Nessuna regola di classificazione configurata. Crea regole in Impostazioni &gt; Classificazione.</value>
+  </data>
+  <data name="ClassifyNoRulesGoToSettings" xml:space="preserve">
+    <value>Vai alle impostazioni di classificazione</value>
+  </data>
+  <data name="ClassifyApplyConfirmWithLabels" xml:space="preserve">
+    <value>Verranno applicate le seguenti etichette:</value>
+  </data>
+  <data name="ClassifyApplyConfirmEmpty" xml:space="preserve">
+    <value>Il classificatore non ha trovato etichette. Applicare comunque per contrassegnare questo messaggio come classificato?</value>
+  </data>
+  <data name="ClassifyPreviewNoLabels" xml:space="preserve">
+    <value>Nessuna etichetta corrispondente.</value>
+  </data>
+  <data name="ClassifyPreviewLabelsHeading" xml:space="preserve">
+    <value>Etichette riconosciute</value>
+  </data>
+  <data name="ClassifyPreviewSystemPromptHeading" xml:space="preserve">
+    <value>Prompt di sistema</value>
+  </data>
+  <data name="ClassifyPreviewUserPromptHeading" xml:space="preserve">
+    <value>Prompt utente</value>
+  </data>
+  <data name="ClassifyPreviewRawResponseHeading" xml:space="preserve">
+    <value>Risposta grezza dell'LLM</value>
+  </data>
+  <data name="ClassifyErrorPrefix" xml:space="preserve">
+    <value>Errore: {0}</value>
+  </data>
+  <data name="ClassifyToastApplied" xml:space="preserve">
+    <value>Classificazione applicata.</value>
+  </data>
+  <data name="ClassifyToastRequestFailed" xml:space="preserve">
+    <value>Impossibile classificare il messaggio. Riprovare.</value>
+  </data>
+  <data name="ClassifyButtonClose" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="ClassifyButtonApply" xml:space="preserve">
+    <value>Applica</value>
+  </data>
+  <data name="ClassifyServiceUnavailable" xml:space="preserve">
+    <value>Servizio IA non disponibile. Riprova più tardi.</value>
+  </data>
 </root>

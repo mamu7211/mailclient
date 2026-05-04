@@ -5,6 +5,9 @@
 @inject HttpClient Http
 @inject IStringLocalizer<SharedResources> L
 @inject BreadcrumbOverrideService BreadcrumbOverride
+@inject ToolbarStateService ToolbarState
+@inject NotificationService Notifications
+@inject NavigationManager Navigation
 @implements IDisposable
 
 <PageTitle>@L["PageTitleMessageDetail"]</PageTitle>
@@ -132,6 +135,170 @@ else if (_message is not null)
     }
 }
 
+@* Classify Preview Modal *@
+@if (_showPreviewModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" data-testid="classify-preview-modal">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@L["ClassifyPreviewTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModals" aria-label="@L["ClassifyButtonClose"]"></button>
+                </div>
+                <div class="modal-body">
+                    @if (_classifyInProgress)
+                    {
+                        <div class="d-flex align-items-center gap-2 text-muted">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <span>@L["ClassificationOngoing"]</span>
+                        </div>
+                    }
+                    else if (_lastResult is null)
+                    {
+                        <div class="alert alert-danger mb-0" role="alert">@L["ClassifyToastRequestFailed"]</div>
+                    }
+                    else if (!_lastResult.Success)
+                    {
+                        <div class="alert alert-danger" role="alert" data-testid="classify-preview-error">
+                            @string.Format(L["ClassifyErrorPrefix"], _lastResult.Error ?? L["ClassifyServiceUnavailable"])
+                        </div>
+                        @RenderPromptDetails(_lastResult)
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <div class="text-muted small mb-1">@L["ClassifyPreviewLabelsHeading"]</div>
+                            @if (_lastResult.Labels.Count == 0)
+                            {
+                                <p class="text-muted mb-0" data-testid="classify-preview-no-labels">@L["ClassifyPreviewNoLabels"]</p>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap gap-2" data-testid="classify-preview-labels">
+                                    @foreach (var labelName in _lastResult.Labels)
+                                    {
+                                        <LabelPill Name="@labelName" Color="@LookupLabelColor(labelName)" />
+                                    }
+                                </div>
+                            }
+                        </div>
+                        @RenderPromptDetails(_lastResult)
+                    }
+                </div>
+                <div class="modal-footer">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ClassifyButtonClose"]</Button>
+                    @if (_lastResult is { Success: true } && !_classifyInProgress)
+                    {
+                        <Button Variant="ButtonVariant.Primary"
+                                Icon="check-lg"
+                                OnClick="ConfirmApplyFromPreviewAsync"
+                                Disabled="_isApplying"
+                                data-testid="classify-preview-apply">
+                            @if (_isApplying)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            }
+                            @L["ClassifyButtonApply"]
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* Apply Confirmation Dialog *@
+@if (_showApplyConfirm)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" data-testid="classify-apply-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@L["ClassifyApplyTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModals" aria-label="@L["ClassifyButtonClose"]"></button>
+                </div>
+                <div class="modal-body">
+                    @if (_classifyInProgress)
+                    {
+                        <div class="d-flex align-items-center gap-2 text-muted">
+                            <span class="spinner-border spinner-border-sm" role="status"></span>
+                            <span>@L["ClassificationOngoing"]</span>
+                        </div>
+                    }
+                    else if (_lastResult is null)
+                    {
+                        <div class="alert alert-danger mb-0" role="alert">@L["ClassifyToastRequestFailed"]</div>
+                    }
+                    else if (!_lastResult.Success)
+                    {
+                        <div class="alert alert-danger mb-0" role="alert">
+                            @string.Format(L["ClassifyErrorPrefix"], _lastResult.Error ?? L["ClassifyServiceUnavailable"])
+                        </div>
+                    }
+                    else if (_lastResult.Labels.Count == 0)
+                    {
+                        <p class="mb-0">@L["ClassifyApplyConfirmEmpty"]</p>
+                    }
+                    else
+                    {
+                        <p class="mb-2">@L["ClassifyApplyConfirmWithLabels"]</p>
+                        <div class="d-flex flex-wrap gap-2" data-testid="classify-apply-labels">
+                            @foreach (var labelName in _lastResult.Labels)
+                            {
+                                <LabelPill Name="@labelName" Color="@LookupLabelColor(labelName)" />
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ButtonCancel"]</Button>
+                    @if (_lastResult is { Success: true } && !_classifyInProgress)
+                    {
+                        <Button Variant="ButtonVariant.Primary"
+                                Icon="check-lg"
+                                OnClick="ApplyConfirmedAsync"
+                                Disabled="_isApplying"
+                                data-testid="classify-apply-confirm">
+                            @if (_isApplying)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            }
+                            @L["ButtonConfirm"]
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@* No-Rules Help Dialog *@
+@if (_showNoRulesModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);" data-testid="classify-no-rules-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@L["ClassifyNoRulesTitle"]</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModals" aria-label="@L["ClassifyButtonClose"]"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">@L["ClassifyNoRulesMessage"]</p>
+                </div>
+                <div class="modal-footer">
+                    <Button Variant="ButtonVariant.Secondary" OnClick="CloseModals">@L["ClassifyButtonClose"]</Button>
+                    <Button Variant="ButtonVariant.Primary"
+                            Icon="gear"
+                            OnClick="GoToClassificationSettings"
+                            data-testid="classify-no-rules-settings">
+                        @L["ClassifyNoRulesGoToSettings"]
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     [Parameter]
     public Guid Id { get; set; }
@@ -142,6 +309,15 @@ else if (_message is not null)
     private string? _errorMessage;
     private string _selectedBodyFormat = "html";
     private bool _hasBothBodyFormats;
+
+    // Classify state
+    private ToolbarDropdownAction[] _toolbarDropdownActions = [];
+    private bool _showPreviewModal;
+    private bool _showApplyConfirm;
+    private bool _showNoRulesModal;
+    private bool _classifyInProgress;
+    private bool _isApplying;
+    private ClassifyMessageResponse? _lastResult;
 
     private IReadOnlyList<ToggleButtonItem> BodyFormatOptions =>
     [
@@ -173,6 +349,8 @@ else if (_message is not null)
 
                 BreadcrumbOverride.SetLastSegmentLabel(
                     $"{_message.FromAddress.Name} \u2014 {_message.Subject}");
+
+                RegisterToolbar();
             }
         }
         catch
@@ -185,7 +363,272 @@ else if (_message is not null)
         }
     }
 
-    public void Dispose() => BreadcrumbOverride.Clear();
+    private void RegisterToolbar()
+    {
+        var items = new[]
+        {
+            new DropdownButtonItem(
+                L["ClassifyMenuPreview"],
+                EventCallback.Factory.Create(this, OpenPreviewAsync),
+                Icon: "eye",
+                TestId: "classify-menu-preview"),
+            new DropdownButtonItem(
+                L["ClassifyMenuApplyNow"],
+                EventCallback.Factory.Create(this, OpenApplyConfirmAsync),
+                Icon: "check-lg",
+                TestId: "classify-menu-apply"),
+        };
+        _toolbarDropdownActions =
+        [
+            new ToolbarDropdownAction(
+                L["ClassifyToolbarLabel"],
+                ButtonVariant.Secondary,
+                items,
+                icon: "magic",
+                testId: "classify-dropdown",
+                menuTestId: "classify-menu"),
+        ];
+        ToolbarState.AddDropdownActions(_toolbarDropdownActions);
+    }
+
+    public void Dispose()
+    {
+        BreadcrumbOverride.Clear();
+        ToolbarState.RemoveDropdownActions(_toolbarDropdownActions);
+    }
+
+    // Monotonic counter to guard against stale responses: every modal open and every
+    // explicit close increments this; in-flight classify calls capture the value at
+    // start and discard their result if the value has moved on by the time they resolve.
+    private int _classifyGeneration;
+
+    private void CloseModals()
+    {
+        _classifyGeneration++;
+        _showPreviewModal = false;
+        _showApplyConfirm = false;
+        _showNoRulesModal = false;
+    }
+
+    private async Task OpenPreviewAsync()
+    {
+        CloseModals();
+        var gen = ++_classifyGeneration;
+        _lastResult = null;
+        _classifyInProgress = true;
+        _showPreviewModal = true;
+        StateHasChanged();
+
+        var result = await ClassifyAsync(dryRun: true);
+
+        // Discard if the user closed the modal or started another classify in the meantime.
+        if (gen != _classifyGeneration)
+            return;
+
+        _classifyInProgress = false;
+
+        if (result is null)
+        {
+            // Network/server failure — keep modal open with error state, also toast.
+            Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        // Backend unavailable or hard failure — close modal, show toast.
+        if (!result.Success)
+        {
+            _showPreviewModal = false;
+            var msg = !string.IsNullOrEmpty(result.Error)
+                ? string.Format(L["ClassifyErrorPrefix"], result.Error)
+                : L["ClassifyToastRequestFailed"].Value;
+            Notifications.Add(msg, NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        // Skipped (no rules/labels) — close preview, show help dialog instead.
+        if (IsNoRulesResponse(result))
+        {
+            _showPreviewModal = false;
+            _showNoRulesModal = true;
+            StateHasChanged();
+            return;
+        }
+
+        _lastResult = result;
+        StateHasChanged();
+    }
+
+    private async Task OpenApplyConfirmAsync()
+    {
+        CloseModals();
+        var gen = ++_classifyGeneration;
+        _lastResult = null;
+        _classifyInProgress = true;
+        _showApplyConfirm = true;
+        StateHasChanged();
+
+        // Run a dry-run first so the user can see what will be applied.
+        var result = await ClassifyAsync(dryRun: true);
+
+        if (gen != _classifyGeneration)
+            return;
+
+        _classifyInProgress = false;
+
+        if (result is null)
+        {
+            Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        if (!result.Success)
+        {
+            _showApplyConfirm = false;
+            var msg = !string.IsNullOrEmpty(result.Error)
+                ? string.Format(L["ClassifyErrorPrefix"], result.Error)
+                : L["ClassifyToastRequestFailed"].Value;
+            Notifications.Add(msg, NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        if (IsNoRulesResponse(result))
+        {
+            _showApplyConfirm = false;
+            _showNoRulesModal = true;
+            StateHasChanged();
+            return;
+        }
+
+        _lastResult = result;
+        StateHasChanged();
+    }
+
+    private void ConfirmApplyFromPreviewAsync()
+    {
+        // From the preview modal: switch to the apply-confirm modal with the same result.
+        _showPreviewModal = false;
+        _showApplyConfirm = true;
+    }
+
+    private async Task ApplyConfirmedAsync()
+    {
+        _isApplying = true;
+        StateHasChanged();
+
+        var result = await ClassifyAsync(dryRun: false);
+        _isApplying = false;
+
+        if (result is null || !result.Success)
+        {
+            var msg = result?.Error is { Length: > 0 } e
+                ? string.Format(L["ClassifyErrorPrefix"], e)
+                : L["ClassifyToastRequestFailed"].Value;
+            Notifications.Add(msg, NotificationSeverity.Error);
+            return;
+        }
+
+        // Success can come back without an actual apply — e.g. the user had no rules/labels
+        // configured, so the service returned empty-labels-skipped. Route that to the help
+        // dialog instead of misleading the user with "applied".
+        if (!result.Applied)
+        {
+            CloseModals();
+            if (IsNoRulesResponse(result))
+            {
+                _showNoRulesModal = true;
+                StateHasChanged();
+            }
+            else
+            {
+                Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Warning);
+            }
+            return;
+        }
+
+        Notifications.Add(L["ClassifyToastApplied"], NotificationSeverity.Success);
+        CloseModals();
+
+        // Refresh the message to show the newly-applied labels.
+        await ReloadMessageAsync();
+    }
+
+    private async Task<ClassifyMessageResponse?> ClassifyAsync(bool dryRun)
+    {
+        try
+        {
+            var response = await Http.PostAsync(
+                $"/api/mail/messages/{Id}/classify?dryRun={(dryRun ? "true" : "false")}",
+                content: null);
+
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool IsNoRulesResponse(ClassifyMessageResponse result) =>
+        result.Success && result.Labels.Count == 0
+            && string.IsNullOrEmpty(result.RawResponse) && result.Prompt is null;
+
+    private async Task ReloadMessageAsync()
+    {
+        var response = await Http.GetAsync($"/api/mail/messages/{Id}");
+        if (response.IsSuccessStatusCode)
+        {
+            _message = await response.Content.ReadFromJsonAsync<MessageDetailResponse>();
+            StateHasChanged();
+        }
+    }
+
+    private string? LookupLabelColor(string labelName)
+    {
+        if (_message is null)
+            return null;
+
+        // Match case-insensitively against labels already on the message. Both the
+        // classify endpoint output and the stored label names are normalized to lowercase
+        // (see LabelEndpoints create/update), so an exact compare would also work — the
+        // case-insensitive compare is defensive against legacy or imported data.
+        var match = _message.Labels.FirstOrDefault(
+            l => string.Equals(l.Name, labelName, StringComparison.OrdinalIgnoreCase));
+        return match?.Color;
+    }
+
+    private RenderFragment RenderPromptDetails(ClassifyMessageResponse result) => @<text>
+        @if (result.Prompt is not null)
+        {
+            <div class="mb-3">
+                <div class="text-muted small mb-1">@L["ClassifyPreviewSystemPromptHeading"]</div>
+                <pre class="feirb-prompt-pre" data-testid="classify-preview-system-prompt">@result.Prompt.System</pre>
+            </div>
+            <div class="mb-3">
+                <div class="text-muted small mb-1">@L["ClassifyPreviewUserPromptHeading"]</div>
+                <pre class="feirb-prompt-pre" data-testid="classify-preview-user-prompt">@result.Prompt.User</pre>
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(result.RawResponse))
+        {
+            <div class="mb-0">
+                <div class="text-muted small mb-1">@L["ClassifyPreviewRawResponseHeading"]</div>
+                <pre class="feirb-prompt-pre" data-testid="classify-preview-raw-response">@result.RawResponse</pre>
+            </div>
+        }
+    </text>;
+
+    private void GoToClassificationSettings()
+    {
+        CloseModals();
+        Navigation.NavigateTo("/settings/classification");
+    }
 
     private static string FormatFileSize(long bytes)
     {

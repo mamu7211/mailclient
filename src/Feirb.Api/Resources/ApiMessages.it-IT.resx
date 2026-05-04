@@ -216,4 +216,10 @@
   <data name="AddressStatusInvalid" xml:space="preserve">
     <value>Valore di stato indirizzo non valido.</value>
   </data>
+  <data name="ClassificationFailed" xml:space="preserve">
+    <value>Classificazione non riuscita.</value>
+  </data>
+  <data name="ClassificationAiUnavailable" xml:space="preserve">
+    <value>Il servizio di classificazione AI non è disponibile. Riprovare più tardi.</value>
+  </data>
 </root>

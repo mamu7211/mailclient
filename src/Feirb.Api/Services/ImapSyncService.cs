@@ -51,7 +51,8 @@ public class ImapSyncService(
             await client.ConnectAsync(mailbox.ImapHost, mailbox.ImapPort, tlsOptions, cancellationToken);
             await client.AuthenticateAsync(mailbox.ImapUsername, password, cancellationToken);
 
-            var inbox = client.Inbox;
+            var inbox = client.Inbox ?? throw new InvalidOperationException(
+                $"IMAP server for mailbox {mailboxId} returned no Inbox folder.");
             await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
             var lastSeenUid = await GetLastSeenUidAsync(db, mailboxId, cancellationToken);

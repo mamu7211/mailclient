@@ -17,6 +17,17 @@ public class ClassificationService(
     public async Task<ClassificationServiceResult> ClassifyAsync(
         CachedMessage message, CancellationToken cancellationToken = default)
     {
+        var detailed = await ClassifyDetailedAsync(message, cancellationToken);
+
+        if (detailed.IsSkipped)
+            return ClassificationServiceResult.Skipped;
+
+        return new ClassificationServiceResult(detailed.Success, detailed.Result, detailed.Error);
+    }
+
+    public async Task<ClassificationDetailedResult> ClassifyDetailedAsync(
+        CachedMessage message, CancellationToken cancellationToken = default)
+    {
         ArgumentNullException.ThrowIfNull(message);
 
         // Determine the user who owns this message via mailbox
@@ -26,7 +37,7 @@ public class ClassificationService(
 
         if (mailbox is null)
         {
-            return new ClassificationServiceResult(false, null, "Mailbox not found for message.");
+            return new ClassificationDetailedResult(false, null, "Mailbox not found for message.", null, null);
         }
 
         var userId = mailbox.UserId;
@@ -39,7 +50,7 @@ public class ClassificationService(
 
         if (rules.Count == 0)
         {
-            return ClassificationServiceResult.Skipped;
+            return ClassificationDetailedResult.Skipped;
         }
 
         // Load user's label names for validation
@@ -50,11 +61,18 @@ public class ClassificationService(
 
         if (labels.Count == 0)
         {
-            return ClassificationServiceResult.Skipped;
+            return ClassificationDetailedResult.Skipped;
         }
 
-        // Build and send the LLM request
-        var chatMessages = BuildPrompt(message, rules, labels);
+        // Build the LLM prompt
+        var systemPrompt = BuildSystemPrompt(rules, labels);
+        var userPrompt = BuildUserPrompt(message);
+        var prompt = new ClassificationPrompt(systemPrompt, userPrompt);
+        var chatMessages = new List<ChatMessage>
+        {
+            new(ChatRole.System, systemPrompt),
+            new(ChatRole.User, userPrompt),
+        };
 
         string responseText;
         try
@@ -65,16 +83,17 @@ public class ClassificationService(
         catch (HttpRequestException ex)
         {
             logger.LogWarning(ex, "Ollama unavailable, skipping classification for message {MessageId}", message.Id);
-            return ClassificationServiceResult.Skipped;
+            return ClassificationDetailedResult.BackendUnavailable("Classification service unavailable.");
         }
         catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
             logger.LogWarning(ex, "Ollama request timed out, skipping classification for message {MessageId}", message.Id);
-            return ClassificationServiceResult.Skipped;
+            return ClassificationDetailedResult.BackendUnavailable("Classification request timed out.");
         }
 
         // Parse and validate the response
-        return ParseAndValidateResponse(responseText, labels);
+        var parsed = ParseAndValidateResponse(responseText, labels);
+        return new ClassificationDetailedResult(parsed.Success, parsed.Result, parsed.Error, prompt, responseText);
     }
 
     internal static IList<ChatMessage> BuildPrompt(

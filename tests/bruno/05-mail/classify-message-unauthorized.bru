@@ -1,0 +1,17 @@
+meta {
+  name: Classify Message - Unauthorized
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/mail/messages/00000000-0000-0000-0000-000000000000/classify
+  body: none
+  auth: none
+}
+
+tests {
+  test("should return 401", function() {
+    expect(res.status).to.equal(401);
+  });
+}

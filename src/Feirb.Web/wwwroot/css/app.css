@@ -248,6 +248,77 @@ a:hover, .btn-link:hover {
     padding: 1rem;
 }
 
+/* Classify Preview prompt blocks */
+.feirb-prompt-pre {
+    background-color: var(--feirb-surface-container);
+    border: 1px solid var(--feirb-border-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    max-height: 16rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--feirb-on-surface);
+}
+
+/* Dropdown Button */
+.feirb-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.feirb-dropdown-caret {
+    margin-left: 0.4rem;
+    transition: transform 0.15s ease;
+}
+
+.feirb-dropdown.open .feirb-dropdown-caret {
+    transform: rotate(180deg);
+}
+
+.feirb-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    min-width: 12rem;
+    background-color: var(--feirb-surface);
+    border: 1px solid var(--feirb-border-color);
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--feirb-shadow);
+    padding: 0.25rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+}
+
+.feirb-dropdown-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--feirb-on-surface);
+    text-align: left;
+    font-size: 0.9375rem;
+    border-radius: calc(var(--bs-border-radius) - 0.5rem);
+    cursor: pointer;
+    width: 100%;
+}
+
+.feirb-dropdown-menu-item:hover:not(:disabled),
+.feirb-dropdown-menu-item:focus-visible:not(:disabled) {
+    background-color: var(--feirb-primary-container, var(--feirb-surface-container));
+    outline: none;
+}
+
+.feirb-dropdown-menu-item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Toggle Button Group */
 .feirb-toggle-group {
     display: inline-grid;

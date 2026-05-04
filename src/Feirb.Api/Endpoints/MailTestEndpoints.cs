@@ -78,7 +78,7 @@ public static class MailTestEndpoints
             try
             {
                 if (request.RequiresAuth)
-                    await client.AuthenticateAsync(request.Username, request.Password);
+                    await client.AuthenticateAsync(request.Username ?? string.Empty, request.Password ?? string.Empty);
             }
             catch (AuthenticationException ex)
             {

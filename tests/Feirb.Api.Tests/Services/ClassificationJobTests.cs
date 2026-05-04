@@ -311,6 +311,10 @@ public class ClassificationJobTests : IDisposable
         public Task<ClassificationServiceResult> ClassifyAsync(
             CachedMessage message, CancellationToken cancellationToken = default) =>
             Task.FromResult(new ClassificationServiceResult(true, """["TestLabel"]""", null));
+
+        public Task<ClassificationDetailedResult> ClassifyDetailedAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new ClassificationDetailedResult(true, """["TestLabel"]""", null, null, null));
     }
 
     private sealed class FailingClassificationService : IClassificationService
@@ -318,6 +322,10 @@ public class ClassificationJobTests : IDisposable
         public Task<ClassificationServiceResult> ClassifyAsync(
             CachedMessage message, CancellationToken cancellationToken = default) =>
             Task.FromResult(new ClassificationServiceResult(false, null, "Classification failed"));
+
+        public Task<ClassificationDetailedResult> ClassifyDetailedAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new ClassificationDetailedResult(false, null, "Classification failed", null, null));
     }
 
     private sealed class SkippingClassificationService : IClassificationService
@@ -325,6 +333,10 @@ public class ClassificationJobTests : IDisposable
         public Task<ClassificationServiceResult> ClassifyAsync(
             CachedMessage message, CancellationToken cancellationToken = default) =>
             Task.FromResult(ClassificationServiceResult.Skipped);
+
+        public Task<ClassificationDetailedResult> ClassifyDetailedAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(ClassificationDetailedResult.Skipped);
     }
 
     private sealed class EmptyArrayClassificationService : IClassificationService
@@ -332,5 +344,9 @@ public class ClassificationJobTests : IDisposable
         public Task<ClassificationServiceResult> ClassifyAsync(
             CachedMessage message, CancellationToken cancellationToken = default) =>
             Task.FromResult(new ClassificationServiceResult(true, "[]", null));
+
+        public Task<ClassificationDetailedResult> ClassifyDetailedAsync(
+            CachedMessage message, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new ClassificationDetailedResult(true, "[]", null, null, null));
     }
 }

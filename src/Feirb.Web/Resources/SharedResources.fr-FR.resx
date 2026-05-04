@@ -1857,4 +1857,67 @@
   <data name="ClassificationNotClassified" xml:space="preserve">
     <value>Non classé</value>
   </data>
+  <data name="ClassifyToolbarLabel" xml:space="preserve">
+    <value>Classer</value>
+  </data>
+  <data name="ClassifyMenuPreview" xml:space="preserve">
+    <value>Aperçu</value>
+  </data>
+  <data name="ClassifyMenuApplyNow" xml:space="preserve">
+    <value>Appliquer maintenant</value>
+  </data>
+  <data name="ClassifyPreviewTitle" xml:space="preserve">
+    <value>Aperçu de la classification</value>
+  </data>
+  <data name="ClassifyApplyTitle" xml:space="preserve">
+    <value>Appliquer la classification</value>
+  </data>
+  <data name="ClassifyNoRulesTitle" xml:space="preserve">
+    <value>Aucune règle de classification</value>
+  </data>
+  <data name="ClassifyNoRulesMessage" xml:space="preserve">
+    <value>Aucune règle de classification configurée. Créez des règles dans Paramètres &gt; Classification.</value>
+  </data>
+  <data name="ClassifyNoRulesGoToSettings" xml:space="preserve">
+    <value>Aller aux paramètres de classification</value>
+  </data>
+  <data name="ClassifyApplyConfirmWithLabels" xml:space="preserve">
+    <value>Les libellés suivants seront appliqués :</value>
+  </data>
+  <data name="ClassifyApplyConfirmEmpty" xml:space="preserve">
+    <value>Le classifieur n'a trouvé aucun libellé. Appliquer quand même pour marquer ce message comme classé ?</value>
+  </data>
+  <data name="ClassifyPreviewNoLabels" xml:space="preserve">
+    <value>Aucun libellé correspondant.</value>
+  </data>
+  <data name="ClassifyPreviewLabelsHeading" xml:space="preserve">
+    <value>Libellés reconnus</value>
+  </data>
+  <data name="ClassifyPreviewSystemPromptHeading" xml:space="preserve">
+    <value>Prompt système</value>
+  </data>
+  <data name="ClassifyPreviewUserPromptHeading" xml:space="preserve">
+    <value>Prompt utilisateur</value>
+  </data>
+  <data name="ClassifyPreviewRawResponseHeading" xml:space="preserve">
+    <value>Réponse brute du LLM</value>
+  </data>
+  <data name="ClassifyErrorPrefix" xml:space="preserve">
+    <value>Erreur : {0}</value>
+  </data>
+  <data name="ClassifyToastApplied" xml:space="preserve">
+    <value>Classification appliquée.</value>
+  </data>
+  <data name="ClassifyToastRequestFailed" xml:space="preserve">
+    <value>Impossible de classer le message. Veuillez réessayer.</value>
+  </data>
+  <data name="ClassifyButtonClose" xml:space="preserve">
+    <value>Fermer</value>
+  </data>
+  <data name="ClassifyButtonApply" xml:space="preserve">
+    <value>Appliquer</value>
+  </data>
+  <data name="ClassifyServiceUnavailable" xml:space="preserve">
+    <value>Service IA indisponible. Veuillez réessayer plus tard.</value>
+  </data>
 </root>

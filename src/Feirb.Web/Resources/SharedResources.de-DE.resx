@@ -1857,4 +1857,67 @@
   <data name="ClassificationNotClassified" xml:space="preserve">
     <value>Nicht klassifiziert</value>
   </data>
+  <data name="ClassifyToolbarLabel" xml:space="preserve">
+    <value>Klassifizieren</value>
+  </data>
+  <data name="ClassifyMenuPreview" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="ClassifyMenuApplyNow" xml:space="preserve">
+    <value>Jetzt anwenden</value>
+  </data>
+  <data name="ClassifyPreviewTitle" xml:space="preserve">
+    <value>Klassifizierungs-Vorschau</value>
+  </data>
+  <data name="ClassifyApplyTitle" xml:space="preserve">
+    <value>Klassifizierung anwenden</value>
+  </data>
+  <data name="ClassifyNoRulesTitle" xml:space="preserve">
+    <value>Keine Klassifizierungsregeln</value>
+  </data>
+  <data name="ClassifyNoRulesMessage" xml:space="preserve">
+    <value>Keine Klassifizierungsregeln konfiguriert. Erstelle Regeln unter Einstellungen &gt; Klassifizierung.</value>
+  </data>
+  <data name="ClassifyNoRulesGoToSettings" xml:space="preserve">
+    <value>Zu den Klassifizierungs-Einstellungen</value>
+  </data>
+  <data name="ClassifyApplyConfirmWithLabels" xml:space="preserve">
+    <value>Folgende Labels werden angewendet:</value>
+  </data>
+  <data name="ClassifyApplyConfirmEmpty" xml:space="preserve">
+    <value>Der Klassifizierer hat keine Labels gefunden. Trotzdem anwenden, um diese Mail als klassifiziert zu markieren?</value>
+  </data>
+  <data name="ClassifyPreviewNoLabels" xml:space="preserve">
+    <value>Keine Labels passend.</value>
+  </data>
+  <data name="ClassifyPreviewLabelsHeading" xml:space="preserve">
+    <value>Erkannte Labels</value>
+  </data>
+  <data name="ClassifyPreviewSystemPromptHeading" xml:space="preserve">
+    <value>System-Prompt</value>
+  </data>
+  <data name="ClassifyPreviewUserPromptHeading" xml:space="preserve">
+    <value>User-Prompt</value>
+  </data>
+  <data name="ClassifyPreviewRawResponseHeading" xml:space="preserve">
+    <value>Roh-Antwort vom LLM</value>
+  </data>
+  <data name="ClassifyErrorPrefix" xml:space="preserve">
+    <value>Fehler: {0}</value>
+  </data>
+  <data name="ClassifyToastApplied" xml:space="preserve">
+    <value>Klassifizierung angewendet.</value>
+  </data>
+  <data name="ClassifyToastRequestFailed" xml:space="preserve">
+    <value>Die Nachricht konnte nicht klassifiziert werden. Bitte erneut versuchen.</value>
+  </data>
+  <data name="ClassifyButtonClose" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="ClassifyButtonApply" xml:space="preserve">
+    <value>Anwenden</value>
+  </data>
+  <data name="ClassifyServiceUnavailable" xml:space="preserve">
+    <value>KI-Dienst nicht verfügbar. Bitte später erneut versuchen.</value>
+  </data>
 </root>

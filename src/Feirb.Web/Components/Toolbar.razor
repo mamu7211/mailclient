@@ -1,9 +1,20 @@
 @inject ToolbarStateService ToolbarState
 @implements IDisposable
 
-@if (ToolbarState.Actions.Count > 0)
+@if (ToolbarState.Actions.Count > 0 || ToolbarState.DropdownActions.Count > 0)
 {
     <div class="toolbar-actions" data-testid="toolbar">
+        @foreach (var action in ToolbarState.DropdownActions)
+        {
+            <DropdownButton @key="action"
+                            Label="@action.Label"
+                            Icon="@action.Icon"
+                            Variant="action.Variant"
+                            Size="ButtonSize.Small"
+                            Items="action.Items"
+                            TestId="@action.TestId"
+                            MenuTestId="@action.MenuTestId" />
+        }
         @foreach (var action in ToolbarState.Actions)
         {
             <Button @key="action" Variant="action.Variant" Size="ButtonSize.Small" Icon="@action.Icon" OnClick="action.OnClickAsync">
