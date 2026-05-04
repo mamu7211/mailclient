@@ -147,29 +147,7 @@ public class ClassificationJob(IServiceScopeFactory scopeFactory, ILogger<Classi
         if (rawLabelNames is null || rawLabelNames.Length == 0)
             return;
 
-        var labelNames = rawLabelNames.Where(n => !string.IsNullOrWhiteSpace(n)).Select(n => n.ToLowerInvariant()).ToArray();
-
-        var mailbox = message.Mailbox ?? await db.Mailboxes
-            .AsNoTracking()
-            .FirstAsync(m => m.Id == message.MailboxId, cancellationToken);
-
-        var matchingLabels = await db.Labels
-            .Where(l => l.UserId == mailbox.UserId && labelNames.Contains(l.Name))
-            .ToListAsync(cancellationToken);
-
-        // Ensure the Labels collection is loaded
-        if (!db.Entry(message).Collection(m => m.Labels).IsLoaded)
-        {
-            await db.Entry(message).Collection(m => m.Labels).LoadAsync(cancellationToken);
-        }
-
-        foreach (var label in matchingLabels)
-        {
-            if (!message.Labels.Any(l => l.Id == label.Id))
-            {
-                message.Labels.Add(label);
-            }
-        }
+        await MessageLabelApplier.ApplyAsync(db, message, rawLabelNames, cancellationToken);
     }
 
     private int GetBatchSize(JobSettings jobSettings)

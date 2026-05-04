@@ -219,4 +219,7 @@
   <data name="ClassificationFailed" xml:space="preserve">
     <value>Classification failed.</value>
   </data>
+  <data name="ClassificationAiUnavailable" xml:space="preserve">
+    <value>AI classification service is unavailable. Please try again later.</value>
+  </data>
 </root>

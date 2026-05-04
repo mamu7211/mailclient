@@ -13,7 +13,10 @@ namespace Feirb.Shared.Mail;
 /// (no rules/labels configured).
 /// </param>
 /// <param name="Applied">
-/// True when labels were persisted to the message (only possible with <c>dryRun=false</c>).
+/// True when the classify action was committed to the database (only possible with
+/// <c>dryRun=false</c>). A classification marker is persisted regardless of matches,
+/// so <c>Applied</c> may be true even if <see cref="Labels"/> is empty — callers
+/// should not assume a label change occurred.
 /// </param>
 /// <param name="Error">Error message when <see cref="Success"/> is false; otherwise null.</param>
 /// <param name="Prompt">

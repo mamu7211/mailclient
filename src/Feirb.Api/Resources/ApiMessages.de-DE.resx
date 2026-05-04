@@ -219,4 +219,7 @@
   <data name="ClassificationFailed" xml:space="preserve">
     <value>Klassifizierung fehlgeschlagen.</value>
   </data>
+  <data name="ClassificationAiUnavailable" xml:space="preserve">
+    <value>Der KI-Klassifizierungsdienst ist nicht verfügbar. Bitte später erneut versuchen.</value>
+  </data>
 </root>

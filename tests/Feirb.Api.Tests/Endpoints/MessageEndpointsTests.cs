@@ -605,10 +605,13 @@ public class MessageEndpointsTests : IDisposable
     }
 
     [Fact]
-    public async Task ClassifyMessage_AiUnavailable_ReturnsSkippedAsync()
+    public async Task ClassifyMessage_AiUnavailable_ReturnsFailureAsync()
     {
-        // Service-level skipped (HttpRequestException etc.) is surfaced with success=true and empty labels
-        var stub = new StubClassificationService(ClassificationDetailedResult.Skipped);
+        // Backend unavailable (HttpRequestException / TaskCanceledException) must be
+        // distinguishable from "no rules configured" — surfaced as success=false with
+        // a localized error so the UI can show an error instead of help text.
+        var stub = new StubClassificationService(
+            ClassificationDetailedResult.BackendUnavailable("Classification service unavailable."));
         RecreateFactoryWith(stub);
 
         var tokens = await SetupAndLoginAsAdminAsync();
@@ -621,9 +624,10 @@ public class MessageEndpointsTests : IDisposable
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var body = await response.Content.ReadFromJsonAsync<ClassifyMessageResponse>();
-        body!.Success.Should().BeTrue();
+        body!.Success.Should().BeFalse();
         body.Labels.Should().BeEmpty();
         body.Applied.Should().BeFalse();
+        body.Error.Should().NotBeNullOrEmpty();
     }
 
     [Fact]

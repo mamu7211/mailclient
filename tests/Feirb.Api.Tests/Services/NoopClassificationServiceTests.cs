@@ -7,7 +7,7 @@ namespace Feirb.Api.Tests.Services;
 public class NoopClassificationServiceTests
 {
     [Fact]
-    public async Task Classify_ReturnsSuccessWithPlaceholderResultAsync()
+    public async Task Classify_ReturnsSuccessWithEmptyLabelsArrayAsync()
     {
         var service = new NoopClassificationService();
         var message = new CachedMessage
@@ -25,7 +25,9 @@ public class NoopClassificationServiceTests
         var result = await service.ClassifyAsync(message);
 
         result.Success.Should().BeTrue();
-        result.Result.Should().Be("noop-classification");
+        // Must be a JSON array to match the contract ClassificationService enforces and
+        // that the classify endpoint persists into ClassificationResult.Result.
+        result.Result.Should().Be("[]");
         result.Error.Should().BeNull();
     }
 }

@@ -246,7 +246,20 @@ public static class MessageEndpoints
 
         var detailed = await classificationService.ClassifyDetailedAsync(message, cancellationToken);
 
-        // Empty rules/labels: skipped — return success with empty labels so the UI
+        // Backend unavailable (Ollama down or timeout) — surface as a hard failure so the
+        // UI shows an error toast instead of the "no rules configured" help dialog.
+        if (detailed.IsSkipped && detailed.SkipReason == ClassificationSkipReason.BackendUnavailable)
+        {
+            return Results.Ok(new ClassifyMessageResponse(
+                Success: false,
+                Labels: [],
+                Applied: false,
+                Error: localizer["ClassificationAiUnavailable"].Value,
+                Prompt: null,
+                RawResponse: null));
+        }
+
+        // No rules/labels configured: skipped — return success with empty labels so the UI
         // can show the "No classification rules configured" help text.
         if (detailed.IsSkipped)
         {
@@ -255,10 +268,8 @@ public static class MessageEndpoints
                 Labels: [],
                 Applied: false,
                 Error: null,
-                Prompt: dryRun && detailed.Prompt is not null
-                    ? new ClassifyPrompt(detailed.Prompt.System, detailed.Prompt.User)
-                    : null,
-                RawResponse: dryRun ? detailed.RawResponse : null));
+                Prompt: null,
+                RawResponse: null));
         }
 
         // Hard failure: surface the error and skip applying.
@@ -280,7 +291,7 @@ public static class MessageEndpoints
         var applied = false;
         if (!dryRun && labelNames.Count > 0)
         {
-            await ApplyLabelsAsync(db, message, labelNames, cancellationToken);
+            await MessageLabelApplier.ApplyAsync(db, message, labelNames, cancellationToken);
             applied = true;
         }
 
@@ -331,31 +342,6 @@ public static class MessageEndpoints
         catch (JsonException)
         {
             return [];
-        }
-    }
-
-    private static async Task ApplyLabelsAsync(
-        FeirbDbContext db,
-        CachedMessage message,
-        IReadOnlyList<string> labelNames,
-        CancellationToken cancellationToken)
-    {
-        var normalized = labelNames.Select(n => n.ToLowerInvariant()).ToArray();
-        var matchingLabels = await db.Labels
-            .Where(l => l.UserId == message.Mailbox.UserId && normalized.Contains(l.Name))
-            .ToListAsync(cancellationToken);
-
-        if (!db.Entry(message).Collection(m => m.Labels).IsLoaded)
-        {
-            await db.Entry(message).Collection(m => m.Labels).LoadAsync(cancellationToken);
-        }
-
-        foreach (var label in matchingLabels)
-        {
-            if (!message.Labels.Any(l => l.Id == label.Id))
-            {
-                message.Labels.Add(label);
-            }
         }
     }
 

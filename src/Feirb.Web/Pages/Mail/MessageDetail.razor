@@ -397,8 +397,14 @@ else if (_message is not null)
         ToolbarState.RemoveDropdownActions(_toolbarDropdownActions);
     }
 
+    // Monotonic counter to guard against stale responses: every modal open and every
+    // explicit close increments this; in-flight classify calls capture the value at
+    // start and discard their result if the value has moved on by the time they resolve.
+    private int _classifyGeneration;
+
     private void CloseModals()
     {
+        _classifyGeneration++;
         _showPreviewModal = false;
         _showApplyConfirm = false;
         _showNoRulesModal = false;
@@ -407,18 +413,36 @@ else if (_message is not null)
     private async Task OpenPreviewAsync()
     {
         CloseModals();
+        var gen = ++_classifyGeneration;
         _lastResult = null;
         _classifyInProgress = true;
         _showPreviewModal = true;
         StateHasChanged();
 
         var result = await ClassifyAsync(dryRun: true);
+
+        // Discard if the user closed the modal or started another classify in the meantime.
+        if (gen != _classifyGeneration)
+            return;
+
         _classifyInProgress = false;
 
         if (result is null)
         {
             // Network/server failure — keep modal open with error state, also toast.
             Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        // Backend unavailable or hard failure — close modal, show toast.
+        if (!result.Success)
+        {
+            _showPreviewModal = false;
+            var msg = !string.IsNullOrEmpty(result.Error)
+                ? string.Format(L["ClassifyErrorPrefix"], result.Error)
+                : L["ClassifyToastRequestFailed"].Value;
+            Notifications.Add(msg, NotificationSeverity.Error);
             StateHasChanged();
             return;
         }
@@ -439,6 +463,7 @@ else if (_message is not null)
     private async Task OpenApplyConfirmAsync()
     {
         CloseModals();
+        var gen = ++_classifyGeneration;
         _lastResult = null;
         _classifyInProgress = true;
         _showApplyConfirm = true;
@@ -446,11 +471,26 @@ else if (_message is not null)
 
         // Run a dry-run first so the user can see what will be applied.
         var result = await ClassifyAsync(dryRun: true);
+
+        if (gen != _classifyGeneration)
+            return;
+
         _classifyInProgress = false;
 
         if (result is null)
         {
             Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Error);
+            StateHasChanged();
+            return;
+        }
+
+        if (!result.Success)
+        {
+            _showApplyConfirm = false;
+            var msg = !string.IsNullOrEmpty(result.Error)
+                ? string.Format(L["ClassifyErrorPrefix"], result.Error)
+                : L["ClassifyToastRequestFailed"].Value;
+            Notifications.Add(msg, NotificationSeverity.Error);
             StateHasChanged();
             return;
         }
@@ -488,6 +528,24 @@ else if (_message is not null)
                 ? string.Format(L["ClassifyErrorPrefix"], e)
                 : L["ClassifyToastRequestFailed"].Value;
             Notifications.Add(msg, NotificationSeverity.Error);
+            return;
+        }
+
+        // Success can come back without an actual apply — e.g. the user had no rules/labels
+        // configured, so the service returned empty-labels-skipped. Route that to the help
+        // dialog instead of misleading the user with "applied".
+        if (!result.Applied)
+        {
+            CloseModals();
+            if (IsNoRulesResponse(result))
+            {
+                _showNoRulesModal = true;
+                StateHasChanged();
+            }
+            else
+            {
+                Notifications.Add(L["ClassifyToastRequestFailed"], NotificationSeverity.Warning);
+            }
             return;
         }
 
@@ -536,9 +594,10 @@ else if (_message is not null)
         if (_message is null)
             return null;
 
-        // Match case-insensitively against labels that the message already carries — the
-        // classify endpoint normalizes label names to lowercase, but message labels keep
-        // their original casing.
+        // Match case-insensitively against labels already on the message. Both the
+        // classify endpoint output and the stored label names are normalized to lowercase
+        // (see LabelEndpoints create/update), so an exact compare would also work — the
+        // case-insensitive compare is defensive against legacy or imported data.
         var match = _message.Labels.FirstOrDefault(
             l => string.Equals(l.Name, labelName, StringComparison.OrdinalIgnoreCase));
         return match?.Color;

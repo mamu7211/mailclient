@@ -114,11 +114,14 @@
         if (Disabled)
             return;
 
-        _open = !_open;
-        OnParametersSet();
-
         if (_open)
         {
+            await CloseInternalAsync();
+        }
+        else
+        {
+            _open = true;
+            OnParametersSet();
             await EnsureOutsideClickHandlerAsync();
         }
     }
@@ -128,24 +131,27 @@
         if (item.Disabled)
             return;
 
-        _open = false;
-        OnParametersSet();
-        StateHasChanged();
+        await CloseInternalAsync();
 
         if (item.OnClick.HasDelegate)
             await item.OnClick.InvokeAsync();
     }
 
     [JSInvokable]
-    public Task CloseAsync()
+    public async Task CloseAsync()
     {
         if (!_open)
-            return Task.CompletedTask;
+            return;
 
+        await CloseInternalAsync();
+    }
+
+    private async Task CloseInternalAsync()
+    {
         _open = false;
         OnParametersSet();
+        await DetachOutsideClickHandlerAsync();
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
     private async Task EnsureOutsideClickHandlerAsync()
@@ -165,16 +171,24 @@
         }
     }
 
+    private async Task DetachOutsideClickHandlerAsync()
+    {
+        if (_outsideClickHandle is null)
+            return;
+
+        try { await _outsideClickHandle.InvokeVoidAsync("detach"); }
+        catch (JSException) { }
+        catch (JSDisconnectedException) { }
+
+        try { await _outsideClickHandle.DisposeAsync(); }
+        catch (JSDisconnectedException) { }
+
+        _outsideClickHandle = null;
+    }
+
     public async ValueTask DisposeAsync()
     {
-        if (_outsideClickHandle is not null)
-        {
-            try { await _outsideClickHandle.InvokeVoidAsync("detach"); }
-            catch (JSException) { }
-            catch (JSDisconnectedException) { }
-            await _outsideClickHandle.DisposeAsync();
-        }
-
+        await DetachOutsideClickHandlerAsync();
         _selfRef?.Dispose();
     }
 }

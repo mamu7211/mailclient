@@ -83,12 +83,12 @@ public class ClassificationService(
         catch (HttpRequestException ex)
         {
             logger.LogWarning(ex, "Ollama unavailable, skipping classification for message {MessageId}", message.Id);
-            return ClassificationDetailedResult.Skipped;
+            return ClassificationDetailedResult.BackendUnavailable("Classification service unavailable.");
         }
         catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
             logger.LogWarning(ex, "Ollama request timed out, skipping classification for message {MessageId}", message.Id);
-            return ClassificationDetailedResult.Skipped;
+            return ClassificationDetailedResult.BackendUnavailable("Classification request timed out.");
         }
 
         // Parse and validate the response
